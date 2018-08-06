@@ -1,0 +1,285 @@
+@import './util.scss';
+* {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+div,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+img,
+ul,
+li,
+input,
+span,
+a,
+i {
+    padding: 0;
+    margin: 0;
+}
+
+html,
+body {
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+html {
+    font-size: calc(10vw);
+    font-size: -webkit-calc(10vw);
+    font-family: "microsoft yahei", "HanHei SC", "PingHei", "PingFang SC", "STHeitiSC-Light", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+}
+
+body {
+    @include f14px;
+    width: 10rem;
+    margin: 0 auto;
+    position: relative;
+    background-color: $bodyBackgroundColor;
+}
+
+img {
+    border: none;
+    vertical-align: top;
+    width: 100%;
+}
+
+a {
+    text-decoration: none;
+}
+
+input,
+textarea,
+button {
+    outline: none;
+    -webkit-appearance: none;
+}
+
+textarea {
+    resize: none;
+    overflow: hidden;
+}
+
+li {
+    list-style: none;
+}
+
+.clear {
+    zoom: 1;
+}
+
+.clear:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.fl,
+.pull-left {
+    float: left;
+}
+
+.fr,
+.pull-right {
+    float: right;
+}
+
+.section {
+    width: 100%;
+    position: relative;
+}
+
+.section-center {
+    padding: 0 0.413rem;
+    position: relative;
+}
+
+.full {
+    width: 100%;
+}
+
+.absolute {
+    position: absolute;
+}
+
+.relative {
+    position: relative;
+}
+
+.noscroll::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+}
+
+.app-init {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+}
+
+.scroll-box-y {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.scroll-box-x {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.footer-hack:after {
+    content: '';
+    display: block;
+    width: 100%;
+    padding-bottom: 1.44rem;
+}
+
+.footer.leave {
+    transform: translateY(100%)
+}
+
+.footer {
+    position: absolute;
+    z-index: 400;
+    background-color: #fff;
+    bottom: 0px;
+    width: 100%;
+    height: $footerHeight;
+    left: 0;
+    transform: translateY(0);
+    -webkit-transition: transform .4s cubic-bezier(.55, 0, .1, 1);
+    transition: transform .4s cubic-bezier(.55, 0, .1, 1);
+    @include box-sizing;
+    -webkit-box-shadow: 0 3px 14px 2px rgba(0, 0, 0, .12);
+    box-shadow: 0 3px 14px 2px rgba(0, 0, 0, .12);
+    .footer-item {
+        width: calc(100% / 3);
+        height: 100%;
+        text-align: center;
+        float: left;
+        color: #111;
+        font-size: 0.32rem;
+        padding-bottom: 0.2rem;
+        padding-top: 0.2rem;
+        .icon {
+            font-size: 0.6rem;
+            height: 0.6rem;
+            margin-bottom: 0.1rem;
+            span{
+                background-repeat: no-repeat;
+                background-size: 100% 100%;
+                display: inline-block;
+                width: 0.6rem;
+                height: 0.6rem;
+            }
+          .icon-shouye{
+            background-image:url('~@/assets/img/home.png');
+          }
+          .icon-classifition{
+            background-image:url('~@/assets/img/classifition.png');
+          }
+           .icon-mine{
+            background-image:url('~@/assets/img/mine.png');
+          }
+        }
+        .shop-car {
+            position: relative;
+        }
+        .num {
+            position: absolute;
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            line-height: 0.5rem;
+            text-align: center;
+            background-color: #f95c52;
+            color: #fff;
+            right: 0.38rem;
+            top: 0.05rem;
+        }
+        .full {
+            font-size: 0.28rem;
+        }
+    }
+    .active {
+        color: rgb(255,151,3);
+         .icon .icon-shouye{
+            background-image:url('~@/assets/img/home_action.png');
+          }
+         .icon .icon-classifition{
+            background-image:url('~@/assets/img/classifition_action.png');
+          }
+                   .icon .icon-mine{
+            background-image:url('~@/assets/img/mine_action.png');
+          }          
+    }
+}
+
+//路由动画
+.slide-go-enter-active,
+.slide-go-leave-active,
+.slide-back-enter-active,
+.slide-back-leave-active {
+    @include ani01-transform;
+}
+
+.slide-go-enter {
+    -webkit-transform: translateX(100%);
+    transform: translateX(100%);
+}
+
+.slide-go-enter-to {
+    -webkit-transform: translateX(0%);
+    transform: translateX(0%);
+}
+
+.slide-go-leave {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+}
+
+.slide-go-leave-to {
+    -webkit-transform: translateX(-100%);
+    transform: translateX(-100%);
+}
+
+.slide-back-enter {
+    -webkit-transform: translateX(-100%);
+    transform: translateX(-100%);
+}
+
+.slide-back-enter-to {
+    -webkit-transform: translateX(0%);
+    transform: translateX(0%);
+}
+
+.slide-back-leave {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+}
+
+.slide-back-leave-to {
+    -webkit-transform: translateX(100%);
+    transform: translateX(100%);
+}
+
+
+
+
+
+
+.red{
+    color:red;
+}
