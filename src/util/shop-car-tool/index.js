@@ -66,6 +66,25 @@ class shopCarTool{
 	}
 	
 	
+  minus(value){
+//	console.log(value)
+//	console.log(this.shopCarDB)
+  	var theItem = this.shopCarDB[value.id].itemGuige;
+  	for (var i=0;i < theItem.length;i++) {
+  		if (theItem[i].itemOneGuige[0].key == value.itemGuige.itemOneGuige[0].key && theItem[i].itemOneGuige[1].key == value.itemGuige.itemOneGuige[1].key && theItem[i].itemOneGuige[2].key == value.itemGuige.itemOneGuige[2].key) {
+  			theItem[i].itemOneGuigeLen -= 1;
+  			if(theItem[i].itemOneGuigeLen < 1){
+  				delete theItem[i]
+  			}
+  			this.shopCarDB[value.id].length -= 1;
+  			if (this.shopCarDB[value.id].length < 1) {
+  				delete this.shopCarDB[value.id]
+  			}
+  		}
+  	}
+  	this.upData();
+  }
+	
   // 删除所有商品
   removeAll() {
     this.shopCarDB = {}

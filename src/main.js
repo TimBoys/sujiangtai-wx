@@ -5,7 +5,7 @@ import App from './App'
 import router from './router'
 import store from './store/store'
 import axios from "axios";
-import { XButton,Group,Cell,XImg,XDialog,Checker, CheckerItem,Confirm,XInput,InlineXNumber   } from 'vux'
+import { XButton,Group,Cell,XImg,XDialog,Checker, CheckerItem,Confirm,XInput,InlineXNumber,Badge   } from 'vux'
 import VueI18n from 'vue-i18n';
 import messages from './i18n/i18n';
 import localLang from './i18n/localeLang';
@@ -14,6 +14,16 @@ import './assets/font/iconfont.css';
 
 //配置axios
 //axios.defaults.headers.get['Content-Type'] = 'application/json';
+let apiUrl = 'http://api.test'; 
+//// 根据 process.env.HOST 的值判断当前是什么环境
+//// 命令：npm run build -- test ，process.env.HOST就设置为：'test'
+//let HOST = process.env.HOST;
+//HOST = HOST === 'prod' ? '' : '-' + HOST;
+// 
+//apiUrl = 'http://api'+HOST+'.demo.com';
+//console.log(apiUrl)
+//axios.defaults.baseURL = apiUrl;
+
 Vue.prototype.$http = axios;
 
 //配置vux
@@ -26,7 +36,7 @@ Vue.component('checker-item', CheckerItem);
 Vue.component('confirm', Confirm)
 Vue.component('x-input', XInput)
 Vue.component('inline-x-number', InlineXNumber)
-
+Vue.component('badge', Badge)
 
 
 

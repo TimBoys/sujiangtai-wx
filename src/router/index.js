@@ -70,7 +70,13 @@ export default new Router({
 		    component(resolve){
 		       require(['@/views/register/register.vue'], resolve)
 		    }
+		},
+		{
+			path: '/helpCenter',
+			name: 'helpCenter',
+		    component(resolve){
+		       require(['@/views/helpCenter/helpCenter.vue'], resolve)
+		    }
 		}
-
 	]
 })

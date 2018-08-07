@@ -117,7 +117,7 @@
 				}, {
 					src: "../../../static/images/home/tf_yuding.png",
 					title: this.$t('home.topFire_src.title_ydxd'),
-					linkTo: "/book"
+					linkTo: "/classification"
 				}],
 				detailFire_src: [{
 					src: "../../../static/images/home/fire_icon.png",
@@ -256,6 +256,7 @@
 			},
 			selectMenu(key){
 				console.log(key)
+				//接口api   getStorCustOrderInfoVoeList   获取所有店铺LIST  queryStores
 			}
 		},
 		components: {

@@ -52,8 +52,8 @@
 			<div class="cfl-cont" @click="gwcMask">
 				<div class="iconfont icon-gouwuche ftl-gwc">
 			</div>
-				<div class="ftl-redPoint">
-					12
+				<div class="ftl-redPoint" v-if="gwcRedPoint">
+					{{gwcRedPoint}}
 				</div>
 			</div>
 		</div>
@@ -75,17 +75,17 @@
 					<span class="gwcc-qk" @click="clearGwc"><span class="delete iconfont icon-del"></span>清空</span>
 				</div>
 				<div class="gwc-detail">
-					<div class="gwcd-item" v-for="(gwcItem,index) in gwcData" :key="index">
+					<div class="gwcd-item" v-for="(gwcItem,index) in gwcData2" :key="index">
 						<div class="gwcdi-left">
-							<div class="gwcdil-top">{{gwcItem.gwcdilTop}}</div>
-							<div class="gwcdil-bottom">{{gwcItem.gwcdilBottom}}</div>
+							<div class="gwcdil-top">{{gwcItem.name}}</div>
+							<div class="gwcdil-bottom"><span v-for="(ggItem,index) in gwcItem.itemGuige.itemOneGuige">{{ggItem.value}}</span></div>
 						</div>
 						<div class="gwcdi-right">
-							<div class="gwcdir-left">{{gwcItem.gwcdirLeft}}</div>
+							<div class="gwcdir-left">{{gwcItem.id}}</div>
 							<div class="gwcdir-right">
-								 <x-icon type="ios-minus" class="cell-x-icon" ></x-icon>
-								 <span>{{gwcItem.gwcdirRight}}</span>
-								 <x-icon type="ios-plus" class="cell-x-icon" ></x-icon>
+								 <x-icon type="ios-minus" class="cell-x-icon" @click.native="minusItemGoods(gwcItem)"></x-icon>
+								 <span>{{gwcItem.itemGuige.itemOneGuigeLen}}</span>
+								 <x-icon type="ios-plus" class="cell-x-icon" @click.native="addItemGoods(gwcItem)"></x-icon>
 							</div>
 						</div>						
 					</div>
@@ -185,6 +185,7 @@ export default {
       isShowGuiGe:false,
       offset: [],
       imgSrc: "../../../static/images/home/testImg1.jpg",
+//    gwcRedPoint:null,
       banner: [
         {
           src: "../../../static/images/home/testImg1.jpg",
@@ -432,27 +433,6 @@ export default {
           ]
         }
       ],
-
-      gwcData: [
-        {
-          gwcdilTop: "招牌特饮",
-          gwcdilBottom: "加冰/加糖/加水",
-          gwcdirLeft: "$22.22",
-          gwcdirRight: "2"
-        },
-        {
-          gwcdilTop: "招牌特饮",
-          gwcdilBottom: "加冰/加糖/加水",
-          gwcdirLeft: "$22.22",
-          gwcdirRight: "2"
-        },
-        {
-          gwcdilTop: "招牌特饮",
-          gwcdilBottom: "加冰/加糖/加水",
-          gwcdirLeft: "$22.22",
-          gwcdirRight: "2"
-        }
-      ],
       gwcData2: [],
       guiGeDemo1: {key: '1-1', value: '标准'},
       guiGeDemo2: {key: '2-1', value: '常温'},
@@ -500,7 +480,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      nowStatus: "nowStatus"
+      gwcRedPoint: "getShopCarLength"
     })
   },
   mounted: function() {
@@ -518,24 +498,25 @@ export default {
     //根据缓存初始化购物车
     initGwc(){
     	console.log("初始化购物车")
-    	console.log(this.shopCar.getAll())
+    	this.gwcData2 = [];	
+//  	console.log(this.shopCar.getAll())
     	var allShopCarData = this.shopCar.getAll();
-//  	this.gwcData = this.shopCar.getAll();
 		for (var itemKey in allShopCarData) {
-			console.log(itemKey)
-			console.log(allShopCarData[itemKey])
-			var item = {};
-			if (allShopCarData[itemKey].itemGuige.length > 1) {
+//			console.log("allShopCarData[itemKey]")
+//			console.log(allShopCarData[itemKey])
 				for (var i =0;i<allShopCarData[itemKey].itemGuige.length;i++) {
-					console.log(allShopCarData[itemKey].itemGuige[i]);
+					var item = {};
+					item.itemGuige = allShopCarData[itemKey].itemGuige[i];
+					item.id = allShopCarData[itemKey].id;
+					item.name = allShopCarData[itemKey].name;
+					
+					this.gwcData2.push(item)
 				}
-			}else{
-				var thePushData = {gwcdilTop:allShopCarData[itemKey].name,gwcdilBottom:allShopCarData[itemKey].itemGuige[0].itemOneGuige[0].value+"/"+allShopCarData[itemKey].itemGuige[0].itemOneGuige[1].value+"/"+allShopCarData[itemKey].itemGuige[0].itemOneGuige[2].value}
-				this.gwcData2.push(thePushData)
-			}
-//			this.gwcData2 = 
+
 		}
-		console.log(this.gwcData2)
+//		console.log("this.gwcData2")
+//		console.log(this.gwcData2)
+		
     },
     // 左侧菜单跳转
     jumpToTarget(index) {
@@ -575,16 +556,12 @@ export default {
           }
         });
 
-		//设置初始化滚动
-        // setTimeout(() => {
-        //   this.$refs.left.scrollTop = initLeftRightScroll.left;
-        //   this.$refs.rightView.scrollTop = initLeftRightScroll.right;
-        // }, 10);
       }, 100);
     },
     //购物撤弹出框
     gwcMask() {
-      this.isMaskLeave = !this.isMaskLeave;
+    	this.isMaskLeave = !this.isMaskLeave;
+
     },
     //展示规格
     showGuiGe(item){
@@ -592,6 +569,7 @@ export default {
     	this.waitPushShopCart = item;
     	this.isShowGuiGe = !this.isShowGuiGe;
     	this.pushGuige = this.initGuige;
+
     },
     pushShopCart(){
     	//获取规格
@@ -602,11 +580,32 @@ export default {
     	console.dir(addShopCart)
     	this.shopCar.add(addShopCart);
 //  	this.isShowGuiGe = !this.isShowGuiGe;
+    	// 初始化购物车
+    	this.initGwc();
     },
     //清空购物车
     clearGwc(){
     	console.log("清空购物车")
     	this.shopCar.removeAll();
+    },
+    //购物车新增商品
+    addItemGoods(item){
+    	console.log(item)
+    	var addItem = {};
+    	addItem.name = item.name;
+    	addItem.id = item.id;
+    	addItem.oneGuige = item.itemGuige.itemOneGuige;
+    	
+    	this.shopCar.add(addItem);
+    	// 初始化购物车
+    	this.initGwc();    	
+    	
+    },
+    //购物车删除商品
+    minusItemGoods(item){
+    	this.shopCar.minus(item);
+    	// 初始化购物车
+    	this.initGwc();    	
     },
     //展示规格end
     open(link){
@@ -863,6 +862,12 @@ export default {
             }
             .gwcdil-bottom {
               font-size: 0.26rem;
+              span:after{
+              	content: "/";
+              }
+              span:nth-last-of-type(1):after{
+              	content: "";
+              }
             }
           }
           .gwcdi-right {

@@ -33,7 +33,7 @@
 							<x-img slot="icon" class="mineItem" v-lazy="groupCont.mineHelp">
 							</x-img>
 						</cell>
-						<cell title="帮助中心"  is-link>
+						<cell title="帮助中心"  is-link @click.native="open('/helpCenter')">
 							<x-img slot="icon" class="mineItem" v-lazy="groupCont.mineMsg">
 							</x-img>
 						</cell>
@@ -75,6 +75,9 @@
 		      this.position = position;
 		      this.showPositionValue = true;
 		    },
+		    open(link){
+		    	this.$router.openPage(link);
+		    }
 		},
 		components:{
 			XImg,
