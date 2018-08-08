@@ -58,7 +58,7 @@
 			this.$http
 				.get("/getAllGoodsClass")
 				.then(res => {
-//										console.log(res)
+										console.log(res)
 				})
 				.catch(err => {
 					console.log(err);
@@ -68,9 +68,9 @@
 				'pageNum': 2,
 				'pageSize': 2
 			}).then((res) => {
-				//				console.log(res)
+								console.log(res)
 			}).catch((err) => {
-				//				console.log(err)
+								console.log(err)
 			})
 			//			测试axios---end
 

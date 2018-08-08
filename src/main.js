@@ -13,8 +13,8 @@ import VueLazyload from 'vue-lazyload';
 import './assets/font/iconfont.css';
 
 //配置axios
-//axios.defaults.headers.get['Content-Type'] = 'application/json';
-let apiUrl = 'http://api.test'; 
+axios.defaults.headers.get['Content-Type'] = 'application/json';
+//let apiUrl = 'http://api.test'; 
 //// 根据 process.env.HOST 的值判断当前是什么环境
 //// 命令：npm run build -- test ，process.env.HOST就设置为：'test'
 //let HOST = process.env.HOST;

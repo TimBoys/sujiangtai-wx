@@ -82,7 +82,7 @@
 		data() {
 			return {
 				home: "home",
-				localLang: "zh",
+				localLang: "en",
 				localAddr: {
 					localPos: "../../../static/images/home/local_position.png",
 					localName: "Whiterock BC"
@@ -207,15 +207,80 @@
 			}
 		},
 		mounted: function() {
-
+			//初始化获取本地语言
 			this.initLocalLang();
-			var strUrl = location.href.split('#')[0];
-						console.log("url:"+ location.href)
-			var resultCode = getUrlParam(strUrl, "code");
-						console.log(resultCode)
+			//根据code获取并存储openId
+//			this.initOpenId();			
+			//初始化店铺
+			this.initGetStoreId();
+			//初始化店铺数据
+			this.initStoreData();
 
 		},
 		methods: {
+			//初试化start
+			//根据code获取并存储openId
+			initOpenId(){
+			var strUrl = location.href.split('#')[0];
+			console.log("url:"+ location.href);
+			var resultCode = getUrlParam(strUrl, "code");
+			console.log(resultCode);
+			//code存在是wx端，不存在是pc端
+			if (resultCode) {
+				this.$http.get("/userInfoLogin", {params:{
+					code: resultCode
+				}}).then((res) => {
+					console.log(res)
+					var weixinOpenid = "";
+					DB.setItem("weixinOpenid",weixinOpenid);
+				}).catch((err) => {
+					console.log(err)
+				})				
+			}else{
+				console.log("no-code")
+			}
+			},
+			//初始化获取本地语言
+			initLocalLang() {
+				if(!DB.getItem("localLang").toString()) {
+					this.localLang = "en";
+					DB.setItem("localLang",this.localLang);
+				} else {
+					this.localLang = DB.getItem("localLang").toString();
+				}
+			},
+			//初始化店铺获取店铺id
+			initGetStoreId(){
+				if(!DB.getItem("storeId").toString()) {
+					var storeId = null;
+					console.log("/userLogin/storelist")
+					this.$http.get("/userLogin/storelist").then((res) => {
+						console.log("/userLogin/storelist")
+						console.log(res)
+					}).catch((err) => {
+						console.log(err)
+					})	
+					DB.setItem(storeId);
+				} else {
+					DB.getItem("storeId").toString();
+				}
+			},
+			//初试化店铺数据
+			initStoreData(){
+				this.$http.get("/userLogin/getClassGoods",{
+					params:{
+//						storeNo:DB.getItem("storeId").toString(),
+						storeNo:1,
+						classType:1
+					}
+				}).then((res) => {
+					console.log(res)
+				}).catch((err) => {
+					console.log(err)
+				})				
+				
+			},
+			//初试化店铺数据end
 			open(link) {
 				console.log(link)
 				this.$router.openPage(link);
@@ -229,14 +294,6 @@
 				}
 				DB.setItem("localLang", this.localLang);
 				window.location.reload();
-			},
-			initLocalLang() {
-				if(!DB.getItem("localLang").toString()) {
-					this.localLang = "zh";
-					DB.setItem(this.localLang);
-				} else {
-					this.localLang = DB.getItem("localLang").toString();
-				}
 			},
 			selectAddr(){
 				this.isShowAs = true;

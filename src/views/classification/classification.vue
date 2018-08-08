@@ -60,7 +60,7 @@
 				<div class="cf-center" @click="gwcMask">
 			总价:$33.00
 		</div>
-				<div class="cf-right" @click="open('/closeAccount')">
+				<div class="cf-right" @click="toAccount('/closeAccount')">
 			去结算
 		</div>
 	</div>
@@ -490,6 +490,8 @@ export default {
     this.initScroll();
     // 初始化购物车
     this.initGwc();
+
+  	
   },
   methods: {
     showModel() {
@@ -610,7 +612,20 @@ export default {
     //展示规格end
     open(link){
     	this.$router.openPage(link);
-    }
+    },
+    //去结算判断是否用户是注册
+    toAccount(){
+    	    	this.$router.openPage("/closeAccount");
+			this.$http.get("/findUserByWeixinOpenid", {params:{
+				weixinOpenid: DB.getItem("weixinOpenid").toString()
+			}}).then((res) => {
+				console.log(res)
+			}).catch((err) => {
+				console.log(err)
+			})	    	
+   },
+   //绑定
+    
   },
   components: {
     swiper,

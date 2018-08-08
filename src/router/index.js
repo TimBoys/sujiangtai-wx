@@ -54,7 +54,7 @@ export default new Router({
 			path: '/closeAccount',
 			name: 'closeAccount',
 		    component(resolve){
-		       require(['@/views/closeAccount/closeAccount.vue'], resolve)
+		       require(['@/views/classification/closeAccount/closeAccount.vue'], resolve)
 		    }
 		},
 		{
@@ -75,8 +75,31 @@ export default new Router({
 			path: '/helpCenter',
 			name: 'helpCenter',
 		    component(resolve){
+		    	console.log(124444444444)
 		       require(['@/views/helpCenter/helpCenter.vue'], resolve)
+		    },
+		},
+		{
+		    	path:'/hcDetail',
+		    	name:'hcDetail',
+			    component(resolve){
+			       require(['@/views/helpCenter/hcDetail/hcDetail.vue'], resolve)
+			    },		    	
+		},
+		{
+			path: '/news',
+			name: 'news',
+		    component(resolve){
+		       require(['@/views/news/news.vue'], resolve)
 		    }
-		}
+		},		
+		{
+			path: '/indent',
+			name: 'indent',
+		    component(resolve){
+		       require(['@/views/indent/indent.vue'], resolve)
+		    }
+		},		
+		
 	]
 })

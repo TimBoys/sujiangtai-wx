@@ -62,14 +62,14 @@ export default {
 	computed:{
 		leaveComp(){
 			var resout = false;
-			var base = ['home','classification','mine',"login","register"];
+			var base = ['home','classification','mine',"login","register","helpCenter","hcDetail"];
 			
         for(var i=0; i<base.length; i++){
           if(this.isActive(base[i])){
             resout = false;
           }
         }
-			if (this.isActive("classification") || this.isActive("closeAccount") ||  this.isActive("login") ||  this.isActive("register")) {
+			if (this.isActive("classification") || this.isActive("closeAccount") ||  this.isActive("login") ||  this.isActive("register") || this.isActive("helpCenter") || this.isActive("hcDetail")) {
 				resout = true;
 			}			
 			

@@ -73,7 +73,7 @@
 				<div class="cf-center">
 			总价:$33.00
 		</div>
-				<div class="cf-right" @click="open('/login')">
+				<div class="cf-right" @click="updateAccount()">
 			提交订单
 		</div>
 	</div>
@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import headerBack from "../../components/header-back";
+import headerBack from "../../../components/header-back";
 import { Confirm,XImg,Divider,PopupPicker,Tab,TabItem,XTextarea } from "vux";
 
 export default{
@@ -115,9 +115,9 @@ export default{
 		     },
 		    myPhone:"18305626606",
 		    allGoods:[{
-		    	sjtLogo:"../../../static/images/mine/TimTest.jpeg",
+		    	sjtLogo:"../../../../static/images/mine/TimTest.jpeg",
 		    },{
-		    	sjtLogo:"../../../static/images/mine/TimTest.jpeg",
+		    	sjtLogo:"../../../../static/images/mine/TimTest.jpeg",
 		    }],
 		    textAreaValue:"sfsdfs"
 		}
@@ -148,7 +148,17 @@ export default{
 	      console.log(value)
 	      this.myPhone = value;
 	    },
-	    //模态框e
+	    //提交订单
+	    updateAccount(){
+	    	this.$router.openPage("/register");
+				this.$http.get("/userOrderOper", {CustOrderInfoVo:{
+					telephone: "1222"
+				}}).then((res) => {
+					console.log(res)
+				}).catch((err) => {
+					console.log(err)
+				})	    	
+	    }
 	}
 	
 	
@@ -158,7 +168,7 @@ export default{
 </script>
 
 <style lang="scss" type="text/scss" scoped="scoped">
-@import "../../assets/scss/util";
+@import "../../../assets/scss/util";
 
 .classification-footer {
   left: 0;
@@ -290,8 +300,4 @@ export default{
 	}
 
 
-
-.weui-cells,.vux-no-group-title{
-	margin-top: 0!important;
-}
 </style>

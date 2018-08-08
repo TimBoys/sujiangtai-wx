@@ -11,7 +11,7 @@
 			</div>
 			<div class="sjtlc-cont">
 				   <group class="sjtlc-group">
-     					 <x-input  placeholder="输入手机号码"  placeholder-align="left" class="gInput" >
+     					 <x-input  placeholder="输入手机号码"  placeholder-align="left" class="gInput" v-model="register.telephone">
      					 	
      					 </x-input>
    				  </group>
@@ -50,6 +50,9 @@
 				sjtLogo:"../../../static/images/mine/sjtLogin.jpg",
 				sjtLogo2:"../../../static/images/mine/circleLogo.png",
 				iconType: '',
+				register:{
+					telephone:""
+				}
 			}
 		},
 		components:{
@@ -71,6 +74,61 @@
 		    		}
 		    	},1000)
 		    	
+		    	//判断是绑定还是插入
+		    	console.log(this.register.telephone);
+				this.$http.get("/findUserByTelephone", {params:{
+					telephone: this.register.telephone
+				}}).then((res) => {
+					console.log(res)
+					if(res){
+						//插入
+						this.insertTel()
+					}else{
+						//注册
+						this.bindOpenidTel();
+					}
+				}).catch((err) => {
+					console.log(err)
+				})	 		    	
+		    	
+		    },
+		    //注册用户
+		    bindOpenidTel(){
+				this.$http.get("/bindOpenidTel", {TeaUserInfo:{
+					telephone: this.register.telephone
+				}}).then((res) => {
+					console.log(res)
+				}).catch((err) => {
+					console.log(err)
+				})			    	
+		    },
+		    //插入用户
+		    insertTel(){
+				this.$http.get("/insert", {TeaUserInfo:{
+					telephone: this.register.telephone
+				}}).then((res) => {
+					console.log(res)
+				}).catch((err) => {
+					console.log(err)
+				})			    	
+		    },
+		    //发送短信息msg
+		    createPollCode(){
+				this.$http.get("/createPollCode").then((res) => {
+					console.log(res)
+				}).catch((err) => {
+					console.log(err)
+				})				    	
+		    },
+		    //发送短信息msg
+		    createPollCode(){
+				this.$http.get("/comparePollCode",{
+					params:this.register
+				}).then((res) => {
+					console.log(res)
+				}).catch((err) => {
+					console.log(err)
+				})				    	
 		    }
 		}
 		

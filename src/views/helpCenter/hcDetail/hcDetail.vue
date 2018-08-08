@@ -3,13 +3,13 @@
 		<header-back :title="headTitle"></header-back>
 			
     <group gutter="0">
-      <cell title="客服问题" is-link @click.native="open('/hcDetail')">
+      <cell title="客服问题" is-link>
         <div class="badge-value">
           <span class="vertical-middle"> &nbsp;</span>
-          <badge text="22"></badge>
+          <!--<badge></badge>-->
         </div>
       </cell>
-      <cell title="客服问题2" is-link @click.native="open('/hcDetail')">
+      <cell title="客服问题2" is-link>
         <div class="badge-value">
           <span class="vertical-middle"> &nbsp;</span>
           <!--<badge></badge>-->
@@ -23,24 +23,17 @@
 </template>
 
 <script>
-import headerBack from "../../components/header-back";
+import headerBack from "../../../components/header-back";
 
 	export default{
-		name:"helpCenter",
+		name:"hcDetail",
 		data(){
 			return{
-				headTitle:"帮助中心"
+				headTitle:"11111111111"
 			}
 		},
 		components:{
 			headerBack
-		},
-		methods:{
-			open(link){
-				console.log(1)
-				console.log(link)
-				this.$router.openPage(link);
-			}
 		}
 		
 				
@@ -52,10 +45,5 @@ import headerBack from "../../components/header-back";
 
 <style lang="scss" type="text/scss" scoped="scoped">
 
-.badge-value {
-  display: inline-block!important;
-}
-.vertical-middle {
-  vertical-align: middle;
-}
+
 </style>

@@ -29,7 +29,8 @@
 						autoplay:3000,
 						observer:true,
 						observeParents:true,
-						autoplayDisableOnInteraction:false
+						autoplayDisableOnInteraction:false,
+						loop:true
 					}
 				}
 			}
