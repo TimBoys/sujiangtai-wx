@@ -25,22 +25,20 @@
 		<div class="bodyCont scroll-box-y">
 
 			<!--三种分类-->
-			<div class="detailFire_cont">
-				<div v-for="(df_src) in detailFire_src" class="df_cell">
+			<div class="detailFire_cont" v-show="detailFireSrc.length">
+				<div v-for="(detailFS,index) in detailFireSrc" class="df_cell">
 					<div class="df_header">
-						<x-img v-lazy="df_src.src" :web-src="`${df_src.src}?type=webp`" class="dfh_img"></x-img>
-						<p class="dfh_title">{{df_src.title}}</p>
+						<x-img  v-lazy="detailFS.detailFireIcon"  class="dfh_img"></x-img>
+						<p class="dfh_title">{{detailFS.className}}——</p>
 					</div>
 					<div class="df_body">
-						<div v-for="(dfb_body) in df_src.body" class="dfb_item" >
-							<x-img v-lazy="dfb_body.bodySrc" :web-src="`${dfb_body.bodySrc}?type=webp`" class="dfb_img" @click="showModelCode"></x-img>
-							<p class="dfb_name">{{dfb_body.name}}</p>
-							<p class="dfb_price">{{dfb_body.price}}</p>
+						<div v-for="(dfb_body) in detailFS.goods" class="dfb_item" >
+							<x-img v-lazy="dfb_body.goodsPictureRound" class="dfb_img" @click="showModelCode"></x-img>
+							<p class="dfb_name">{{dfb_body.goodsName}}</p>
+							<p class="dfb_price">${{dfb_body.goodsPrice}}</p>
 						</div>
 					</div>
-
 				</div>
-
 			</div>
 		</div>
 
@@ -97,15 +95,10 @@
 					menu1:"123",
 					menu2:"123",
 				},
-				banner: [{
-						src: '../../../static/images/home/testImg1.jpg',
-						href: '/detail/1007'
-					},
-					{
-						src: '../../../static/images/home/testImg2.jpg',
-						href: '/detail/1009'
-					}
-				],
+				detailFSsrc:"../../../static/images/home/fire_icon.png",
+				
+				banner: [],
+
 				topFire_src: [{
 					src: "../../../static/images/home/tf_zhaopai.png",
 					title: this.$t('home.topFire_src.title_djjx'),
@@ -119,100 +112,20 @@
 					title: this.$t('home.topFire_src.title_ydxd'),
 					linkTo: "/classification"
 				}],
-				detailFire_src: [{
-					src: "../../../static/images/home/fire_icon.png",
-					title: "单季精选——",
-					body: [{
-						bodySrc: '../../../static/images/home/testImg1.jpg',
-						name: "桃子茶",
-						price: "$25.00"
-					}, {
-						bodySrc: '../../../static/images/home/testImg1.jpg',
-						name: "桃子茶",
-						price: "$25.00"
-					}, {
-						bodySrc: '../../../static/images/home/testImg1.jpg',
-						name: "桃子茶",
-						price: "$25.00"
-					}, {
-						bodySrc: '../../../static/images/home/testImg1.jpg',
-						name: "桃子茶",
-						price: "$25.00"
-					}, {
-						bodySrc: '../../../static/images/home/testImg1.jpg',
-						name: "桃子茶",
-						price: "$25.00"
-					}, {
-						bodySrc: '../../../static/images/home/testImg1.jpg',
-						name: "桃子茶",
-						price: "$25.00"
-					}]
-				}, {
-					src: "../../../static/images/home/zan_icon.png",
-					title: "店长推荐——",
-					body: [{
-						bodySrc: '../../../static/images/home/testImg1.jpg',
-						name: "桃子茶",
-						price: "$25.00"
-					}, {
-						bodySrc: '../../../static/images/home/testImg1.jpg',
-						name: "桃子茶",
-						price: "$25.00"
-					}, {
-						bodySrc: '../../../static/images/home/testImg1.jpg',
-						name: "桃子茶",
-						price: "$25.00"
-					}, {
-						bodySrc: '../../../static/images/home/testImg1.jpg',
-						name: "桃子茶",
-						price: "$25.00"
-					}, {
-						bodySrc: '../../../static/images/home/testImg1.jpg',
-						name: "桃子茶",
-						price: "$25.00"
-					}, {
-						bodySrc: '../../../static/images/home/testImg1.jpg',
-						name: "桃子茶",
-						price: "$25.00"
-					}]
-				}, {
-					src: "../../../static/images/home/crown_icon.png",
-					title: "招牌饮品——",
-					body: [{
-						bodySrc: '../../../static/images/home/testImg1.jpg',
-						name: "桃子茶",
-						price: "$25.00"
-					}, {
-						bodySrc: '../../../static/images/home/testImg1.jpg',
-						name: "桃子茶",
-						price: "$25.00"
-					}, {
-						bodySrc: '../../../static/images/home/testImg1.jpg',
-						name: "桃子茶",
-						price: "$25.00"
-					}, {
-						bodySrc: '../../../static/images/home/testImg1.jpg',
-						name: "桃子茶",
-						price: "$25.00"
-					}, {
-						bodySrc: '../../../static/images/home/testImg1.jpg',
-						name: "桃子茶",
-						price: "$25.00"
-					}, {
-						bodySrc: '../../../static/images/home/testImg1.jpg',
-						name: "桃子茶",
-						price: "$25.00"
-					}]
-				}],
+				//首页最热的三类的图标
+				detailFire_icon:["../../../static/images/home/fire_icon.png","../../../static/images/home/zan_icon.png","../../../static/images/home/crown_icon.png"],
+				detailFireSrc:[],
 			}
 		},
 		mounted: function() {
 			//初始化获取本地语言
 			this.initLocalLang();
+			//初始化轮播图
+			this.initGetCarousel();
 			//根据code获取并存储openId
 //			this.initOpenId();			
 			//初始化店铺
-			this.initGetStoreId();
+//			this.initGetStoreId();
 			//初始化店铺数据
 			this.initStoreData();
 
@@ -249,14 +162,32 @@
 					this.localLang = DB.getItem("localLang").toString();
 				}
 			},
+			//初始化轮播
+			initGetCarousel(){
+					console.log("/userLogin/queryCarouselFigure")
+				this.$http.post("/queryCarouselFigureNation",{
+//						storeNo:DB.getItem("storeId").toString(),
+						storeNo:"D00005",
+						lang:"zh"
+				}).then((res) => {
+					console.log(res)
+						if(res.status == 200 && res.data.rspCode == "00000"){
+							console.log(res.data.data)
+							this.banner = res.data.data;
+						}
+					}).catch((err) => {
+						console.log(err)
+					})	
+			},			
 			//初始化店铺获取店铺id
 			initGetStoreId(){
 				if(!DB.getItem("storeId").toString()) {
 					var storeId = null;
 					console.log("/userLogin/storelist")
 					this.$http.get("/userLogin/storelist").then((res) => {
-						console.log("/userLogin/storelist")
-						console.log(res)
+						if(res.status == 200 && res.data.rspCode == "00000"){
+							console.log(res.data.data.data)
+						}
 					}).catch((err) => {
 						console.log(err)
 					})	
@@ -267,14 +198,23 @@
 			},
 			//初试化店铺数据
 			initStoreData(){
+				var _this = this;
 				this.$http.get("/userLogin/getClassGoods",{
 					params:{
 //						storeNo:DB.getItem("storeId").toString(),
-						storeNo:1,
-						classType:1
+						storeNo:"D00005",
+						classType:1,
+						lang:DB.getItem("localLang").toString() == "zh" ? "zh" : "en"
 					}
 				}).then((res) => {
-					console.log(res)
+						if(res.status == 200 && res.data.rspCode == "00000"){
+							console.log(res.data.data.data)
+							this.detailFireSrc = res.data.data.data;
+							this.detailFireSrc.map(function(item,index){
+								item.detailFireIcon = _this.detailFire_icon[index]
+							})
+//							console.log(this.detailFireSrc)							
+						}
 				}).catch((err) => {
 					console.log(err)
 				})				

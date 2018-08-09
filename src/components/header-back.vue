@@ -1,7 +1,7 @@
 <template>
 	<div class="header-back" :class="{'active':active}">
 		<p>{{title}}</p>
-    	<span class="iconfont icon-backer myicon back" @click="$router.go(-1)"></span>		
+    	<span class="iconfont icon-backer myicon back" @click="leftBack(title)"></span>		
 		
 	</div>
 </template>
@@ -17,13 +17,23 @@
 		},
 		data(){
 			return{
-				active:false
+				active:false,
 			}
 		},
 		mounted(){
 			setTimeout(()=>{
 				this.active = true;
 			},10)
+		},
+		methods:{
+			leftBack(title){
+				if(this.title == "所有商品"){
+					this.$router.openPage("/home");
+				}else{
+					this.$router.go(-1);
+				}
+				
+			}
 		}
 	}
 </script>

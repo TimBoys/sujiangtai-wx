@@ -2,7 +2,7 @@
 	<div class="swiper-container vue-swiper" ref="swiper">
 		<div class="swiper-wrapper">
 			<div class="swiper-slide" v-for="(x,index) in list">
-				<a href="javascript:;" @click=""><img :src="x.src" :alt="x.alt || 'img'+index" /></a>
+				<a href="javascript:;" @click=""><img :src="x.figureAddress" :alt="x.alt || 'img'+index" /></a>
 				
 			</div>
 		</div>
@@ -41,7 +41,7 @@
 			}
 		},
 		mounted(){
-//			console.log(234)
+			console.log(this.list)
 			myswiper = new Swiper (this.$refs.swiper, _.assign({
 		        pagination: this.$refs.pagination
 		     }, this.config))

@@ -186,16 +186,7 @@ export default {
       offset: [],
       imgSrc: "../../../static/images/home/testImg1.jpg",
 //    gwcRedPoint:null,
-      banner: [
-        {
-          src: "../../../static/images/home/testImg1.jpg",
-          href: "/detail/1007"
-        },
-        {
-          src: "../../../static/images/home/testImg2.jpg",
-          href: "/detail/1009"
-        }
-      ],
+      banner: [],
       dataItem: [
         {
           name: "店长推荐",
@@ -485,7 +476,8 @@ export default {
   },
   mounted: function() {
 	this.shopCar = new shopCarTool(this.$store);
-	
+	//初始化轮播图
+	this.initGetCarousel();
     // 初始化右侧菜单滚动 
     this.initScroll();
     // 初始化购物车
@@ -497,6 +489,23 @@ export default {
     showModel() {
 
     },
+			//初始化轮播
+			initGetCarousel(){
+					console.log("/userLogin/queryCarouselFigure")
+				this.$http.post("/queryCarouselFigureNation",{
+//						storeNo:DB.getItem("storeId").toString(),
+						storeNo:"D00005",
+						lang:"zh"
+				}).then((res) => {
+					console.log(res)
+						if(res.status == 200 && res.data.rspCode == "00000"){
+							console.log(res.data.data)
+							this.banner = res.data.data;
+						}
+					}).catch((err) => {
+						console.log(err)
+					})	
+			},	
     //根据缓存初始化购物车
     initGwc(){
     	console.log("初始化购物车")
