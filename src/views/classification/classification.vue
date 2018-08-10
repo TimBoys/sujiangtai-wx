@@ -10,29 +10,29 @@
 		<div class="classificationCont">
 		<div class="left-menu absolute scroll-box-y" ref="left">
 			<ul>
-				<li class="item" v-for="(target,index) in dataItem" :class="{ 'active': index == active }" @click="jumpToTarget(index)" :key="index">{{target.name}}</li>
+				<li class="item" v-for="(target,index) in dataItem1" :class="{ 'active': index == active }" @click="jumpToTarget(index)" :key="index">{{target.className}}</li>
 			</ul>
 		</div>
 		<div class="right-box absolute scroll-box-y" ref="rightView">
 			<ul>
-				<li class="item" v-for="(target,index) in dataItem" :key="index">
+				<li class="item" v-for="(target,index) in dataItem1" :key="index">
 				<p class="title">
-					<span>{{target.name}}</span>
+					<span>{{target.className}}</span>
 				</p>
 				<div class="shop-item-wrap clear">
-					<div class="shop-item" v-for="(shop,index) in target.children" @click="showModel(shop)" :key="index">
-                			<x-img v-lazy="shop.src" alt=""></x-img>
+					<div class="shop-item" v-for="(goods,index) in target.goods" @click="showModel(goods)" :key="index">
+                			<x-img v-lazy="goods.goodsPictureRound" alt=""></x-img>
                 			<div class="shop-detail">
-                				<div class="shopd-title">{{shop.name}}</div>
+                				<div class="shopd-title">{{goods.goodsName}}</div>
                 				<div class="shopd-detail">
-                					<div>乌龙茶</div>
-                					<div>月售333份</div>
+                					<div>{{goods.goodsIntroduction}}</div>
+                					<div>库存{{goods.goodsStock}}</div>
                 				</div>
                 				<div class="shopd-pAdd">
-                					<div class="shopdpa-price">$22.00</div>
+                					<div class="shopdpa-price">${{goods.goodsPrice}}</div>
                 					<div class="shopdpa-add">
                 						 <!--<x-icon type="ios-plus" class="cell-x-icon" @click="showGuiGe"></x-icon>-->
-                						 <x-button class="shopdpa-select" @click.native="showGuiGe(shop)" type="primary" mini>选择规格</x-button>
+                						 <x-button class="shopdpa-select" @click.native="showGuiGe(goods)" type="primary" mini>选择规格</x-button>
                 					</div>
                 				</div>
                 			</div>
@@ -110,6 +110,16 @@
 				
 			</div>
 			<div class="guiGe-cont">
+			  <div class="checkItemBox" v-for="(item,index) in waitPushShopCart.allSelGuiGe" :key="index">
+              	<divider>{{item.guiGeBigName}}</divider>
+                 <checker v-model="item.theGuiGeArr[0]"  default-item-class="demo1-item" selected-item-class="demo1-item-selected" class="guiGe-checker">
+                      <checker-item :value="theItem"  v-for="(theItem,theIndex) in item.theGuiGeArr" :key="theIndex" class="guiGe-checkerItem">
+                        {{theItem.attrName}}
+                      </checker-item>
+                 </checker>
+
+              </div>
+				
               <div class="checkItemBox">
               	<divider>规格</divider>
                  <checker v-model="guiGeDemo1" default-item-class="demo1-item" selected-item-class="demo1-item-selected" class="guiGe-checker">
@@ -187,6 +197,7 @@ export default {
       imgSrc: "../../../static/images/home/testImg1.jpg",
 //    gwcRedPoint:null,
       banner: [],
+      dataItem1:[],
       dataItem: [
         {
           name: "店长推荐",
@@ -478,34 +489,57 @@ export default {
 	this.shopCar = new shopCarTool(this.$store);
 	//初始化轮播图
 	this.initGetCarousel();
-    // 初始化右侧菜单滚动 
-    this.initScroll();
+	//初始化店铺数据
+	this.initStoreData();
+
     // 初始化购物车
     this.initGwc();
-
   	
   },
   methods: {
     showModel() {
 
     },
-			//初始化轮播
-			initGetCarousel(){
-					console.log("/userLogin/queryCarouselFigure")
-				this.$http.post("/queryCarouselFigureNation",{
-//						storeNo:DB.getItem("storeId").toString(),
-						storeNo:"D00005",
-						lang:"zh"
-				}).then((res) => {
-					console.log(res)
-						if(res.status == 200 && res.data.rspCode == "00000"){
-							console.log(res.data.data)
-							this.banner = res.data.data;
-						}
-					}).catch((err) => {
-						console.log(err)
-					})	
-			},	
+	//初始化轮播
+	initGetCarousel(){
+		this.$http.get("/userLogin/getCarouselFigure",{
+				params:{
+				storeNo:DB.getItem("storeNo").toString(),
+				lang:"zh"
+		}}).then((res) => {
+				if(res.status == 200 && res.data.rspCode == "00000"){
+					this.banner = res.data.data.data;
+				}
+			}).catch((err) => {
+				console.log(err)
+			})	
+	},	
+	
+	//初试化店铺数据
+	initStoreData(){
+		var _this = this;
+		console.log(this.gwcRedPoint)
+		this.$http.get("/userLogin/getClassGoods",{
+			params:{
+				storeNo:DB.getItem("storeNo").toString(),
+				classType:1,
+				lang:DB.getItem("localLang").toString()
+			}
+		}).then((res) => {
+			console.log(res.data.data.data)
+			if(res.status == 200 && res.data.rspCode == "00000"){
+				var concatGwcInit = this.shopCar.concatGwcInit(res.data.data.data);
+				console.log(concatGwcInit)
+				this.dataItem1 = concatGwcInit;
+				console.log(this.dataItem1)
+				//初始化右侧菜单滚动 
+    			this.initScroll();
+			}
+		}).catch((err) => {
+			console.log(err)
+		})				
+	},
+	
     //根据缓存初始化购物车
     initGwc(){
     	console.log("初始化购物车")
@@ -532,6 +566,7 @@ export default {
     // 左侧菜单跳转
     jumpToTarget(index) {
 		this.$refs.rightView.scrollTop = this.offset[index] ;
+		console.log(this.$refs.rightView.scrollTop)
 		setTimeout(()=>{
 			this.active = index;
 		},10)
@@ -547,39 +582,88 @@ export default {
         _.forEach(
 		  this.$refs.rightView.querySelectorAll(".right-box>ul>.item"),
           (value, key) => {
-		      // console.dir(value.offsetHeight)
+		    // console.dir(value.offsetHeight)
             this.offset.push(value.offsetHeight * key + (11*key));
           }
         );
         var mySort = this.offset;
-
+        
+        //首页从哪个入口过来的
+		var jfHomeNo = "jfHomeNo";
+		if(DB.getItem("judeFromHome").toJson()){
+			jfHomeNo = DB.getItem("judeFromHome").toJson().indexNo;
+			console.log(jfHomeNo)
+	        if (jfHomeNo) {
+	        	this.$refs.rightView.scrollTop = this.offset[jfHomeNo - 1];
+	        	this.active = jfHomeNo - 1;
+	        	DB.removeItem("judeFromHome");
+	        } 
+		}
+		
 		//监听右侧滚动来设置左侧焦点状态
         this.$refs.rightView.addEventListener("scroll", e => {
           var rightScrollHeight = this.$refs.rightView.scrollTop;
-          if(400 < rightScrollHeight){
+//        console.log(rightScrollHeight)
+          if(10 < rightScrollHeight){
               this.$refs.boxCont.scrollTop = 200;
           }
           for (let index = 0; index < mySort.length; index++) {
             let myRightItemHeight = mySort[index];
-            if (rightScrollHeight > myRightItemHeight) {
+            if (rightScrollHeight > myRightItemHeight && jfHomeNo == "jfHomeNo") {
               this.active = index;
             }
           }
-        });
+          jfHomeNo = "jfHomeNo";
+          
+        });               
 
       }, 100);
     },
+    
     //购物撤弹出框
     gwcMask() {
     	this.isMaskLeave = !this.isMaskLeave;
-
     },
     //展示规格
-    showGuiGe(item){
-//  	console.log(item);
-    	this.waitPushShopCart = item;
-    	this.isShowGuiGe = !this.isShowGuiGe;
-    	this.pushGuige = this.initGuige;
+    showGuiGe(goodsItem){
+    	console.log(goodsItem);
+    	if (goodsItem.goodsAttrs.length) {
+    		//第一遍获取商品的所有规格种类
+    		var allSelGuiGeClass = [],allSelGuiGe = [],allSelGuiGeObj = {theGuiGeArr:[]};
+			goodsItem.goodsAttrs.forEach((item)=>{
+				if (allSelGuiGeClass.indexOf(item.attrType) == -1) {
+					allSelGuiGeClass.push(item.attrType);
+				}
+			})
+    		console.log(allSelGuiGeClass)
+    		//第二遍获取商品规格类整理的数组
+			allSelGuiGeClass.forEach((item3)=>{
+				console.log(item3)
+				allSelGuiGeObj = {theGuiGeArr:[]}
+			goodsItem.goodsAttrs.forEach((item2)=>{
+					if(item2.attrType == item3){
+						if(item3 == 0){
+							allSelGuiGeObj.guiGeBigName = "杯型";
+						}else if(item3 == 1){
+							allSelGuiGeObj.guiGeBigName = "添加辅料";
+						}else if(item3 == 2){
+							allSelGuiGeObj.guiGeBigName = "温度 ";
+						}else if(item3 == 3){
+							allSelGuiGeObj.guiGeBigName = "甜度";
+						}
+						console.log(allSelGuiGeObj)
+						allSelGuiGeObj.theGuiGeArr.push(item2);
+					}
+				})				
+				allSelGuiGe.push(allSelGuiGeObj);
+			})
+    		
+    		console.log(allSelGuiGe)
+    		goodsItem.allSelGuiGe = allSelGuiGe;
+	    	this.waitPushShopCart = goodsItem;
+	    	this.isShowGuiGe = !this.isShowGuiGe;
+	//  	this.pushGuige = this.initGuige;
+    	}
 
     },
     pushShopCart(){

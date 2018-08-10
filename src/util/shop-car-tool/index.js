@@ -9,7 +9,7 @@ var DB = new DBLong();
 class shopCarTool{
 	constructor(store){
 		var shopCar = DB.getItem("shop-car").toJson();
-		console.log(shopCar)
+//		console.log(shopCar)
 		if (!shopCar) {
 			DB.setItem("shop-car",JSON.stringify(shopCar = {}));
 		}
@@ -98,11 +98,22 @@ class shopCarTool{
   
 	//所有商品数量
 	length(){
-    	var n = 0;
+		var n = 0;
 	    for(var i in this.shopCarDB){
 	      n += this.shopCarDB[i].length
 	    }
 	    return n		
+	}
+	
+	//把购物车中商品和初始化商品合并
+	concatGwcInit(initVal){
+		console.log(initVal)
+		
+		
+		
+		
+		return initVal;
+		
 	}
 	
 	

@@ -41,7 +41,7 @@
 			}
 		},
 		mounted(){
-			console.log(this.list)
+//			console.log(this.list)
 			myswiper = new Swiper (this.$refs.swiper, _.assign({
 		        pagination: this.$refs.pagination
 		     }, this.config))

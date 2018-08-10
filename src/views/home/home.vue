@@ -3,9 +3,9 @@
 		<swiper :list="banner"></swiper>
 
 		<!--热门三种按钮-->
-		<div class="topFire_cont">
+		<div class="topFire_cont" v-show="detailFireSrc.length">
 			<div v-for="(tf_src) in topFire_src" class="tf_cell">
-				<section @click="open(tf_src.linkTo)">
+				<section @click="open(tf_src.linkTo,tf_src.indexNo)">
 					<x-img v-lazy="tf_src.src" :web-src="`${tf_src.src}?type=webp`" class="tf_img"></x-img>
 					<div class="tf_title">{{tf_src.title}}</div>
 				</section>
@@ -22,18 +22,19 @@
 				</div>
 			</div>
 		</div>
-		<div class="bodyCont scroll-box-y">
+		
+		<div class="bodyCont scroll-box-y" v-show="detailFireSrc.length">
 
 			<!--三种分类-->
-			<div class="detailFire_cont" v-show="detailFireSrc.length">
+			<div class="detailFire_cont">
 				<div v-for="(detailFS,index) in detailFireSrc" class="df_cell">
 					<div class="df_header">
 						<x-img  v-lazy="detailFS.detailFireIcon"  class="dfh_img"></x-img>
-						<p class="dfh_title">{{detailFS.className}}——</p>
+						<p class="dfh_title">{{detailFS.className}} ——</p>
 					</div>
 					<div class="df_body">
 						<div v-for="(dfb_body) in detailFS.goods" class="dfb_item" >
-							<x-img v-lazy="dfb_body.goodsPictureRound" class="dfb_img" @click="showModelCode"></x-img>
+							<x-img v-lazy="dfb_body.goodsPictureRound" class="dfb_img" @click.native="selectThisGoods(dfb_body)"></x-img>
 							<p class="dfb_name">{{dfb_body.goodsName}}</p>
 							<p class="dfb_price">${{dfb_body.goodsPrice}}</p>
 						</div>
@@ -44,7 +45,6 @@
 
 		<!--<!--地址选择localAddr-->
 		<actionsheet v-model="isShowAs" :menus="menusAddr" @on-click-menu="selectMenu" show-cancel></actionsheet>
-		<actionsheet v-model="testUrl" :menus="testUrlData" show-cancel></actionsheet>
 
 	</div>
 </template>
@@ -83,30 +83,23 @@
 				localLang: "en",
 				localAddr: {
 					localPos: "../../../static/images/home/local_position.png",
-					localName: "Whiterock BC"
+					localName: ""
 				},
 				isShowAs: false,
 				testUrl:false,
-				menusAddr: {
-					menu1: "White rock",
-					menu2: "Downtown"
-				},
-				testUrlData:{
-					menu1:"123",
-					menu2:"123",
-				},
+				menusAddr: {},
 				detailFSsrc:"../../../static/images/home/fire_icon.png",
-				
 				banner: [],
-
 				topFire_src: [{
 					src: "../../../static/images/home/tf_zhaopai.png",
 					title: this.$t('home.topFire_src.title_djjx'),
-					linkTo: "/classification"
+					linkTo: "/classification",
+					indexNo:"1"
 				}, {
 					src: "../../../static/images/home/tf_dianzhang.png",
 					title: this.$t('home.topFire_src.title_zpty'),
-					linkTo: "/classification"
+					linkTo: "/classification",
+					indexNo:"2"
 				}, {
 					src: "../../../static/images/home/tf_yuding.png",
 					title: this.$t('home.topFire_src.title_ydxd'),
@@ -125,34 +118,36 @@
 			//根据code获取并存储openId
 //			this.initOpenId();			
 			//初始化店铺
-//			this.initGetStoreId();
+			this.initGetStoreId();
 			//初始化店铺数据
 			this.initStoreData();
 
 		},
 		methods: {
+			
 			//初试化start
 			//根据code获取并存储openId
 			initOpenId(){
-			var strUrl = location.href.split('#')[0];
-			console.log("url:"+ location.href);
-			var resultCode = getUrlParam(strUrl, "code");
-			console.log(resultCode);
-			//code存在是wx端，不存在是pc端
-			if (resultCode) {
-				this.$http.get("/userInfoLogin", {params:{
-					code: resultCode
-				}}).then((res) => {
-					console.log(res)
-					var weixinOpenid = "";
-					DB.setItem("weixinOpenid",weixinOpenid);
-				}).catch((err) => {
-					console.log(err)
-				})				
-			}else{
-				console.log("no-code")
-			}
+				var strUrl = location.href.split('#')[0];
+	//			console.log("url:"+ location.href);
+				var resultCode = getUrlParam(strUrl, "code");
+	//			console.log(resultCode);
+				//code存在是wx端，不存在是pc端
+				if (resultCode) {
+					this.$http.get("/userInfoLogin", {params:{
+						code: resultCode
+					}}).then((res) => {
+	//					console.log(res)
+						var weixinOpenid = "";
+						DB.setItem("weixinOpenid",weixinOpenid);
+					}).catch((err) => {
+						console.log(err)
+					})				
+				}else{
+					console.log("no-code")
+				}
 			},
+			
 			//初始化获取本地语言
 			initLocalLang() {
 				if(!DB.getItem("localLang").toString()) {
@@ -164,67 +159,99 @@
 			},
 			//初始化轮播
 			initGetCarousel(){
-					console.log("/userLogin/queryCarouselFigure")
-				this.$http.post("/queryCarouselFigureNation",{
-//						storeNo:DB.getItem("storeId").toString(),
-						storeNo:"D00005",
+				this.$http.get("/userLogin/getCarouselFigure",{
+						params:{
+						storeNo:DB.getItem("storeNo").toString(),
+//						storeNo:"D00005",
 						lang:"zh"
-				}).then((res) => {
-					console.log(res)
+				}}).then((res) => {
+//					console.log(res)
 						if(res.status == 200 && res.data.rspCode == "00000"){
-							console.log(res.data.data)
-							this.banner = res.data.data;
+//							console.log(res.data.data.data)
+							this.banner = res.data.data.data;
 						}
 					}).catch((err) => {
 						console.log(err)
 					})	
-			},			
-			//初始化店铺获取店铺id
+			},	
+			
+			//初始化店铺获取店铺编号
 			initGetStoreId(){
-				if(!DB.getItem("storeId").toString()) {
-					var storeId = null;
-					console.log("/userLogin/storelist")
-					this.$http.get("/userLogin/storelist").then((res) => {
+				var _this = this;
+					this.$http.get("/userLogin/storelist",{
+						params:{
+							lang:DB.getItem("localLang").toString()
+						}
+					}).then((res) => {
 						if(res.status == 200 && res.data.rspCode == "00000"){
-							console.log(res.data.data.data)
+							//初始化上拉店铺
+							if(DB.getItem("storeNo").toString()) {
+								//有缓存过店铺编号，根据店铺编号去取
+								res.data.data.data.forEach(function(item,index){
+										if(item.storeNo == DB.getItem("storeNo").toString()){
+											_this.localAddr.localName = item.storeName;
+										}
+									})								
+							}else{
+								//第一次进来没有缓存数据，1缓存storeNo ,2初始化选择框
+								res.data.data.data.forEach(function(item,index){
+									if(item.isDefault){
+										DB.setItem("storeNo",item.storeNo);
+										_this.localAddr.localName = item.storeName;
+									}
+								})
+							}
+								//初始化上拉店铺 ，缓存三个店铺数据
+								res.data.data.data.forEach(function(item,index){
+									_this.menusAddr["storeName_"+item.storeNo]= item.storeName;
+								})
+								DB.setItem("storeList",res.data.data.data);
 						}
 					}).catch((err) => {
 						console.log(err)
 					})	
-					DB.setItem(storeId);
-				} else {
-					DB.getItem("storeId").toString();
-				}
+
 			},
+			selectAddr(){
+				this.isShowAs = true;
+			},
+			//切换店铺 存储店铺编号 更新选择框
+			selectMenu(key,val){
+//				console.log(key)
+				if(key != "cancel"){
+				var selectVal = key.split("_");
+//				console.log(selectVal[1]);
+				if(selectVal[1] != DB.getItem("storeNo").toString()){
+					DB.setItem("storeNo",selectVal[1]);
+					this.localAddr.localName = val;				
+					window.location.reload();
+				}
+				}
+			},		
+			
 			//初试化店铺数据
 			initStoreData(){
 				var _this = this;
 				this.$http.get("/userLogin/getClassGoods",{
 					params:{
-//						storeNo:DB.getItem("storeId").toString(),
-						storeNo:"D00005",
+						storeNo:DB.getItem("storeNo").toString(),
 						classType:1,
-						lang:DB.getItem("localLang").toString() == "zh" ? "zh" : "en"
+						lang:DB.getItem("localLang").toString()
 					}
 				}).then((res) => {
+					console.log(res.data.data.data)
 						if(res.status == 200 && res.data.rspCode == "00000"){
-							console.log(res.data.data.data)
 							this.detailFireSrc = res.data.data.data;
 							this.detailFireSrc.map(function(item,index){
 								item.detailFireIcon = _this.detailFire_icon[index]
 							})
-//							console.log(this.detailFireSrc)							
 						}
 				}).catch((err) => {
 					console.log(err)
 				})				
 				
 			},
-			//初试化店铺数据end
-			open(link) {
-				console.log(link)
-				this.$router.openPage(link);
-			},
+			//切换语言
 			changeLang(item) {
 				console.log(item);
 				if(item == "zh") {
@@ -235,26 +262,23 @@
 				DB.setItem("localLang", this.localLang);
 				window.location.reload();
 			},
-			selectAddr(){
-				this.isShowAs = true;
+			//点击商品跳转到所有商品并弹出规格
+			selectThisGoods(item){
+				console.log(item)
+				
 			},
-			showModelCode(){
-				var strUrl = location.href.split('#')[0];
-				//			console.log(strUrl)
-				var resultCode = getUrlParam(strUrl, "code");
-				//			console.log(resultCode)
-
+			//通用方法
 			
-				this.testUrlData.menu1 = location.href;
-				this.testUrlData.menu2 = resultCode;
-				
-				this.testUrl = true;
-				
+			//初试化店铺数据end
+			open(link,indexNo) {
+				console.log(link)
+				console.log(indexNo)
+				if (indexNo) {
+					DB.setItem("judeFromHome",{indexNo:indexNo})
+				} else{
+				}
+				this.$router.openPage(link);
 			},
-			selectMenu(key){
-				console.log(key)
-				//接口api   getStorCustOrderInfoVoeList   获取所有店铺LIST  queryStores
-			}
 		},
 		components: {
 			swiper,

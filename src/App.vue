@@ -2,7 +2,9 @@
   <div id="app">
     <div >
       <transition :name="transitionName">
+      	<!--<keep-alive>-->
         <router-view></router-view>
+        <!--</keep-alive>-->
       </transition>
     </div>
 
@@ -45,8 +47,8 @@ export default {
   },
   watch:{
 			'$route'(to,from){
-				console.log(from)
-				console.log(to)
+//				console.log(from)
+//				console.log(to)
 				if(from.query.time){
 					if(to.query.time > from.query.time){
 						this.transitionName = "slide-go";
