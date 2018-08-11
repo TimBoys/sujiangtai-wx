@@ -10,17 +10,27 @@ Vue.use(Vuex)
 
 const ShopCar = { // 路由状态
   state: {
-    length: shopCar.length()
+    length: shopCar.length(),
+//  classifyData: shopCar.concatGwcInit(),
   },
   mutations: {
     setShopCarLength (state, length) {
       state.length = length
-    }
+    },
+//  concatGwcInit(state, value){
+//  	console.log(state)
+//  	state.classifyData = value;
+//  }
   },
   getters: {
     getShopCarLength: state => {
       return state.length
-    }
+    },
+//  getClassifyData:state =>{
+//  	console.log("state.classifyData")
+//  	console.log(state.classifyData)
+//  	return state.classifyData
+//  }
   }
 }
 

@@ -4,18 +4,18 @@
     	<header-back :title="headTitle"></header-back>
 
     </div>		
-    
+    <!--左右侧滑动商品-->
 	<div class="warp-box" ref="boxCont">
     	<swiper :list="banner"></swiper>
 		<div class="classificationCont">
 		<div class="left-menu absolute scroll-box-y" ref="left">
 			<ul>
-				<li class="item" v-for="(target,index) in dataItem1" :class="{ 'active': index == active }" @click="jumpToTarget(index)" :key="index">{{target.className}}</li>
+				<li class="item" v-for="(target,index) in dataItem" :class="{ 'active': index == active }" @click="jumpToTarget(index)" :key="index">{{target.className}}</li>
 			</ul>
 		</div>
 		<div class="right-box absolute scroll-box-y" ref="rightView">
 			<ul>
-				<li class="item" v-for="(target,index) in dataItem1" :key="index">
+				<li class="item" v-for="(target,index) in dataItem" :key="index">
 				<p class="title">
 					<span>{{target.className}}</span>
 				</p>
@@ -32,7 +32,7 @@
                 					<div class="shopdpa-price">${{goods.goodsPrice}}</div>
                 					<div class="shopdpa-add">
                 						 <!--<x-icon type="ios-plus" class="cell-x-icon" @click="showGuiGe"></x-icon>-->
-                						 <x-button class="shopdpa-select" @click.native="showGuiGe(goods)" type="primary" mini>选择规格</x-button>
+                						 <x-button class="shopdpa-select" @click.native="showGuiGe(goods)" type="primary" mini>选择规格<span>1</span></x-button>
                 					</div>
                 				</div>
                 			</div>
@@ -110,62 +110,28 @@
 				
 			</div>
 			<div class="guiGe-cont">
-			  <div class="checkItemBox" v-for="(item,index) in waitPushShopCart.allSelGuiGe" :key="index">
+			  <div class="checkItemBox" v-for="(item,index) in initGuiGeBottomSC.goodsItem .allSelGuiGe" :key="index">
               	<divider>{{item.guiGeBigName}}</divider>
-                 <checker v-model="item.theGuiGeArr[0]"  default-item-class="demo1-item" selected-item-class="demo1-item-selected" class="guiGe-checker">
+                 <checker v-model="initGuiGeBottomSC.initGuiGeSC[index]" radio-required default-item-class="demo1-item" selected-item-class="demo1-item-selected" class="guiGe-checker" @on-change="changeChecker">
                       <checker-item :value="theItem"  v-for="(theItem,theIndex) in item.theGuiGeArr" :key="theIndex" class="guiGe-checkerItem">
                         {{theItem.attrName}}
                       </checker-item>
                  </checker>
-
               </div>
-				
-              <div class="checkItemBox">
-              	<divider>规格</divider>
-                 <checker v-model="guiGeDemo1" default-item-class="demo1-item" selected-item-class="demo1-item-selected" class="guiGe-checker">
-                      <checker-item :value="item" v-for="(item,index) in items1" :key="index" class="guiGe-checkerItem">
-                        {{item.value}}
-                      </checker-item>
-                 </checker>
-
-              </div>
-              <div class="checkItemBox">
-              	<divider>温度</divider>
-                 <checker v-model="guiGeDemo2" default-item-class="demo1-item" selected-item-class="demo1-item-selected" class="guiGe-checker">
-                      <checker-item :value="item" v-for="(item,index) in items2" :key="index" class="guiGe-checkerItem" >
-                        {{item.value}}
-                      </checker-item>
-                 </checker>
-
-              </div>              
-              <div class="checkItemBox">
-              	<divider>糖度</divider>
-                 <checker v-model="guiGeDemo3" default-item-class="demo1-item" selected-item-class="demo1-item-selected" class="guiGe-checker">
-                      <checker-item :value="item" v-for="(item,index) in items3" :key="index" class="guiGe-checkerItem" >
-                        {{item.value}}
-                      </checker-item>
-                 </checker>
-
-              </div>
-			
 			</div>
-			
-			
 			
 			<div class="guiGe-footer">
 				<div class="guiGef-left">
-					<span class="red guiGef-price">$22.00</span>
-					<span class="guiGef-guiGe">({{guiGeDemo1.value}}、{{guiGeDemo2.value}}、{{guiGeDemo3.value}})</span>
+					<span class="red guiGef-price">${{initGuiGeBottomSC.iGAGPrice}}</span>
+					<span class="guiGef-guiGe">({{initGuiGeBottomSC.iGAGAllGuige}})</span>
 				</div>
 				<div class="guiGef-right">
-					<x-button type="primary" mini style="border-radius:44px;" action-type="button" @click.native="pushShopCart"><div class="iconfont icon-gouwuche ftl-gwc">加入购物车</div></x-button>
+					<x-button type="primary" mini style="border-radius:44px;" action-type="button" @click.native="pushShopCart">
+						<div class="iconfont icon-gouwuche ftl-gwc">加入购物车</div>
+					</x-button>
 				</div>
       		</div>
-			
-			
 		</x-dialog>
-
-		
 	</div>
 	
 	<!--选择规格弹出层-->
@@ -197,244 +163,8 @@ export default {
       imgSrc: "../../../static/images/home/testImg1.jpg",
 //    gwcRedPoint:null,
       banner: [],
-      dataItem1:[],
-      dataItem: [
-        {
-          name: "店长推荐",
-          children: [
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123",
-              id:"1-1"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123",
-              id:"1-2"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123",
-              id:"1-3"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123",
-              id:"1-4"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123",
-              id:"1-5"
-            }
-          ]
-        },
-        {
-          name: "当季精选",
-          children: [
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123",
-              id:"2-1"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123",
-              id:"2-2"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123",
-               id:"2-3"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123",
-               id:"2-4"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123",
-               id:"2-5"
-            }
-          ]
-        },
-        {
-          name: "招牌特饮",
-          children: [
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            }
-          ]
-        },
-        {
-          name: "素匠泰式热饮",
-          children: [
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            }
-          ]
-        },
-        {
-          name: "素匠泰式热饮",
-          children: [
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            }
-          ]
-        },
-        {
-          name: "素匠泰式热饮",
-          children: [
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            }
-          ]
-        },
-        {
-          name: "素匠泰式热饮",
-          children: [
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            }
-          ]
-        },
-        {
-          name: "素匠泰式热饮",
-          children: [
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            }
-          ]
-        },
-        {
-          name: "素匠泰式热饮",
-          children: [
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            },
-            {
-              src: "../../../static/images/home/testImg1.jpg",
-              name: "123"
-            }
-          ]
-        }
-      ],
+      dataItem:[],
+      dataItem22:[],
       gwcData2: [],
       guiGeDemo1: {key: '1-1', value: '标准'},
       guiGeDemo2: {key: '2-1', value: '常温'},
@@ -476,7 +206,8 @@ export default {
         key: '3-3',
         value: '多糖'
       }],
-   	  waitPushShopCart:"",  //点击选择规格，待加入购物车
+      //初始化底部所选价格规格 //initGuiGeSC初始化每大类规格选中的，所选规格总规格、价格，这个商品
+      initGuiGeBottomSC:{initGuiGeSC:[],iGAGAllGuige:"",iGAGPrice:0,goodsItem:""}, 
       pushGuige:"", //选中的规格
     };
   },
@@ -494,7 +225,6 @@ export default {
 
     // 初始化购物车
     this.initGwc();
-  	
   },
   methods: {
     showModel() {
@@ -528,42 +258,42 @@ export default {
 		}).then((res) => {
 			console.log(res.data.data.data)
 			if(res.status == 200 && res.data.rspCode == "00000"){
-				var concatGwcInit = this.shopCar.concatGwcInit(res.data.data.data);
-				console.log(concatGwcInit)
-				this.dataItem1 = concatGwcInit;
-				console.log(this.dataItem1)
-				//初始化右侧菜单滚动 
+				//合并购物车和初始化的数据
+				this.concatGwcInit(res.data.data.data);
+//				//初始化右侧菜单滚动 
     			this.initScroll();
 			}
 		}).catch((err) => {
 			console.log(err)
-		})				
+		})	
 	},
 	
     //根据缓存初始化购物车
     initGwc(){
-    	console.log("初始化购物车")
-    	this.gwcData2 = [];	
-//  	console.log(this.shopCar.getAll())
-    	var allShopCarData = this.shopCar.getAll();
-		for (var itemKey in allShopCarData) {
-//			console.log("allShopCarData[itemKey]")
-//			console.log(allShopCarData[itemKey])
-				for (var i =0;i<allShopCarData[itemKey].itemGuige.length;i++) {
-					var item = {};
-					item.itemGuige = allShopCarData[itemKey].itemGuige[i];
-					item.id = allShopCarData[itemKey].id;
-					item.name = allShopCarData[itemKey].name;
-					
-					this.gwcData2.push(item)
-				}
-
-		}
+//  	console.log("初始化购物车")
+//  	this.gwcData2 = [];	
+////  	console.log(this.shopCar.getAll())
+//  	var allShopCarData = this.shopCar.getAll();
+//		for (var itemKey in allShopCarData) {
+////			console.log("allShopCarData[itemKey]")
+////			console.log(allShopCarData[itemKey])
+//				for (var i =0;i<allShopCarData[itemKey].itemGuige.length;i++) {
+//					var item = {};
+//					item.itemGuige = allShopCarData[itemKey].itemGuige[i];
+//					item.id = allShopCarData[itemKey].id;
+//					item.name = allShopCarData[itemKey].name;
+//					
+//					this.gwcData2.push(item)
+//				}
+//
+//		}
 //		console.log("this.gwcData2")
 //		console.log(this.gwcData2)
+//		console.log(this.initGuiGeBottomSC)
 		
     },
-    // 左侧菜单跳转
+   
+   // 左侧菜单跳转
     jumpToTarget(index) {
 		this.$refs.rightView.scrollTop = this.offset[index] ;
 		console.log(this.$refs.rightView.scrollTop)
@@ -624,9 +354,11 @@ export default {
     gwcMask() {
     	this.isMaskLeave = !this.isMaskLeave;
     },
-    //展示规格
+    //显示规格
     showGuiGe(goodsItem){
+    	this.initGuiGeBottomSC.initGuiGeSC = [];
     	console.log(goodsItem);
+    	this.initGuiGeBottomSC.iGAGPrice = goodsItem.goodsPrice;
     	if (goodsItem.goodsAttrs.length) {
     		//第一遍获取商品的所有规格种类
     		var allSelGuiGeClass = [],allSelGuiGe = [],allSelGuiGeObj = {theGuiGeArr:[]};
@@ -635,11 +367,10 @@ export default {
 					allSelGuiGeClass.push(item.attrType);
 				}
 			})
-    		console.log(allSelGuiGeClass)
+//  		console.log(allSelGuiGeClass)
     		//第二遍获取商品规格类整理的数组
 			allSelGuiGeClass.forEach((item3)=>{
-				console.log(item3)
-				allSelGuiGeObj = {theGuiGeArr:[]}
+			allSelGuiGeObj = {theGuiGeArr:[]}
 			goodsItem.goodsAttrs.forEach((item2)=>{
 					if(item2.attrType == item3){
 						if(item3 == 0){
@@ -651,35 +382,64 @@ export default {
 						}else if(item3 == 3){
 							allSelGuiGeObj.guiGeBigName = "甜度";
 						}
-						console.log(allSelGuiGeObj)
 						allSelGuiGeObj.theGuiGeArr.push(item2);
 					}
 				})				
 				allSelGuiGe.push(allSelGuiGeObj);
 			})
     		
-    		console.log(allSelGuiGe)
+    		//初始化默认的规格
+    		allSelGuiGe.forEach((item4,index)=>{
+    			this.initGuiGeBottomSC.initGuiGeSC.push(item4.theGuiGeArr[0]);
+    			this.initGuiGeBottomSC.iGAGPrice += item4.theGuiGeArr[0].attrPrice;
+    			this.initGuiGeBottomSC.iGAGAllGuige += item4.theGuiGeArr[0].attrName + "、";
+    			
+    		})
+    		this.initGuiGeBottomSC.iGAGAllGuige =  this.initGuiGeBottomSC.iGAGAllGuige.slice(0,this.initGuiGeBottomSC.iGAGAllGuige.length -1);
+    		this.initGuiGeBottomSC.goodsItem = goodsItem;
+    		
     		goodsItem.allSelGuiGe = allSelGuiGe;
-	    	this.waitPushShopCart = goodsItem;
 	    	this.isShowGuiGe = !this.isShowGuiGe;
 	//  	this.pushGuige = this.initGuige;
     	}
 
     },
-    pushShopCart(){
-    	//获取规格
-    	this.pushGuige = {oneGuige:[this.guiGeDemo1,this.guiGeDemo2,this.guiGeDemo3]};
-//  	console.log(this.pushGuige)
-    	var addShopCart =  _.assignIn({},this.waitPushShopCart,this.pushGuige)
+    //选择切换规格
+    changeChecker(value){
+		//根据切换的规格设置底部的价格和总规格
+		this.initGuiGeBottomSC.iGAGPrice = this.initGuiGeBottomSC.goodsItem.goodsPrice;
+
+		var iGAGAllGuige = "";
+     	this.initGuiGeBottomSC.initGuiGeSC.forEach((item4)=>{
+    		this.initGuiGeBottomSC.iGAGPrice += item4.attrPrice;
+    		iGAGAllGuige += item4.attrName + "、";
+    	})   	
+    	iGAGAllGuige =  iGAGAllGuige.slice(0,iGAGAllGuige.length -1);
+    	this.initGuiGeBottomSC.iGAGAllGuige = iGAGAllGuige;
     	
-    	console.dir(addShopCart)
-    	this.shopCar.add(addShopCart);
-//  	this.isShowGuiGe = !this.isShowGuiGe;
-    	// 初始化购物车
-    	this.initGwc();
     },
+    
+    //加入购物车
+    pushShopCart(){
+    	console.log(this.initGuiGeBottomSC)
+//  	DB.removeItem("shop-car")
+    	this.shopCar.add(this.initGuiGeBottomSC);
+//  	//获取规格
+//  	this.pushGuige = {oneGuige:[this.guiGeDemo1,this.guiGeDemo2,this.guiGeDemo3]};
+////  	console.log(this.pushGuige)
+//  	var addShopCart =  _.assignIn({},this.initGuiGeBottomSC.goodsItem,this.pushGuige)
+//  	
+//  	console.dir(addShopCart)
+////  	this.isShowGuiGe = !this.isShowGuiGe;
+
+
+    	// 初始化购物车
+//  	this.initGwc();
+    },
+    
     //清空购物车
     clearGwc(){
+    	DB.removeItem("shop-car")
     	console.log("清空购物车")
     	this.shopCar.removeAll();
     },
@@ -718,6 +478,23 @@ export default {
 			})	    	
    },
    //绑定
+   
+   //重置数据
+   concatGwcInit(val){
+   		console.log(val);
+   		console.log(DB.getItem("shopCarDB2").toString())
+// 		DB.removeItem("shopCarDB2")
+   		
+   		if(DB.getItem("shopCarDB2").toString()){
+   			//合并
+   			
+   		}else{
+   			//初始化的值
+   			this.dataItem = val;
+   		}
+   	
+   	
+   }
     
   },
   components: {

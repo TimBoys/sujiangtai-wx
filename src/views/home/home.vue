@@ -161,8 +161,8 @@
 			initGetCarousel(){
 				this.$http.get("/userLogin/getCarouselFigure",{
 						params:{
-						storeNo:DB.getItem("storeNo").toString(),
-//						storeNo:"D00005",
+//						storeNo:DB.getItem("storeNo").toString(),
+						storeNo:"D00005",
 						lang:"zh"
 				}}).then((res) => {
 //					console.log(res)
