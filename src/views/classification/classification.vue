@@ -2,7 +2,6 @@
 	<div class="classification">
     <div class="classification-header">
     	<header-back :title="headTitle"></header-back>
-
     </div>		
     <!--左右侧滑动商品-->
 	<div class="warp-box" ref="boxCont">
