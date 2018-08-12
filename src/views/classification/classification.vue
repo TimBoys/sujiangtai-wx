@@ -74,17 +74,17 @@
 					<span class="gwcc-qk" @click="clearGwc"><span class="delete iconfont icon-del"></span>清空</span>
 				</div>
 				<div class="gwc-detail">
-					<div class="gwcd-item" v-for="(gwcItem,index) in gwcData2" :key="index">
+					<div class="gwcd-item" v-for="(gwcItem,index) in gwcInitData" :key="index">
 						<div class="gwcdi-left">
-							<div class="gwcdil-top">{{gwcItem.name}}</div>
-							<div class="gwcdil-bottom"><span v-for="(ggItem,index) in gwcItem.itemGuige.itemOneGuige">{{ggItem.value}}</span></div>
+							<div class="gwcdil-top">{{gwcItem.goodsName}}</div>
+							<div class="gwcdil-bottom"><span>{{gwcItem.iGAGAllGuige}}</span></div>
 						</div>
 						<div class="gwcdi-right">
-							<div class="gwcdir-left">{{gwcItem.id}}</div>
+							<div class="gwcdir-left">${{gwcItem.iGAGPrice}}</div>
 							<div class="gwcdir-right">
-								 <x-icon type="ios-minus" class="cell-x-icon" @click.native="minusItemGoods(gwcItem)"></x-icon>
+								 <x-icon type="ios-minus" class="cell-x-icon" @click.native="minusItemGoods(gwcItem.goodsItem)"></x-icon>
 								 <span>{{gwcItem.itemGuige.itemOneGuigeLen}}</span>
-								 <x-icon type="ios-plus" class="cell-x-icon" @click.native="addItemGoods(gwcItem)"></x-icon>
+								 <x-icon type="ios-plus" class="cell-x-icon" @click.native="addItemGoods(gwcItem.goodsItem)"></x-icon>
 							</div>
 						</div>						
 					</div>
@@ -159,52 +159,10 @@ export default {
       isMaskLeave: true,
       isShowGuiGe:false,
       offset: [],
-      imgSrc: "../../../static/images/home/testImg1.jpg",
-//    gwcRedPoint:null,
       banner: [],
       dataItem:[],
       dataItem22:[],
-      gwcData2: [],
-      guiGeDemo1: {key: '1-1', value: '标准'},
-      guiGeDemo2: {key: '2-1', value: '常温'},
-      guiGeDemo3: {key: '3-1', value: '半糖'},
-      initGuige:[{key: '1-1', value: '标准'},{key: '2-1', value: '常温'},{key: '3-1', value: '半糖'}],
-      items1: [{
-        key: '1-1',
-        value: '标准'
-      }, {
-        key: '1-2',
-        value: '奶沫'
-      }, {
-        key: '1-3',
-        value: '奶泡'
-      }],
-      items2: [{
-        key: '2-1',
-        value: '常温'
-      }, {
-        key: '2-2',
-        value: '温热'
-      }, {
-        key: '2-3',
-        value: '去冰'
-      }, {
-        key: '2-4',
-        value: '少冰'
-      }, {
-        key: '2-5',
-        value: '多冰'
-      }],
-      items3: [{
-        key: '3-1',
-        value: '半糖'
-      }, {
-        key: '3-2',
-        value: '无糖'
-      }, {
-        key: '3-3',
-        value: '多糖'
-      }],
+      gwcInitData: [],
       //初始化底部所选价格规格 //initGuiGeSC初始化每大类规格选中的，所选规格总规格、价格，这个商品
       initGuiGeBottomSC:{initGuiGeSC:[],iGAGAllGuige:"",iGAGPrice:0,goodsItem:""}, 
       pushGuige:"", //选中的规格
@@ -270,26 +228,22 @@ export default {
     //根据缓存初始化购物车
     initGwc(){
 //  	console.log("初始化购物车")
-//  	this.gwcData2 = [];	
-////  	console.log(this.shopCar.getAll())
-//  	var allShopCarData = this.shopCar.getAll();
-//		for (var itemKey in allShopCarData) {
-////			console.log("allShopCarData[itemKey]")
-////			console.log(allShopCarData[itemKey])
-//				for (var i =0;i<allShopCarData[itemKey].itemGuige.length;i++) {
-//					var item = {};
-//					item.itemGuige = allShopCarData[itemKey].itemGuige[i];
-//					item.id = allShopCarData[itemKey].id;
-//					item.name = allShopCarData[itemKey].name;
-//					
-//					this.gwcData2.push(item)
-//				}
-//
-//		}
-//		console.log("this.gwcData2")
-//		console.log(this.gwcData2)
-//		console.log(this.initGuiGeBottomSC)
-		
+    	this.gwcInitData = [];	
+//  	console.log(this.shopCar.getAll())
+    	var allShopCarData = this.shopCar.getAll();
+		for (var itemKey in allShopCarData) {
+//			console.log("allShopCarData[itemKey]")
+//			console.log(allShopCarData[itemKey])
+				for (var i =0;i<allShopCarData[itemKey].itemGuige.length;i++) {
+					var item = {};
+					item.itemGuige = allShopCarData[itemKey].itemGuige[i];
+					item.iGAGAllGuige = allShopCarData[itemKey].itemGuige[i].iGAGAllGuige;
+					item.iGAGPrice = allShopCarData[itemKey].iGAGPrice;
+					item.goodsName = allShopCarData[itemKey].goodsName;
+					item.goodsItem = {goodsItem:allShopCarData[itemKey].goodsItem,iGAGAllGuige:allShopCarData[itemKey].itemGuige[i].iGAGAllGuige,iGAGPrice:0,initGuiGeSC:allShopCarData[itemKey].itemGuige[i].initGuiGeSC};
+					this.gwcInitData.push(item)
+				}
+		}
     },
    
    // 左侧菜单跳转
@@ -421,36 +375,30 @@ export default {
     //加入购物车
     pushShopCart(){
     	console.log(this.initGuiGeBottomSC)
-//  	DB.removeItem("shop-car")
     	this.shopCar.add(this.initGuiGeBottomSC);
-//  	//获取规格
-//  	this.pushGuige = {oneGuige:[this.guiGeDemo1,this.guiGeDemo2,this.guiGeDemo3]};
-////  	console.log(this.pushGuige)
-//  	var addShopCart =  _.assignIn({},this.initGuiGeBottomSC.goodsItem,this.pushGuige)
-//  	
-//  	console.dir(addShopCart)
-////  	this.isShowGuiGe = !this.isShowGuiGe;
-
-
     	// 初始化购物车
-//  	this.initGwc();
+    	this.initGwc();
     },
     
     //清空购物车
     clearGwc(){
-    	DB.removeItem("shop-car")
     	console.log("清空购物车")
     	this.shopCar.removeAll();
+    	this.isMaskLeave = !this.isMaskLeave;
+    	// 初始化购物车
+    	this.initGwc();   
     },
     //购物车新增商品
     addItemGoods(item){
-    	console.log(item)
-    	var addItem = {};
-    	addItem.name = item.name;
-    	addItem.id = item.id;
-    	addItem.oneGuige = item.itemGuige.itemOneGuige;
+//  	console.log(item)
+//  	var addItem = {};
+//  	addItem.name = item.name;
+//  	addItem.id = item.id;
+//  	addItem.oneGuige = item.itemGuige.itemOneGuige;
     	
-    	this.shopCar.add(addItem);
+//  	this.shopCar.add(addItem);
+		console.log(item)
+    	this.shopCar.add(item);
     	// 初始化购物车
     	this.initGwc();    	
     	
