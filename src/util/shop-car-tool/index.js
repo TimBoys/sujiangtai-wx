@@ -28,7 +28,9 @@ class shopCarTool{
 	add(value){
 		console.log("value" )
 		console.dir( value)
+		console.dir(this.shopCarDB)
 	    var key = value.goodsItem.goodsId;
+	    console.dir(this.shopCarDB[key])
 	
 	    if(!key){
 	      return
@@ -46,7 +48,7 @@ class shopCarTool{
 				} else{
 					initLeng++;
 					if (itemGuigeLength == initLeng) {
-						this.shopCarDB[key].itemGuige.push({itemOneGuigeLen:1,iGAGAllGuige:value.iGAGAllGuige,initGuiGeSC:value.initGuiGeSC})
+						this.shopCarDB[key].itemGuige.push({itemOneGuigeLen:1,hasGuigePrice:value.iGAGPrice,iGAGAllGuige:value.iGAGAllGuige,initGuiGeSC:value.initGuiGeSC})
 					}
 				}
 			}	    	
@@ -56,9 +58,8 @@ class shopCarTool{
 	     	// 过滤需要的信息
 	      	var filter = {};
 			filter.length =1;
-			filter.itemGuige = [{itemOneGuigeLen:1,iGAGAllGuige:value.iGAGAllGuige,initGuiGeSC:value.initGuiGeSC}]
-//			filter.initGuiGeSC = value.initGuiGeSC //选择规格数组
-//			filter.iGAGAllGuige = value.iGAGAllGuige //选择规格字符串
+			//选择规格数组和规格所属的商品
+			filter.itemGuige = [{itemOneGuigeLen:1,hasGuigePrice:value.iGAGPrice,iGAGAllGuige:value.iGAGAllGuige,initGuiGeSC:value.initGuiGeSC}]
 			filter.goodsId = value.goodsItem.goodsId //规格所属的商品
 			filter.goodsName = value.goodsItem.goodsName //规格所属的商品
 			filter.iGAGPrice = value.iGAGPrice //选择商品加上规格的价格
@@ -70,21 +71,25 @@ class shopCarTool{
 	
 	
   minus(value){
-//	console.log(value)
-//	console.log(this.shopCarDB)
-  	var theItem = this.shopCarDB[value.id].itemGuige;
-  	for (var i=0;i < theItem.length;i++) {
-  		if (theItem[i].itemOneGuige[0].key == value.itemGuige.itemOneGuige[0].key && theItem[i].itemOneGuige[1].key == value.itemGuige.itemOneGuige[1].key && theItem[i].itemOneGuige[2].key == value.itemGuige.itemOneGuige[2].key) {
-  			theItem[i].itemOneGuigeLen -= 1;
-  			if(theItem[i].itemOneGuigeLen < 1){
-  				delete theItem[i]
-  			}
-  			this.shopCarDB[value.id].length -= 1;
-  			if (this.shopCarDB[value.id].length < 1) {
-  				delete this.shopCarDB[value.id]
-  			}
-  		}
-  	}
+	console.log(value)
+	console.log(this.shopCarDB)
+
+	var theItem = this.shopCarDB[value.goodsItem.goodsId].itemGuige; //再购物车中找到减去的商品
+	var theGoodsLen = this.shopCarDB[value.goodsItem.goodsId]; //这个商品的数量
+//	debugger
+	for (var i=0;i < theItem.length;i++) {
+		if (theItem[i].iGAGAllGuige == value.iGAGAllGuige) {
+			theItem[i].itemOneGuigeLen -= 1;
+			if(theItem[i].itemOneGuigeLen < 1){
+				theItem.splice(i,1);
+			}
+			theGoodsLen.length -= 1;
+			if (theGoodsLen.length < 1) {
+//				theGoodsLen.splice(i,1);
+				delete this.shopCarDB[value.goodsItem.goodsId];
+			}
+		}
+	}
   	this.upData();
   }
 	
@@ -105,24 +110,11 @@ class shopCarTool{
 	    for(var i in this.shopCarDB){
 	      n += this.shopCarDB[i].length
 	    }
+	    console.log(this.shopCarDB)
+	    console.log(n)
 	    return n		
 	}
 	
-	//把购物车中商品和初始化商品合并
-//	concatGwcInit(initVal){
-////		console.log(initVal)
-//		var returnGwcInit = [];
-//		if(initVal){
-//			console.log(123)
-//			DB.setItem('shopCarDB2', JSON.stringify(initVal))
-//		}
-//		returnGwcInit = DB.getItem("shopCarDB2").toString();
-//		
-//		return returnGwcInit;
-//		
-//	}
-	
-	//
 	
 }
 

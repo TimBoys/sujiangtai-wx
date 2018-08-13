@@ -31,11 +31,10 @@
                 					<div class="shopdpa-price">${{goods.goodsPrice}}</div>
                 					<div class="shopdpa-add">
                 						 <!--<x-icon type="ios-plus" class="cell-x-icon" @click="showGuiGe"></x-icon>-->
-                						 <x-button class="shopdpa-select" @click.native="showGuiGe(goods)" type="primary" mini>选择规格<span>1</span></x-button>
+                						 <x-button class="shopdpa-select" @click.native="showGuiGe(goods)" type="primary" mini>选择规格<badge class="guigeBadge" :text="goods.selGoodsNum" v-if="goods.selGoodsNum"></badge></x-button>
                 					</div>
                 				</div>
                 			</div>
-						
 					</div>
 				</div>
 				</li>
@@ -48,19 +47,19 @@
 	<!--底部结算按钮s-->
 	<div class="classification-footer absolute">
 		<div class="cf-left">
-			<div class="cfl-cont" @click="gwcMask">
-				<div class="iconfont icon-gouwuche ftl-gwc">
+			<div class="cfl-cont" :class="{'hasGwcData' : !hasGwcData.hasGoodsData}" @click="gwcMask">
+				<div class="iconfont icon-gouwuche ftl-gwc" >
 			</div>
 				<div class="ftl-redPoint" v-if="gwcRedPoint">
 					{{gwcRedPoint}}
 				</div>
 			</div>
 		</div>
-				<div class="cf-center" @click="gwcMask">
-			总价:$33.00
+						<div class="cf-center"  @click="gwcMask">
+			{{hasGwcData.allGoodsPrice}}
 		</div>
-				<div class="cf-right" @click="toAccount('/closeAccount')">
-			去结算
+				<div class="cf-right" :class="{'hasGwcData' : !hasGwcData.hasGoodsData}" @click="toAccount('/closeAccount')">
+			{{hasGwcData.allGoodsBtn}}
 		</div>
 	</div>
 	<!--底部结算按钮e-->
@@ -89,8 +88,6 @@
 						</div>						
 					</div>
 				</div>
-				
-				
 			</div>		
 		</div>
 	</div>
@@ -101,7 +98,7 @@
 		<x-dialog v-model="isShowGuiGe" hide-on-blur :dialog-style="{'width':'90%','max-width':'90%'}">
 			<div class="guiGe-header">
 				<div class="guiGeh-title">
-					素匠泰茶
+					{{initGuiGeBottomSC.goodsItem.goodsName}}
 	     		<div @click="isShowGuiGe=false" class="guiGeh-closeGuiGe">
 	          		<x-icon type="ios-close-empty" size="38"></x-icon>
 	        	</div>
@@ -109,7 +106,7 @@
 				
 			</div>
 			<div class="guiGe-cont">
-			  <div class="checkItemBox" v-for="(item,index) in initGuiGeBottomSC.goodsItem .allSelGuiGe" :key="index">
+			  <div class="checkItemBox" v-for="(item,index) in initGuiGeBottomSC.goodsItem.allSelGuiGe" :key="index">
               	<divider>{{item.guiGeBigName}}</divider>
                  <checker v-model="initGuiGeBottomSC.initGuiGeSC[index]" radio-required default-item-class="demo1-item" selected-item-class="demo1-item-selected" class="guiGe-checker" @on-change="changeChecker">
                       <checker-item :value="theItem"  v-for="(theItem,theIndex) in item.theGuiGeArr" :key="theIndex" class="guiGe-checkerItem">
@@ -125,9 +122,14 @@
 					<span class="guiGef-guiGe">({{initGuiGeBottomSC.iGAGAllGuige}})</span>
 				</div>
 				<div class="guiGef-right">
-					<x-button type="primary" mini style="border-radius:44px;" action-type="button" @click.native="pushShopCart">
+					<x-button type="primary" mini style="border-radius:44px;" action-type="button" @click.native="addItemGoods(initGuiGeBottomSC,initGuiGeBottomSC.iGAGAllGuige)" v-if="!hasTheGgInGwcLen">
 						<div class="iconfont icon-gouwuche ftl-gwc">加入购物车</div>
 					</x-button>
+					<div class="gwcdir-right" v-if="hasTheGgInGwcLen">
+						 <x-icon type="ios-minus" class="cell-x-icon" @click.native="minusItemGoods(initGuiGeBottomSC,initGuiGeBottomSC.iGAGAllGuige)"></x-icon>
+						 <span>{{hasTheGgInGwcLen}}</span>
+						 <x-icon type="ios-plus" class="cell-x-icon" @click.native="addItemGoods(initGuiGeBottomSC,initGuiGeBottomSC.iGAGAllGuige)"></x-icon>
+					</div>
 				</div>
       		</div>
 		</x-dialog>
@@ -161,11 +163,15 @@ export default {
       offset: [],
       banner: [],
       dataItem:[],
+      dataInitItem:[],
       dataItem22:[],
       gwcInitData: [],
       //初始化底部所选价格规格 //initGuiGeSC初始化每大类规格选中的，所选规格总规格、价格，这个商品
       initGuiGeBottomSC:{initGuiGeSC:[],iGAGAllGuige:"",iGAGPrice:0,goodsItem:""}, 
       pushGuige:"", //选中的规格
+      hasGwcData: {hasGoodsData:true,allGoodsPrice:"第二件商品半折",allGoodsBtn:"请选择商品"}, //购物车中是否有商品
+      hasTheGgInGwc:false,
+      hasTheGgInGwcLen:0
     };
   },
   computed: {
@@ -180,12 +186,10 @@ export default {
 	//初始化店铺数据
 	this.initStoreData();
 
-    // 初始化购物车
-    this.initGwc();
   },
   methods: {
     showModel() {
-
+//this.shopCar.removeAll();
     },
 	//初始化轮播
 	initGetCarousel(){
@@ -216,9 +220,12 @@ export default {
 			console.log(res.data.data.data)
 			if(res.status == 200 && res.data.rspCode == "00000"){
 				//合并购物车和初始化的数据
-				this.concatGwcInit(res.data.data.data);
+				this.dataInitItem = res.data.data.data;
+//				this.concatGwcInit();
 //				//初始化右侧菜单滚动 
     			this.initScroll();
+    // 初始化购物车
+    this.initGwc();
 			}
 		}).catch((err) => {
 			console.log(err)
@@ -227,23 +234,42 @@ export default {
 	
     //根据缓存初始化购物车
     initGwc(){
-//  	console.log("初始化购物车")
+    	console.log("初始化购物车")
     	this.gwcInitData = [];	
-//  	console.log(this.shopCar.getAll())
+    	console.log(this.shopCar.getAll())
     	var allShopCarData = this.shopCar.getAll();
 		for (var itemKey in allShopCarData) {
-//			console.log("allShopCarData[itemKey]")
-//			console.log(allShopCarData[itemKey])
+			console.log("allShopCarData[itemKey]")
+			console.log(allShopCarData[itemKey])
 				for (var i =0;i<allShopCarData[itemKey].itemGuige.length;i++) {
 					var item = {};
 					item.itemGuige = allShopCarData[itemKey].itemGuige[i];
 					item.iGAGAllGuige = allShopCarData[itemKey].itemGuige[i].iGAGAllGuige;
-					item.iGAGPrice = allShopCarData[itemKey].iGAGPrice;
+					item.iGAGPrice = allShopCarData[itemKey].itemGuige[i].hasGuigePrice;
 					item.goodsName = allShopCarData[itemKey].goodsName;
 					item.goodsItem = {goodsItem:allShopCarData[itemKey].goodsItem,iGAGAllGuige:allShopCarData[itemKey].itemGuige[i].iGAGAllGuige,iGAGPrice:0,initGuiGeSC:allShopCarData[itemKey].itemGuige[i].initGuiGeSC};
+					item.goodsId = itemKey;
 					this.gwcInitData.push(item)
 				}
 		}
+		
+		console.log("this.gwcInitData")
+		console.log(this.gwcInitData)
+		if(this.gwcInitData.length){
+			this.hasGwcData.hasGoodsData = true;
+			var allGoodsPrice = 0;
+			this.gwcInitData.forEach((item,index)=>{
+				console.log(item)
+				allGoodsPrice += item.iGAGPrice * item.itemGuige.itemOneGuigeLen;
+			})
+			this.hasGwcData.allGoodsPrice = "总价："+"$"+allGoodsPrice;
+			this.hasGwcData.allGoodsBtn = "去结算";
+		}else{
+			this.hasGwcData.hasGoodsData = false;
+			this.hasGwcData.allGoodsBtn = "请选择商品";
+			this.hasGwcData.allGoodsPrice = "第二件商品半折";
+		}
+		this.concatGwcInit();
     },
    
    // 左侧菜单跳转
@@ -305,13 +331,19 @@ export default {
     
     //购物撤弹出框
     gwcMask() {
-    	this.isMaskLeave = !this.isMaskLeave;
+    	console.log(this.hasGwcData.hasGoodsData)
+    	if(this.hasGwcData.hasGoodsData){
+    		this.isMaskLeave = !this.isMaskLeave;
+    	}else{
+    		this.$vux.toast.show({
+    			text:"请选择商品！",
+    			type:"text",
+    		})
+    	}
     },
     //显示规格
     showGuiGe(goodsItem){
-    	this.initGuiGeBottomSC.initGuiGeSC = [];
     	console.log(goodsItem);
-    	this.initGuiGeBottomSC.iGAGPrice = goodsItem.goodsPrice;
     	if (goodsItem.goodsAttrs.length) {
     		//第一遍获取商品的所有规格种类
     		var allSelGuiGeClass = [],allSelGuiGe = [],allSelGuiGeObj = {theGuiGeArr:[]};
@@ -342,6 +374,9 @@ export default {
 			})
     		
     		//初始化默认的规格
+    		this.initGuiGeBottomSC.initGuiGeSC = [];
+    		this.initGuiGeBottomSC.iGAGPrice = goodsItem.goodsPrice;
+    		this.initGuiGeBottomSC.iGAGAllGuige = "";
     		allSelGuiGe.forEach((item4,index)=>{
     			this.initGuiGeBottomSC.initGuiGeSC.push(item4.theGuiGeArr[0]);
     			this.initGuiGeBottomSC.iGAGPrice += item4.theGuiGeArr[0].attrPrice;
@@ -354,6 +389,10 @@ export default {
     		goodsItem.allSelGuiGe = allSelGuiGe;
 	    	this.isShowGuiGe = !this.isShowGuiGe;
 	//  	this.pushGuige = this.initGuige;
+			console.log("this.initGuiGeBottomSC")
+			console.log(this.initGuiGeBottomSC)
+			
+			this.thisGuiGeIsInGwc(this.initGuiGeBottomSC.iGAGAllGuige,this.initGuiGeBottomSC.goodsItem.goodsId);
     	}
 
     },
@@ -370,44 +409,65 @@ export default {
     	iGAGAllGuige =  iGAGAllGuige.slice(0,iGAGAllGuige.length -1);
     	this.initGuiGeBottomSC.iGAGAllGuige = iGAGAllGuige;
     	
+    	this.thisGuiGeIsInGwc(this.initGuiGeBottomSC.iGAGAllGuige,this.initGuiGeBottomSC.goodsItem.goodsId);
+    	
     },
-    
-    //加入购物车
-    pushShopCart(){
-    	console.log(this.initGuiGeBottomSC)
-    	this.shopCar.add(this.initGuiGeBottomSC);
-    	// 初始化购物车
-    	this.initGwc();
+    //这种规格是否再购物车中
+    thisGuiGeIsInGwc(value,goodsId){
+    	console.log("thisGuiGeIsInGwc")
+    	console.log(value)
+   		console.log(this.gwcInitData);    	
+   		this.hasTheGgInGwc = false;
+   		this.hasTheGgInGwcLen = 0;
+   		this.gwcInitData.forEach((item,index)=>{
+   			console.log(item)
+   			console.log(item.goodsId)
+   			console.log(item.iGAGAllGuige)
+   			if(item.iGAGAllGuige == value && item.goodsId == goodsId){
+   				this.hasTheGgInGwc = true;
+   				this.hasTheGgInGwcLen = item.itemGuige.itemOneGuigeLen;
+   			}
+   			
+   		})
+   		console.log(this.hasTheGgInGwcLen)
+    	
     },
     
     //清空购物车
     clearGwc(){
     	console.log("清空购物车")
-    	this.shopCar.removeAll();
     	this.isMaskLeave = !this.isMaskLeave;
+    	this.shopCar.removeAll();
     	// 初始化购物车
     	this.initGwc();   
+    	this.concatGwcInit();
     },
     //购物车新增商品
-    addItemGoods(item){
-//  	console.log(item)
-//  	var addItem = {};
-//  	addItem.name = item.name;
-//  	addItem.id = item.id;
-//  	addItem.oneGuige = item.itemGuige.itemOneGuige;
-    	
-//  	this.shopCar.add(addItem);
+    addItemGoods(item,fromGuige){
+    	console.log("add")
 		console.log(item)
+		console.log(fromGuige)
     	this.shopCar.add(item);
     	// 初始化购物车
     	this.initGwc();    	
+    	if (fromGuige) {
+    		this.thisGuiGeIsInGwc(fromGuige,item.goodsItem.goodsId);
+    	}
     	
     },
     //购物车删除商品
-    minusItemGoods(item){
+    minusItemGoods(item,fromGuige){
     	this.shopCar.minus(item);
     	// 初始化购物车
     	this.initGwc();    	
+
+    	if (fromGuige) {
+    		this.thisGuiGeIsInGwc(fromGuige,item.goodsItem.goodsId);
+    	}else{
+    		    if (!this.gwcInitData.length) {
+    				this.isMaskLeave = !this.isMaskLeave;
+    			}
+    	}
     },
     //展示规格end
     open(link){
@@ -415,30 +475,45 @@ export default {
     },
     //去结算判断是否用户是注册
     toAccount(){
-    	    	this.$router.openPage("/closeAccount");
-			this.$http.get("/findUserByWeixinOpenid", {params:{
-				weixinOpenid: DB.getItem("weixinOpenid").toString()
+//  	    this.$router.openPage("/closeAccount");
+			//微信登录
+//			this.$http.get("/findUserByWeixinOpenid", {params:{
+//				weixinOpenid: DB.getItem("weixinOpenid").toString()
+//			}}).then((res) => {
+//				console.log(res)
+//			}).catch((err) => {
+//				console.log(err)
+//			})	    	
+			
+			
+			this.$http.get("/userLogin/findUserByTelephone", {params:{
+				telephone: "18305626606"
 			}}).then((res) => {
 				console.log(res)
 			}).catch((err) => {
 				console.log(err)
-			})	    	
+			})	
    },
    //绑定
    
    //重置数据
-   concatGwcInit(val){
-   		console.log(val);
-   		console.log(DB.getItem("shopCarDB2").toString())
-// 		DB.removeItem("shopCarDB2")
-   		
-   		if(DB.getItem("shopCarDB2").toString()){
-   			//合并
-   			
-   		}else{
-   			//初始化的值
-   			this.dataItem = val;
-   		}
+   concatGwcInit(){
+   		console.log("concatGwcInit")
+   		console.log(this.gwcInitData);
+   		console.log(this.dataInitItem);
+// 		this.dataItem = this.dataInitItem;
+		//合并
+		this.dataInitItem.forEach((item2,index2)=>{
+			item2.goods.map((item3,index3)=>{
+				item3.selGoodsNum = 0;
+			   	this.gwcInitData.forEach((item,index)=>{
+   					if (item.goodsId == item3.goodsId) {
+   						item3.selGoodsNum += item.itemGuige.itemOneGuigeLen;
+   					}
+				})
+			})
+		})
+   		this.dataItem = this.dataInitItem;
    	
    	
    }
@@ -582,6 +657,13 @@ export default {
             padding-right: 0.4rem;
             .shopdpa-select{
             	font-size: 0.26rem;
+            	overflow: visible;
+            	position: relative;
+            	.guigeBadge{
+            		position: absolute;
+            		top: -0.1rem;
+            		font-size: 0.22rem;
+            	}
             }
           }
           .cell-x-icon {
@@ -620,6 +702,7 @@ export default {
         font-size: 0.6rem;
         color: #fff;
       }
+
       .ftl-redPoint {
         width: 0.4rem;
         height: 0.4rem;
@@ -632,10 +715,13 @@ export default {
         right: 0;
       }
     }
+    .hasGwcData{
+      		background-color: #767676;
+      }
   }
   .cf-center {
     flex: 3;
-    background-color: rgb(80, 80, 83);
+    background-color:  #4F4F4F;
     color: #fff;
     line-height: $footerHeight;
   }
@@ -645,6 +731,9 @@ export default {
     color: #fff;
     text-align: center;
     line-height: $footerHeight;
+  }
+  .hasGwcData{
+  	background-color: #4F4F4F;
   }
 }
 
@@ -779,6 +868,17 @@ export default {
       .guiGef-guiGe{
         font-size: 0.3rem;
       }
+
+    }
+    .guiGef-right{
+          .gwcdir-right {
+		      display: flex;
+		      align-items: center;
+		      fill: rgb(32, 150, 250);
+		      span {
+		        padding: 0 0.2rem;
+		      }
+		    }    	
     }
   }
 }
