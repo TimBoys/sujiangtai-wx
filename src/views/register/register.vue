@@ -16,7 +16,7 @@
      					 </x-input>
    				  </group>
    				  				   <group class="sjtlc-group">
-     					 <x-input  placeholder="输入验证码"  placeholder-align="left" class="gInput" >
+     					 <x-input  placeholder="输入验证码"  placeholder-align="left" class="gInput" v-model="register.code">
      					 	 <x-button slot="right" type="primary" mini @click.native="getMsgCode" v-if="!isMsgShow">获取验证码</x-button>
      					 	 <x-button slot="right" type="default" mini v-else disabled>
      					 	 	{{countDown}}
@@ -24,7 +24,7 @@
      					 </x-input>
    				  </group>
 				   <group class="sjtlc-group">
-     					 <x-input  placeholder="输入密码"   class="gInput"></x-input>
+     					 <x-input  placeholder="输入密码"   class="gInput" v-model="register.password"></x-input>
    				  </group>
 			</div>
 			<div class="sjtlc-btn">
@@ -51,14 +51,21 @@
 				sjtLogo2:"../../../static/images/mine/circleLogo.png",
 				iconType: '',
 				register:{
-					telephone:""
+					telephone:"",
+					code:"",
+					password:""
 				}
 			}
 		},
 		components:{
 			XImg,
 		},
+		mounted: function(){
+			this.initData();
+		},
 		methods:{
+			initData(){
+			},
 		    open(link){
 		    	this.$router.openPage(link);
 		    },
@@ -76,7 +83,7 @@
 		    	
 		    	//判断是绑定还是插入
 		    	console.log(this.register.telephone);
-				this.$http.get("/findUserByTelephone", {params:{
+				this.$http.get("/userLogin/findUserByTelephone", {params:{
 					telephone: this.register.telephone
 				}}).then((res) => {
 					console.log(res)
@@ -90,11 +97,13 @@
 				}).catch((err) => {
 					console.log(err)
 				})	 		    	
-		    	
+
+				this.createPollCode();
+				console.log(this.register)
 		    },
 		    //注册用户
 		    bindOpenidTel(){
-				this.$http.get("/bindOpenidTel", {TeaUserInfo:{
+				this.$http.get("/userLogin/bindOpenidTel", {TeaUserInfo:{
 					telephone: this.register.telephone
 				}}).then((res) => {
 					console.log(res)
@@ -104,7 +113,7 @@
 		    },
 		    //插入用户
 		    insertTel(){
-				this.$http.get("/insert", {TeaUserInfo:{
+				this.$http.get("/userLogin/insert", {TeaUserInfo:{
 					telephone: this.register.telephone
 				}}).then((res) => {
 					console.log(res)
@@ -114,7 +123,7 @@
 		    },
 		    //发送短信息msg
 		    createPollCode(){
-				this.$http.get("/createPollCode").then((res) => {
+				this.$http.get("/userLogin/createPollCode").then((res) => {
 					console.log(res)
 				}).catch((err) => {
 					console.log(err)
@@ -122,7 +131,7 @@
 		    },
 		    //发送短信息msg
 		    createPollCode(){
-				this.$http.get("/comparePollCode",{
+				this.$http.get("/userLogin/comparePollCode",{
 					params:this.register
 				}).then((res) => {
 					console.log(res)

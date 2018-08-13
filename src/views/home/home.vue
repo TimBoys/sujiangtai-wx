@@ -116,7 +116,7 @@
 			//初始化轮播图
 			this.initGetCarousel();
 			//根据code获取并存储openId
-//			this.initOpenId();			
+			this.initOpenId();			
 			//初始化店铺
 			this.initGetStoreId();
 			//初始化店铺数据
@@ -124,7 +124,6 @@
 
 		},
 		methods: {
-			
 			//初试化start
 			//根据code获取并存储openId
 			initOpenId(){
@@ -137,7 +136,7 @@
 					this.$http.get("/userInfoLogin", {params:{
 						code: resultCode
 					}}).then((res) => {
-	//					console.log(res)
+						console.log(res)
 						var weixinOpenid = "";
 						DB.setItem("weixinOpenid",weixinOpenid);
 					}).catch((err) => {

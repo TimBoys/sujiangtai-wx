@@ -484,15 +484,14 @@ export default {
 //			}).catch((err) => {
 //				console.log(err)
 //			})	    	
+
+			if(DB.getItem("telephone").toString()){
+				 this.$router.openPage("/closeAccount");
+			}else{
+				 this.$router.openPage("/register");
+			}
 			
-			
-			this.$http.get("/userLogin/findUserByTelephone", {params:{
-				telephone: "18305626606"
-			}}).then((res) => {
-				console.log(res)
-			}).catch((err) => {
-				console.log(err)
-			})	
+
    },
    //绑定
    
