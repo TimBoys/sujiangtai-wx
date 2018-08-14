@@ -29,7 +29,10 @@
 			leftBack(title){
 				if(this.title == "所有商品"){
 					this.$router.openPage("/home");
-				}else{
+				}else if(this.title == "提交订单"){
+					this.$router.openPage("/classification");
+				}
+				else{
 					this.$router.go(-1);
 				}
 				

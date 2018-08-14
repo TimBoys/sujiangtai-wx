@@ -98,6 +98,12 @@ export default new Router({
 		       require(['@/views/indent/indent.vue'], resolve)
 		    }
 		},		
-		
+		{
+			path: '/forgetPassword',
+			name: 'forgetPassword',
+		    component(resolve){
+		       require(['@/views/forgetPassword/forgetPassword.vue'], resolve)
+		    }
+		},
 	]
 })

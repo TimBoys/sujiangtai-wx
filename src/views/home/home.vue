@@ -137,16 +137,54 @@
 						code: resultCode
 					}}).then((res) => {
 						console.log(res)
-						var weixinOpenid = "";
+						var weixinOpenid = null;
 						DB.setItem("weixinOpenid",weixinOpenid);
+						//check 用户编号
+						this.findUserByWeixinOpenid();
 					}).catch((err) => {
 						console.log(err)
 					})				
 				}else{
 					console.log("no-code")
 				}
+				var telUserNo = {telephone:"13916702735",userNo:"6"}
+				DB.setItem("telUserNo",telUserNo);
+//				DB.removeItem("telUserNo")
+//				this.$http.get("/userRegister/findUserByTelephone", {
+//					params: {
+//						telephone: 13916702735 //userNo: "6"曹总
+////						telephone: 17621503621 //userNo: "8",曹星星
+//					}
+//				}).then((res) => {
+//					if(res.status == 200 && res.data.rspCode == "00000") {
+//						console.log("根据手机号码查找用户,确定用户已经存在了，存储userNo,telephone")
+//						console.log(res.data.data)
+//					}
+//				}).catch((err) => {
+//					console.log(err)
+//				})
 			},
-			
+			//根据微信号查询用户
+			findUserByWeixinOpenid() {
+				this.$http.get("/userRegister/findUserByWeixinOpenid", {
+					params: {
+						telephone: DB.getItem("weixinOpenid").toString()
+					}
+				}).then((res) => {
+					if(res.status == 200 && res.data.rspCode == "00000") {
+						console.log(res)
+						console.log("根据微信号查询用户")
+						if(res.data.data) {
+							var telUserNo = {telephone:"13888888888",usrNo:"123"}
+							DB.setItem("telUserNo",telUserNo);
+						} else {
+							
+						}
+					}
+				}).catch((err) => {
+					console.log(err)
+				})
+			},				
 			//初始化获取本地语言
 			initLocalLang() {
 				if(!DB.getItem("localLang").toString()) {

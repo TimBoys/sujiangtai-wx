@@ -11,21 +11,21 @@
 			</div>
 			<div class="sjtlc-cont">
 				   <group class="sjtlc-group">
-     					 <x-input  placeholder="输入手机号码"  placeholder-align="left" class="gInput" >
+     					 <x-input  placeholder="输入手机号码"  placeholder-align="left" class="gInput" v-model="loginParams.telephone">
      					 	
      					 	
      					 </x-input>
    				  </group>
 				   <group class="sjtlc-group">
-     					 <x-input  placeholder="输入密码"   class="gInput"></x-input>
+     					 <x-input  placeholder="输入密码"   class="gInput" v-model="loginParams.passwords"></x-input>
    				  </group>
    				  <div class="sjtlc-foot">
    				  		<div @click="open('/register')">新用户？请注册</div>
-   				  		<div>忘记密码</div>
+   				  		<div @click="open('/forgetPassword')">忘记密码</div>
    				  </div>
 			</div>
 			<div class="sjtlc-btn">
-				<x-button  class="login-btn" type="primary" >登录</x-button>
+				<x-button  class="login-btn" type="primary" @click.native="login()">登录</x-button>
 			</div>
 
 		</div>		
@@ -36,7 +36,8 @@
 <script>
 	import headerBack from "../../components/header-back";
 	import { Confirm,XImg,Divider,PopupPicker,Tab,TabItem,XTextarea } from "vux";
-	
+	import VueDB from "../../util/vue-db/vue-db-long.js";
+	var DB = new VueDB();	
 	export default{
 		name:"login",
 		data(){
@@ -45,15 +46,37 @@
 				sjtLogo:"../../../static/images/mine/sjtLogin.jpg",
 				sjtLogo2:"../../../static/images/mine/circleLogo.png",
 				iconType: '',
+				loginParams:{
+					telephone:null,
+					passwords:null,
+				}
 			}
 		},
 		components:{
 			XImg
 		},
 		methods:{
-	    open(link){
-	    	this.$router.openPage(link);
-	    },
+		    open(link){
+		    	this.$router.openPage(link);
+		    },
+	    	login(){
+	    		if (this.loginParams.telephone && this.loginParams.passwords) {
+				this.$http.get("/userRegister/userLogin",{params:{
+					telephone:this.loginParams.telephone,
+					passwords:this.loginParams.passwords,
+				}}).then((res) => {
+					console.log(res)
+				}).catch((err) => {
+					console.log(err)
+				})	    		
+	    		
+	    	}else{
+				this.$vux.toast.show({
+						text: "请填写正确的信息！",
+						type: "text",
+					})	    		
+	    	}
+		}
 		}
 		
 		

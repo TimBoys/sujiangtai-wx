@@ -98,6 +98,11 @@
 <script>
 import headerBack from "../../../components/header-back";
 import { Confirm,XImg,Divider,PopupPicker,Tab,TabItem,XTextarea } from "vux";
+import VueDB from "../../../util/vue-db/vue-db-long.js";
+import shopCarTool from "../../../util/shop-car-tool/index.js";
+import _ from 'lodash'
+
+var DB = new VueDB();
 
 export default{
 	name:"closeAccount",
@@ -131,6 +136,9 @@ export default{
 		TabItem,
 		XTextarea
 	},
+	mounted:function(){
+		this.shopCar = new shopCarTool(this.$store);
+	},
 	methods:{
 		//展示规格end
 	    open(link){
@@ -150,10 +158,30 @@ export default{
 	    },
 	    //提交订单
 	    updateAccount(){
-	    	this.$router.openPage("/register");
-				this.$http.get("/userOrderOper", {CustOrderInfoVo:{
-					telephone: "1222"
-				}}).then((res) => {
+	//	    	this.$router.openPage("/register");
+				console.log(this.shopCar.getAll())
+	
+				var telUserNo = DB.getItem("telUserNo").toJson();
+				var toPushData = {
+					userNo:telUserNo.userNo,
+					telephone:telUserNo.telephone,
+					promotionId:1,			//暂时没有，向曹佳要
+					remark:this.textAreaValue, //备注
+					orderType:1,				//1堂吃2预约
+//					DateBookTime			//预约时间
+					StringStoreNo:DB.getItem("storeNo").toString(),
+					listTeaOrderDetails:[{goodsId:3,listTeaOrderDetailsAttr:[
+							{attrId:7}
+						]}
+					]
+					
+					
+					
+				};
+//				toPushData.userNo = 
+				console.log(toPushData)
+	
+				this.$http.post("/userOrderInfo/userOrderOper",toPushData).then((res) => {
 					console.log(res)
 				}).catch((err) => {
 					console.log(err)
