@@ -210,6 +210,8 @@
 						lang: "zh"
 					}
 				}).then((res) => {
+					console.log("getCarouselFigure")
+					console.log(res)
 					if(res.status == 200 && res.data.rspCode == "00000") {
 						this.banner = res.data.data.data;
 					}
@@ -560,7 +562,343 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss" type="text/scss">
-	@import "../../assets/scss/util"; .classification { background-color: #fff; } .headerImg { width: 100%; height: 3rem; } .warp-box { position: absolute; width: 100%; top: 1.2rem; left: 0px; bottom: $footerHeight; overflow-y: auto; .classificationCont { height: calc(100vh - 2.6rem); position: absolute; width: 100%; top: 3rem; left: 0px; bottom: 0rem; .left-menu { width: getIphoneWidth(170px); left: 0px; top: 0px; bottom: 0px; overflow-x: hidden; @include box-sizing; background-color: #efefef; ul { padding-bottom: 0.44rem; } li.item { text-align: center; -webkit-transition: all 0.1s ease; transition: all 0.1s ease; padding: 0 0.1rem 0 0.1rem; @include box-sizing; font-size: 0.34rem; height: 1.2rem; line-height: 1.6rem; } li.item.active { color: #fda544; transform: scale(1.05); } } .right-box { background-color: #fcfcfc; left: getIphoneWidth(170px); padding-left: getIphoneWidth(10px); top: 0; right: 0px; bottom: 0px; overflow-x: hidden; .item { padding-top: 0.4rem; .title { text-align: center; padding-bottom: 0.2rem; } span { position: relative; display: inline-block; } &:after, &:before { display: inline-block; width: getIphoneWidth(34px); height: 1px; top: 50%; background-color: #e0e0e0; position: absolute; content: ""; } &:after { left: getIphoneWidth(-50px); } &:before { right: getIphoneWidth(-50px); } } .shop-item-wrap .shop-item { text-align: left; /*float: left;*/ color: #757575; margin-bottom: 0.3rem; @include f12px; img { width: getIphoneWidth(140px); height: getIphoneWidth(140px); padding-bottom: 0.1rem; } .shop-detail { display: inline-block; width: calc(100% - 2.4rem); .shopd-title { @include f14px; font-weight: 600; vertical-align: top; } .shopd-detail { div { font-size: 0.26rem; } } } .shopd-pAdd { display: flex; .shopdpa-price { flex: 1; } .shopdpa-add { flex: 1; text-align: right; padding-right: 0.4rem; .shopdpa-select{ font-size: 0.26rem; overflow: visible; position: relative; .guigeBadge{ position: absolute; top: -0.1rem; font-size: 0.22rem; } } } .cell-x-icon { fill: limegreen; } } } } } } .classification-footer { left: 0; right: 0px; bottom: 0px; top: calc(100vh - 1.4rem); height: $footerHeight; display: flex; z-index: 999; .cf-left { flex: 1; background-color: rgb(80, 80, 83); display: flex; justify-content: center; align-items: center; .cfl-cont { width: 1.2rem; height: 1.2rem; border-radius: 50%; background-color: rgb(49, 144, 231); text-align: center; position: relative; top: -0.4rem; .ftl-gwc { line-height: 1.2rem; font-size: 0.6rem; color: #fff; } .ftl-redPoint { width: 0.4rem; height: 0.4rem; border-radius: 0.4rem; font-size: 0.3rem; color: #fff; background-color: #ff0000; position: absolute; top: 0; right: 0; } } .hasGwcData{ background-color: #767676; } } .cf-center { flex: 3; background-color: #4F4F4F; color: #fff; line-height: $footerHeight; } .cf-right { flex: 1.5; background-color: rgb(46, 163, 69); color: #fff; text-align: center; line-height: $footerHeight; } .hasGwcData{ background-color: #4F4F4F; } } .gouwuche { display: inline-block; top: 0; left: 0; bottom: calc(100vh - 1.4rem); width: 100%; height: calc(100vh - 1.4rem); transition: all 0.4s cubic-bezier(0.55, 0, 0.1, 1); transform: translateY(0); z-index: 888; .gwc-mask { width: 100%; height: 100%; /*background-color: rgba(33,33,33,0.6);*/ background-color: transparent; .gwc-cont { width: 100%; min-height: 2rem; max-height: 10rem; overflow-y: scroll; background-color: #efefef; bottom: 0; z-index: 333; .gwc-clear { height: 0.8rem; background-color: #e8e8e8; display: flex; justify-content: space-between; align-items: center; padding: 0 0.4rem; } .gwc-detail { .gwcd-item { height: 1.2rem; display: flex; align-items: center; padding: 0 0.4rem; border-bottom: 1px solid #bbb; .gwcdi-left { flex: 1; .gwcdil-top { font-size: 0.34rem; font-weight: 600; } .gwcdil-bottom { font-size: 0.26rem; span:after{ content: "/"; } span:nth-last-of-type(1):after{ content: ""; } } } .gwcdi-right { flex: 1; display: flex; align-items: center; justify-content: space-between; .gwcdir-left { color: #fda544; } .gwcdir-right { display: flex; align-items: center; fill: rgb(32, 150, 250); span { padding: 0 0.2rem; } } } } } } } } .maskLeave { transform: translateY(100vh); } // 选择规格start .goodsGuiGe{ .guiGe-header{ text-align: center; line-height: 1rem; position: relative; .guiGeh-closeGuiGe{ float:right; position: absolute; top: 0; right: 0; } } .guiGe-cont{ max-height: 8rem; height: 8rem; overflow-y:scroll; border: 1px solid #BBB; display: flex; flex-direction: column; .checkItemBox{ .demo1-item { border: 1px solid #ececec; padding: 5px 15px; } .guiGe-checker{ .guiGe-checkerItem{ margin: 0 0.3rem 0.1rem; float: left; } } .demo1-item-selected { border: 1px solid #FDA544; color: #FDA544; } } } .guiGe-footer{ height: 1.4rem; display: flex; justify-content: space-between; align-items: center; padding: 0.3rem; .guiGef-left{ .guiGef-price{ font-size: 0.54rem; } .guiGef-guiGe{ font-size: 0.3rem; } } .guiGef-right{ .gwcdir-right { display: flex; align-items: center; fill: rgb(32, 150, 250); span { padding: 0 0.2rem; } } } } }
-
+<style  lang="scss" type="text/scss">
+@import "../../assets/scss/util";
+.classification {
+  background-color: #fff;
+}
+.headerImg {
+  width: 100%;
+  height: 3rem;
+}
+.warp-box {
+  position: absolute;
+  width: 100%;
+  top: 1.2rem;
+  left: 0px;
+  bottom: $footerHeight;
+  overflow-y: auto;
+  .classificationCont {
+    height: calc(100vh - 2.6rem);
+    position: absolute;
+    width: 100%;
+    top: 3rem;
+    left: 0px;
+    bottom: 0rem;
+    .left-menu {
+      width: getIphoneWidth(170px);
+      left: 0px;
+      top: 0px;
+      bottom: 0px;
+      overflow-x: hidden;
+      @include box-sizing;
+      background-color: #efefef;
+      ul {
+        padding-bottom: 0.44rem;
+      }
+      li.item {
+        text-align: center;
+        -webkit-transition: all 0.1s ease;
+        transition: all 0.1s ease;
+        padding: 0 0.1rem 0 0.1rem;
+        @include box-sizing;
+        font-size: 0.34rem;
+        height: 1.2rem;
+        line-height: 1.6rem;
+      }
+      li.item.active {
+        color: #fda544;
+        transform: scale(1.05);
+      }
+    }
+    .right-box {
+      background-color: #fcfcfc;
+      left: getIphoneWidth(170px);
+      padding-left: getIphoneWidth(10px);
+      top: 0;
+      right: 0px;
+      bottom: 0px;
+      overflow-x: hidden;
+      .item {
+        padding-top: 0.4rem;
+        .title {
+          text-align: center;
+          padding-bottom: 0.2rem;
+        }
+        span {
+          position: relative;
+          display: inline-block;
+        }
+        &:after,
+        &:before {
+          display: inline-block;
+          width: getIphoneWidth(34px);
+          height: 1px;
+          top: 50%;
+          background-color: #e0e0e0;
+          position: absolute;
+          content: "";
+        }
+        &:after {
+          left: getIphoneWidth(-50px);
+        }
+        &:before {
+          right: getIphoneWidth(-50px);
+        }
+      }
+      .shop-item-wrap .shop-item {
+        text-align: left;
+        /*float: left;*/
+        color: #757575;
+        margin-bottom: 0.3rem;
+        @include f12px;
+        img {
+          width: getIphoneWidth(140px);
+          height: getIphoneWidth(140px);
+          padding-bottom: 0.1rem;
+        }
+        .shop-detail {
+          display: inline-block;
+          width: calc(100% - 2.4rem);
+          .shopd-title {
+            @include f14px;
+            font-weight: 600;
+            vertical-align: top;
+          }
+          .shopd-detail {
+            div {
+              font-size: 0.26rem;
+            }
+          }
+        }
+        .shopd-pAdd {
+          display: flex;
+          .shopdpa-price {
+            flex: 1;
+          }
+          .shopdpa-add {
+            flex: 1;
+            text-align: right;
+            padding-right: 0.4rem;
+            .shopdpa-select{
+            	font-size: 0.26rem;
+            	overflow: visible;
+            	position: relative;
+            	.guigeBadge{
+            		position: absolute;
+            		top: -0.1rem;
+            		font-size: 0.22rem;
+            	}
+            }
+          }
+          .cell-x-icon {
+            fill: limegreen;
+          }
+        }
+      }
+    }
+  }
+}
+.classification-footer {
+  left: 0;
+  right: 0px;
+  bottom: 0px;
+  top: calc(100vh - 1.4rem);
+  height: $footerHeight;
+  display: flex;
+  z-index: 999;
+  .cf-left {
+    flex: 1;
+    background-color: rgb(80, 80, 83);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .cfl-cont {
+      width: 1.2rem;
+      height: 1.2rem;
+      border-radius: 50%;
+      background-color: rgb(49, 144, 231);
+      text-align: center;
+      position: relative;
+      top: -0.4rem;
+      .ftl-gwc {
+        line-height: 1.2rem;
+        font-size: 0.6rem;
+        color: #fff;
+      }
+      .ftl-redPoint {
+        width: 0.4rem;
+        height: 0.4rem;
+        border-radius: 0.4rem;
+        font-size: 0.3rem;
+        color: #fff;
+        background-color: #ff0000;
+        position: absolute;
+        top: 0;
+        right: 0;
+      }
+    }
+    .hasGwcData{
+      		background-color: #767676;
+      }
+  }
+  .cf-center {
+    flex: 3;
+    background-color:  #4F4F4F;
+    color: #fff;
+    line-height: $footerHeight;
+  }
+  .cf-right {
+    flex: 1.5;
+    background-color: rgb(46, 163, 69);
+    color: #fff;
+    text-align: center;
+    line-height: $footerHeight;
+  }
+  .hasGwcData{
+  	background-color: #4F4F4F;
+  }
+}
+.gouwuche {
+  display: inline-block;
+  top: 0;
+  left: 0;
+  bottom: calc(100vh - 1.4rem);
+  width: 100%;
+  height: calc(100vh - 1.4rem);
+  transition: all 0.4s cubic-bezier(0.55, 0, 0.1, 1);
+  transform: translateY(0);
+  z-index: 888;
+  .gwc-mask {
+    width: 100%;
+    height: 100%;
+    /*background-color: rgba(33,33,33,0.6);*/
+    background-color: transparent;
+    .gwc-cont {
+      width: 100%;
+      min-height: 2rem;
+      max-height: 10rem;
+      overflow-y: scroll;
+      background-color: #efefef;
+      bottom: 0;
+      z-index: 333;
+      .gwc-clear {
+        height: 0.8rem;
+        background-color: #e8e8e8;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 0.4rem;
+      }
+      .gwc-detail {
+        .gwcd-item {
+          height: 1.2rem;
+          display: flex;
+          align-items: center;
+          padding: 0 0.4rem;
+          border-bottom: 1px solid #bbb;
+          .gwcdi-left {
+            flex: 1;
+            .gwcdil-top {
+              font-size: 0.34rem;
+              font-weight: 600;
+            }
+            .gwcdil-bottom {
+              font-size: 0.26rem;
+              span:after{
+              	content: "/";
+              }
+              span:nth-last-of-type(1):after{
+              	content: "";
+              }
+            }
+          }
+          .gwcdi-right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            .gwcdir-left {
+              color: #fda544;
+            }
+            .gwcdir-right {
+              display: flex;
+              align-items: center;
+              fill: rgb(32, 150, 250);
+              span {
+                padding: 0 0.2rem;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+.maskLeave {
+  transform: translateY(100vh);
+}
+// 选择规格start
+.goodsGuiGe{
+  .guiGe-header{
+      text-align: center;
+      line-height: 1rem;
+      position: relative;
+      .guiGeh-closeGuiGe{
+        float:right;
+        position: absolute;
+        top: 0;
+        right: 0;
+      }
+  }
+  .guiGe-cont{
+    max-height: 8rem;
+    height: 8rem;
+    overflow-y:scroll; 
+    border: 1px solid #BBB;
+    display: flex;
+    flex-direction: column;
+    .checkItemBox{
+    .demo1-item {
+		  border: 1px solid #ececec;
+		  padding: 5px 15px;
+		}
+	.guiGe-checker{
+		.guiGe-checkerItem{
+			margin: 0 0.3rem 0.1rem;
+			float: left;
+		}
+		}
+	.demo1-item-selected {
+	  border: 1px solid #FDA544;
+	  color: #FDA544;
+	}
+	}
+  }
+  .guiGe-footer{
+    height: 1.4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.3rem;
+    .guiGef-left{
+      .guiGef-price{
+        font-size: 0.54rem;
+      }
+      .guiGef-guiGe{
+        font-size: 0.3rem;
+      }
+    }
+    .guiGef-right{
+          .gwcdir-right {
+		      display: flex;
+		      align-items: center;
+		      fill: rgb(32, 150, 250);
+		      span {
+		        padding: 0 0.2rem;
+		      }
+		    }    	
+    }
+  }
+}
 </style>

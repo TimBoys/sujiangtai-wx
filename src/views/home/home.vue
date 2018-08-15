@@ -147,8 +147,8 @@
 				}else{
 					console.log("no-code")
 				}
-				var telUserNo = {telephone:"13916702735",userNo:"6"}
-				DB.setItem("telUserNo",telUserNo);
+//				var telUserNo = {telephone:"13916702735",userNo:"6"}
+//				DB.setItem("telUserNo",telUserNo);
 //				DB.removeItem("telUserNo")
 //				this.$http.get("/userRegister/findUserByTelephone", {
 //					params: {

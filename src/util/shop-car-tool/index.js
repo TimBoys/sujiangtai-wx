@@ -48,7 +48,7 @@ class shopCarTool{
 				} else{
 					initLeng++;
 					if (itemGuigeLength == initLeng) {
-						this.shopCarDB[key].itemGuige.push({itemOneGuigeLen:1,hasGuigePrice:value.iGAGPrice,iGAGAllGuige:value.iGAGAllGuige,initGuiGeSC:value.initGuiGeSC})
+						this.shopCarDB[key].itemGuige.push({itemOneGuigeLen:1,hasGuigePrice:value.iGAGPrice,guiGePrice:value.iGAGPrice - value.goodsItem.goodsPrice,iGAGAllGuige:value.iGAGAllGuige,initGuiGeSC:value.initGuiGeSC})
 					}
 				}
 			}	    	
@@ -59,7 +59,7 @@ class shopCarTool{
 	      	var filter = {};
 			filter.length =1;
 			//选择规格数组和规格所属的商品
-			filter.itemGuige = [{itemOneGuigeLen:1,hasGuigePrice:value.iGAGPrice,iGAGAllGuige:value.iGAGAllGuige,initGuiGeSC:value.initGuiGeSC}]
+			filter.itemGuige = [{itemOneGuigeLen:1,hasGuigePrice:value.iGAGPrice,guiGePrice:value.iGAGPrice - value.goodsItem.goodsPrice,iGAGAllGuige:value.iGAGAllGuige,initGuiGeSC:value.initGuiGeSC}]
 			filter.goodsId = value.goodsItem.goodsId //规格所属的商品
 			filter.goodsName = value.goodsItem.goodsName //规格所属的商品
 			filter.iGAGPrice = value.iGAGPrice //选择商品加上规格的价格

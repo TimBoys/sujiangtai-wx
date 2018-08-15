@@ -13,11 +13,11 @@
 			    </tab>
 				<group label-width="4.5em" label-margin-right="2em" gutter="0" label-align="left" class="groupItem" >
 						<!--<popup-picker title="配送方式" :data="list" v-model="value5" value-text-align="left" ></popup-picker>-->
-						<cell title="自取地址" value-align="left" primary="content"   value="上海市凤凰山凤凰峰">
+						<cell title="自取地址" value-align="left" primary="content"   :value="storeAddress">
 							
 						</cell>
-						<cell title="自取电话" value-align="left" primary="content"  :value="myPhone" @click.native="showPhone = true">
-							
+						<cell title="自取电话" value-align="left" primary="content"  :value="storePhone">
+							 <!--@click.native="showPhone = true"-->
 						</cell>
 						<popup-picker title="时间" v-model="formatDemoValue" value-text-align="left" :data="[['01','02','03'],['11','12','13']]" :display-format="format"></popup-picker>
 						<popup-picker title="支付方式" :data="list2" v-model="value6" value-text-align="left" ></popup-picker>
@@ -33,22 +33,31 @@
 				素匠泰茶(Whiterock)
 			</div>
 			<div class="gd-cont">
-				<div class="gdc-detail" v-for="(goodsItem,index) in allGoods">
-					<x-img  class="gdcd-img" v-lazy="goodsItem.sjtLogo"></x-img>
+				<div class="gdc-detail" v-for="(item,index) in allGoods.allGDPage">
+					<x-img  class="gdcd-img" v-lazy="item.goodsItem.goodsPictureRound"></x-img>
 					<div  class="gdcd-price">
 						<div class="gdcdp-right">
-							<div class="gdcdpr-title">芒果奶昔</div>
-							<div>+加冰+加热加冰+加热</div>
-							<div>x2</div>
+							<div class="gdcdpr-title">{{item.goodsItem.goodsName}}</div>
+							<div>{{item.iGAGAllGuige}}</div>
+							<div>x{{item.itemOneGuigeLen}}</div>
 						</div>
 						<div class="gdcdp-plus">
-							$14.00
+							<span>{{item.goodsItem.goodsPrice}}</span>
+							<span>{{item.goodsItem.goodsGuigePrice}}</span>
+							
 						</div>
 					</div>
 				</div>
 					<div class="gdc-footer">
 						<div class="gdcf-allPrice">
-							小计：$14.50
+							原价：${{allGoods.allGDOrigPrice}}
+						</div>
+						<div class="gdcf-allPrice">
+							<span class="fl"></span>优惠({{promotionName}})：${{allGoods.allGDDiscount}}
+						</div>
+						
+						<div class="gdcf-allPrice">
+							小计：${{allGoods.allGDOrderPrice}}
 						</div>
 						<group title="卖家留言" class="gdc-textarea">
       						<x-textarea  name="detail" placeholder="写下想对卖家说的话" :show-counter="false" v-model="textAreaValue"></x-textarea>
@@ -66,12 +75,12 @@
 			<div class="cfl-cont" >
 				<x-img v-lazy="sjtLogo" class="iconfont icon-gouwuche ftl-gwc"></x-img>
 				<div class="ftl-redPoint">
-					12
+					{{allGoods.allGDLength}}
 				</div>
 			</div>
 		</div>
 				<div class="cf-center">
-			总价:$33.00
+			总价:${{allGoods.allGDOrderPrice}}
 		</div>
 				<div class="cf-right" @click="updateAccount()">
 			提交订单
@@ -118,13 +127,12 @@ export default{
 			format: function (value, name) {
 		        return `${value[0]}:${value[1]}`
 		     },
-		    myPhone:"18305626606",
-		    allGoods:[{
-		    	sjtLogo:"../../../../static/images/mine/TimTest.jpeg",
-		    },{
-		    	sjtLogo:"../../../../static/images/mine/TimTest.jpeg",
-		    }],
-		    textAreaValue:"sfsdfs"
+		    allGoods:[],
+		    textAreaValue:"",
+		    promotionId:null,
+		    promotionName:null,
+		    storeAddress:"shanghai",
+		    storePhone:"110",
 		}
 	},
 	components:{
@@ -138,13 +146,15 @@ export default{
 	},
 	mounted:function(){
 		this.shopCar = new shopCarTool(this.$store);
+		
+		this.queryPromotionByStoreNoNation(); //查询活动id
+		
 	},
 	methods:{
 		//展示规格end
 	    open(link){
 	    	this.$router.openPage(link);
 	    },
-		
 		//模态框s
 	    onHide(){
 	    	console.log("关闭模态框")
@@ -154,38 +164,104 @@ export default{
 	    },
 	    onConfirm5 (value) {
 	      console.log(value)
-	      this.myPhone = value;
+	      this.storePhone = value;
 	    },
-	    //提交订单
-	    updateAccount(){
-	//	    	this.$router.openPage("/register");
-				console.log(this.shopCar.getAll())
-	
+	    //获取店铺的活动
+	    //8/15现在是默认第一个活动（第二件半价）
+	    queryPromotionByStoreNoNation(){
+	    	DB.getItem("storeList").toJson().forEach((item,index)=>{
+	    		if (DB.getItem("storeNo").toString() == item.storeNo) {
+	    			this.storeAddress = item.storeAddress;
+	    			this.storePhone = item.storePhone;
+	    		}
+	    	})
+	    	
+			this.$http.get("/userLogin/queryPromotionByStoreNoNation",{
+				params:{
+					storeNo:DB.getItem("storeNo").toString(),
+					lang:DB.getItem("localLang").toString()
+				}
+			}).then((res) => {
+				console.log(res)
+				if(res.status == 200 && res.data.rspCode == "00000") {
+					this.promotionId = res.data.data.data[0].promotionId;
+					this.promotionName = res.data.data.data[0].promotionName;
+					this.initUserOrder();  //初始化订单
+				}
+			}).catch((err) => {
+				console.log(err)
+			})		    	
+	    	
+	    },
+	    //初始化订单
+	    initUserOrder(){
 				var telUserNo = DB.getItem("telUserNo").toJson();
+				var getAllShopCar = this.shopCar.getAll();
+				var listTeaOrderDetails = [];
+				for (var itemKey in getAllShopCar) {
+					for (var i =0; i < getAllShopCar[itemKey].itemGuige.length; i++) {
+						for (var k = 0; k < getAllShopCar[itemKey].itemGuige[i].itemOneGuigeLen; k++) {
+							var pushGoods = {};
+							pushGoods.goodsId = getAllShopCar[itemKey].goodsId;
+							pushGoods.listTeaOrderDetailsAttr = [];
+							pushGoods.listTeaOrderDetailsAttr = getAllShopCar[itemKey].itemGuige[i].initGuiGeSC;
+							listTeaOrderDetails.push(pushGoods)
+						}
+					}
+				}
 				var toPushData = {
 					userNo:telUserNo.userNo,
 					telephone:telUserNo.telephone,
-					promotionId:1,			//暂时没有，向曹佳要
+					promotionId:this.promotionId,			//活动参数
 					remark:this.textAreaValue, //备注
 					orderType:1,				//1堂吃2预约
-//					DateBookTime			//预约时间
-					StringStoreNo:DB.getItem("storeNo").toString(),
-					listTeaOrderDetails:[{goodsId:3,listTeaOrderDetailsAttr:[
-							{attrId:7}
-						]}
-					]
-					
-					
-					
+					storeNo:DB.getItem("storeNo").toString(),
+					listTeaOrderDetails:listTeaOrderDetails  //商品和其规格
 				};
-//				toPushData.userNo = 
+				
 				console.log(toPushData)
-	
+				
 				this.$http.post("/userOrderInfo/userOrderOper",toPushData).then((res) => {
-					console.log(res)
+					console.log("/userOrderInfo/userOrderOper")
+					if(res.status == 200 && res.data.rspCode == "00000") {
+						console.log(res.data.data)
+						this.initOrderPage(res.data.data);
+					}
 				}).catch((err) => {
 					console.log(err)
 				})	    	
+	    },
+	    //初始化页面数据
+	    initOrderPage(value){
+				var getAllShopCar = this.shopCar.getAll();
+				var allGoodsDataPage = {allGDPage:[],allGDLength:value.listTeaOrderDetails.length,allGDOrigPrice:value.origPrice,allGDDiscount:value.discount,allGDOrderPrice:value.orderPrice};
+						    	
+				for (var itemKey in getAllShopCar) {
+						getAllShopCar[itemKey].itemGuige.forEach((item,i)=>{
+						var allGDPageObj = {};
+						allGDPageObj.goodsItem = {};
+						allGDPageObj.goodsItem.goodsName = getAllShopCar[itemKey].goodsItem.goodsName;
+						allGDPageObj.goodsItem.goodsPrice   = getAllShopCar[itemKey].goodsItem.goodsPrice;
+						allGDPageObj.goodsItem.goodsGuigePrice  = getAllShopCar[itemKey].goodsItem.goodsGuigePrice;
+						allGDPageObj.goodsItem.goodsPictureRound = getAllShopCar[itemKey].goodsItem.goodsPictureRound;
+						allGDPageObj.goodsItem["goodsGuigePrice"] = item.guiGePrice;
+						allGDPageObj.iGAGAllGuige = item.iGAGAllGuige;
+						allGDPageObj.itemOneGuigeLen = item.itemOneGuigeLen;
+						allGDPageObj.hasGuigePrice = item.hasGuigePrice;
+						
+						allGoodsDataPage.allGDPage.push(allGDPageObj)
+				})
+				}
+				console.log(allGoodsDataPage)
+				this.allGoods = allGoodsDataPage;
+	    	
+	    },
+	    
+	    //提交订单
+	    updateAccount(){
+	    	console.log("12333")
+	    	
+	    	
 	    }
 	}
 	
@@ -290,7 +366,7 @@ export default{
 					line-height: 1rem;
 					display: flex;
 					justify-content: space-between;		
-					color: #B2B2B2;
+					color: #666;
 					.gdcdp-right{
 						display: flex;
 						flex-direction: column;
@@ -300,25 +376,35 @@ export default{
 						.gdcdpr-title{
 							height: 0.6rem;
 							font-size: 0.42rem;
-							color: #666;
+							color: #333;
 						}
 
 					}
 					.gdcdp-plus{
 						display: flex;
+						flex-direction: column;
 						justify-content: space-between;		
 						padding-right: 0.6rem;		
 						font-size: 0.42rem;		
+						span{
+							display: inline-block;
+							height: 0.62rem;
+						}
 					}			
 				}			
 			}
 		}
 		.gdc-footer{
+				color: #333;
 				padding:0  0.2rem 0.2rem 0.2rem ;
 			.gdcf-allPrice{
 				padding-right: 0.6rem;				
 				padding-bottom: 0.2rem;				
 				text-align: right;
+				.fl{
+					float: left;
+					padding-left: 0.1rem;	
+				}
 			}
 			.gdc-textarea{
 				border: 1px solid #D0D6D6;

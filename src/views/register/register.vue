@@ -210,31 +210,29 @@
 					identifyCode: this.register.identifyCode
 				}).then((res) => {
 					console.log("比较验证码成功");
-					console.log(res)
 					console.log(res.data)
 					if(res.status == 200){
-						switch(res.data){
-							case 1:
+						if(DB.getItem("localLang").toString() == "en"){
+							var ErrorMsg = res.data.usErrorMsg;
+						}else{
+							var ErrorMsg = res.data.cnErrorMsg;
+						}
+						switch(res.data.rspCode){
+							case "00000":
 								this.comparePollCodeData = 1;
 							break;
-							case 0:
+							case "00008":
 								this.$vux.toast.show({
-									text: "输入验证码错误！",
+									text: ErrorMsg,
 									type: "text",
 								})
 							break;
-							case 98:
+							default:
 								this.$vux.toast.show({
-									text: "输入验证码错误！",
+									text: "server error！",
 									type: "text",
 								})
-							break;								
-							case 99:
-								this.$vux.toast.show({
-									text: "输入验证码已经过期，请重新输入！",
-									type: "text",
-								})
-							break;								
+							break;
 						}
 					//验证码正确
 					console.log(this.comparePollCodeData)
@@ -269,7 +267,7 @@
 								this.findUserByTelephoneEnd();
 								setTimeout(()=>{
 									this.$router.openPage("/closeAccount");
-								},2000)
+								},1000)
 					}
 				}).catch((err) => {
 					console.log(err)
@@ -281,7 +279,7 @@
 					telephone: this.register.telephone,
 					userPassword: this.register.passwords,
 					weixinOpenid: DB.getItem("weixinOpenid").toString(),
-					userName:"liuzhuqing"
+					userName:"000"
 				}).then((res) => {
 					console.log(res)
 					if(res.status == 200 && res.data.rspCode == "00000"){
@@ -292,7 +290,7 @@
 								this.findUserByTelephoneEnd();
 								setTimeout(()=>{
 									this.$router.openPage("/closeAccount");
-								},2000)
+								},1000)
 					}
 				}).catch((err) => {
 					console.log(err)
@@ -309,7 +307,7 @@
 						console.log("根据手机号码查找用户,确定用户已经存在了，存储userNo,telephone")
 						console.log(res.data.data)
 						if(res.data.data) {
-							var telUserNo = {telephone:res.data.data.telephone,usrNo:res.data.data.userNo}
+							var telUserNo = {telephone:res.data.data.telephone,userNo:res.data.data.userNo}
 							console.log("telUserNo")
 							console.log(telUserNo)
 							DB.setItem("telUserNo",telUserNo);

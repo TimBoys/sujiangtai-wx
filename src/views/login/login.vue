@@ -21,7 +21,7 @@
    				  </group>
    				  <div class="sjtlc-foot">
    				  		<div @click="open('/register')">新用户？请注册</div>
-   				  		<div @click="open('/forgetPassword')">忘记密码</div>
+   				  		<!--<div @click="open('/forgetPassword')">忘记密码</div>-->
    				  </div>
 			</div>
 			<div class="sjtlc-btn">
@@ -63,9 +63,28 @@
 	    		if (this.loginParams.telephone && this.loginParams.passwords) {
 				this.$http.get("/userRegister/userLogin",{params:{
 					telephone:this.loginParams.telephone,
-					passwords:this.loginParams.passwords,
+					userPassword:this.loginParams.passwords,
 				}}).then((res) => {
 					console.log(res)
+					if(res.status == 200 && res.data.rspCode == "00000"){
+						if(res.data.data) {
+							this.$vux.toast.show({
+								text: "登录成功！",
+								type: "text",
+							})
+							var telUserNo = {telephone:res.data.data.telephone,userNo:res.data.data.userNo}
+							console.log(telUserNo)
+							DB.setItem("telUserNo",telUserNo);
+							setTimeout(()=>{
+									this.$router.openPage("/closeAccount");
+							},1000)
+						}else{
+							this.$vux.toast.show({
+									text: "账号密码错误！",
+									type: "text",
+						})							
+					} 						
+					}
 				}).catch((err) => {
 					console.log(err)
 				})	    		
