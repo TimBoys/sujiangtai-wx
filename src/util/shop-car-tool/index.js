@@ -9,7 +9,6 @@ var DB = new DBLong();
 class shopCarTool{
 	constructor(store){
 		var shopCar = DB.getItem("shop-car").toJson();
-//		console.log(shopCar)
 		if (!shopCar) {
 			DB.setItem("shop-car",JSON.stringify(shopCar = {}));
 		}
@@ -28,38 +27,47 @@ class shopCarTool{
 	add(value){
 		console.log("value" )
 		console.dir( value)
-		console.dir(this.shopCarDB)
 	    var key = value.goodsItem.goodsId;
-	    console.dir(this.shopCarDB[key])
-	
 	    if(!key){
 	      return
 	    }
 	    //新加入的商品是否在缓存的购物车中
 	    if (this.shopCarDB[key]) {
 	    	console.log("商品已经在购物车中")
-	    	this.shopCarDB[key].length += 1;
 	    	var itemGuigeLength = this.shopCarDB[key].itemGuige.length;
 	    	var initLeng = 0;
 			for (var i =0 ; i < itemGuigeLength ; i++) {
 				//新加入商品的规格是否在缓存的购物车中
+				console.log(this.shopCarDB[key].itemGuige[i].iGAGAllGuige == value.iGAGAllGuige)
 				if (this.shopCarDB[key].itemGuige[i].iGAGAllGuige == value.iGAGAllGuige) {
 					this.shopCarDB[key].itemGuige[i].itemOneGuigeLen += 1;
 				} else{
 					initLeng++;
 					if (itemGuigeLength == initLeng) {
-						this.shopCarDB[key].itemGuige.push({itemOneGuigeLen:1,hasGuigePrice:value.iGAGPrice,guiGePrice:value.iGAGPrice - value.goodsItem.goodsPrice,iGAGAllGuige:value.iGAGAllGuige,initGuiGeSC:value.initGuiGeSC})
+						this.shopCarDB[key].itemGuige.push({
+							itemOneGuigeLen:1,
+							hasGuigePrice:value.iGAGPrice,
+							guiGePrice:value.iGAGPrice - value.goodsItem.goodsPrice,
+							iGAGAllGuige:value.iGAGAllGuige,
+							initGuiGeSC:value.initGuiGeSC
+						})
 					}
 				}
 			}	    	
-	    	
+	    	this.shopCarDB[key].length += 1;
 	    }else{
 	    	console.log("商品不在购物车中")
 	     	// 过滤需要的信息
 	      	var filter = {};
 			filter.length =1;
 			//选择规格数组和规格所属的商品
-			filter.itemGuige = [{itemOneGuigeLen:1,hasGuigePrice:value.iGAGPrice,guiGePrice:value.iGAGPrice - value.goodsItem.goodsPrice,iGAGAllGuige:value.iGAGAllGuige,initGuiGeSC:value.initGuiGeSC}]
+			filter.itemGuige = [{
+				itemOneGuigeLen:1,
+				hasGuigePrice:value.iGAGPrice,
+				guiGePrice:value.iGAGPrice - value.goodsItem.goodsPrice,
+				iGAGAllGuige:value.iGAGAllGuige,
+				initGuiGeSC:value.initGuiGeSC
+			}]
 			filter.goodsId = value.goodsItem.goodsId //规格所属的商品
 			filter.goodsName = value.goodsItem.goodsName //规格所属的商品
 			filter.iGAGPrice = value.iGAGPrice //选择商品加上规格的价格

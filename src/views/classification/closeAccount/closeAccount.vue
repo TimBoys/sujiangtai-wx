@@ -19,7 +19,7 @@
 						<cell title="自取电话" value-align="left" primary="content"  :value="storePhone">
 							 <!--@click.native="showPhone = true"-->
 						</cell>
-						<popup-picker title="时间" v-model="formatDemoValue" value-text-align="left" :data="[['01','02','03'],['11','12','13']]" :display-format="format"></popup-picker>
+						<popup-picker title="时间" v-model="formatDemoValue" value-text-align="left" :data="ppAllYuyueTime" :display-format="format"></popup-picker>
 						<popup-picker title="支付方式" :data="list2" v-model="value6" value-text-align="left" ></popup-picker>
 						
 				</group>	
@@ -99,6 +99,10 @@
       @on-hide="onHide">
       </confirm>
     </div>
+    
+    <!--loadding弹出框-->
+	<loading :show="showLoading" is-show-mask :text="showText"></loading>
+		
 		
 	</div>
 	
@@ -109,10 +113,11 @@ import headerBack from "../../../components/header-back";
 import { Confirm,XImg,Divider,PopupPicker,Tab,TabItem,XTextarea } from "vux";
 import VueDB from "../../../util/vue-db/vue-db-long.js";
 import shopCarTool from "../../../util/shop-car-tool/index.js";
+import formatTime from "../../../util/formatTime/formatTime.js";
 import _ from 'lodash'
 
 var DB = new VueDB();
-
+var handler = null;
 export default{
 	name:"closeAccount",
 	data(){
@@ -123,16 +128,25 @@ export default{
 			value6: ['微信支付'],
 			showPhone:false,
 			showPhoneTitle:"更改自提电话",
-			formatDemoValue: ['01', '12'],
+			formatDemoValue: [],
+			ppAllYuyueTime:[], //所有预约时间
 			format: function (value, name) {
+				console.log(value)
+				if (value[1] == "closeDoor") {
+					return `${value[0]}`
+				}else{
 		        return `${value[0]}:${value[1]}`
-		     },
+		     }
+			},
 		    allGoods:[],
 		    textAreaValue:"",
 		    promotionId:null,
 		    promotionName:null,
 		    storeAddress:"shanghai",
 		    storePhone:"110",
+		    showLoading:false,
+		    showText:"数据加载中...",
+		    orderNo:null,
 		}
 	},
 	components:{
@@ -147,13 +161,91 @@ export default{
 	mounted:function(){
 		this.shopCar = new shopCarTool(this.$store);
 		
+		//初始化预约时间
+		this.initYuyueTime();
+		
 		this.queryPromotionByStoreNoNation(); //查询活动id
+		
+		this.initPayData(); //初始化支付
 		
 	},
 	methods:{
 		//展示规格end
 	    open(link){
 	    	this.$router.openPage(link);
+	    },
+	    initPayData(){
+     			 var _this = this;
+     		     handler = StripeCheckout.configure({
+					 key:'pk_test_ujKHOw9xZM2QYfJwDZIt890W',  //测试key
+     		         //key: 'pk_live_3aqw1J17VC1gcSxl29khgL3u',  //TODO:正式key,正式发布时替换
+     		        image: 'https://stripe.com/img/documentation/checkout/marketplace.png',
+     		        locale: 'auto',
+     		        token: function(token) {
+     		            // You can access the token ID with `token.id`.
+     		            // Get the token ID to your server-side code for use.
+     		            console.log(token)
+     		            //TODO:发起http请求，将token、amount、description等参数发送给服务器
+     		            // 接口地址/stripe/charge
+						var data={
+     		                token:token.id,
+							amount:_this.allGoods.allGDOrderPrice,
+							description:'商品信息',
+                            orderNum:_this.orderNo   //订单编号
+						}
+     		           _this.$http.post("/stripe/charge",data).then((res) => {
+     		               console.log(res)
+	     		            if(DB.getItem("localLang").toString() == "en"){
+								var ErrorMsg = res.data.usErrorMsg;
+							}else{
+								var ErrorMsg = res.data.cnErrorMsg;
+							}
+     		               if(res.status == 200 && res.data.rspCode == "00000") {
+								_this.$vux.toast.show({
+									text: "支付成功！",
+									type: "text",
+								})     		               	
+     		               }else{
+     		               		this.$vux.toast.show({
+									text: ErrorMsg,
+									type: "text",
+								})
+     		               }
+     					}).catch((res) => {
+     						console.log(res)
+     					})   		        
+     		        }
+     		    });     			
+	    	
+	    	    window.addEventListener('popstate', function() {
+			        handler.close();
+			    });
+	    	
+	    },
+	    //初始化预约时间
+	    initYuyueTime(){
+	    	var theTimeHour = [];
+	    	var theTimeMin = [];
+	    	for (var i = 9 ; i < 18 ; i++) {
+	    		var iHour = i < 10 ? "0"+i : i;
+	    		theTimeHour.push(iHour);
+	    	}
+	    	for (var j = 0 ; j <60 ; j++) {
+	    		var iMin = j < 10 ? "0"+j : j;
+	    		theTimeMin.push(iMin);
+	    	}
+	    	var nowHour = new Date().getHours() < 10 ? "0"+new Date().getHours() : new Date().getHours();
+//	    	console.log(nowHour)
+//	    	console.log(theTimeHour)
+//	    	console.log(theTimeMin)
+			if (theTimeHour.slice(0,theTimeHour.length -1).indexOf(nowHour) == -1) {
+				this.formatDemoValue.push("本店暂未开业！","closeDoor")
+			}else{
+				var theNowHour = theTimeHour.slice(theTimeHour.indexOf(nowHour) + 1)
+				console.log(theNowHour)
+				this.ppAllYuyueTime.push(theNowHour,theTimeMin);
+				this.formatDemoValue.push(theNowHour[0],theTimeMin[0])
+			}
 	    },
 		//模态框s
 	    onHide(){
@@ -195,20 +287,32 @@ export default{
 	    },
 	    //初始化订单
 	    initUserOrder(){
+	    		this.showLoading = true;
 				var telUserNo = DB.getItem("telUserNo").toJson();
 				var getAllShopCar = this.shopCar.getAll();
 				var listTeaOrderDetails = [];
 				for (var itemKey in getAllShopCar) {
 					for (var i =0; i < getAllShopCar[itemKey].itemGuige.length; i++) {
+						console.log(getAllShopCar[itemKey].itemGuige[i].initGuiGeSC)
 						for (var k = 0; k < getAllShopCar[itemKey].itemGuige[i].itemOneGuigeLen; k++) {
 							var pushGoods = {};
+							var oneStyleItemArr = [];
 							pushGoods.goodsId = getAllShopCar[itemKey].goodsId;
-							pushGoods.listTeaOrderDetailsAttr = [];
-							pushGoods.listTeaOrderDetailsAttr = getAllShopCar[itemKey].itemGuige[i].initGuiGeSC;
+							getAllShopCar[itemKey].itemGuige[i].iGAGAllGuige.split("、").forEach((oneStyleItem,osIndex)=>{
+								DB.getItem("allGoodsAttrs").toJson().forEach((agaItem,agiIndex)=>{
+										if (oneStyleItem == agaItem.attrName) {
+											oneStyleItemArr.push(agaItem);
+										}									
+								})
+								
+							})
+							pushGoods.listTeaOrderDetailsAttr = oneStyleItemArr;
 							listTeaOrderDetails.push(pushGoods)
 						}
 					}
 				}
+//				console.log(listTeaOrderDetails)
+				
 				var toPushData = {
 					userNo:telUserNo.userNo,
 					telephone:telUserNo.telephone,
@@ -219,13 +323,16 @@ export default{
 					listTeaOrderDetails:listTeaOrderDetails  //商品和其规格
 				};
 				
+				console.log("toPushData")
 				console.log(toPushData)
+				console.log(toPushData.listTeaOrderDetailsAttr)
 				
 				this.$http.post("/userOrderInfo/userOrderOper",toPushData).then((res) => {
 					console.log("/userOrderInfo/userOrderOper")
 					if(res.status == 200 && res.data.rspCode == "00000") {
 						console.log(res.data.data)
 						this.initOrderPage(res.data.data);
+						this.orderNo = res.data.data.orderNo;
 					}
 				}).catch((err) => {
 					console.log(err)
@@ -254,13 +361,23 @@ export default{
 				}
 				console.log(allGoodsDataPage)
 				this.allGoods = allGoodsDataPage;
+				this.showLoading = false;
 	    	
 	    },
 	    
 	    //提交订单
 	    updateAccount(){
-	    	console.log("12333")
+	    	var _this = this;
+	    	var theYuYueTime = formatTime.ftNoHMS(new Date()) +" "+ this.formatDemoValue[0] + ":" + this.formatDemoValue[1];
+	    	console.log(theYuYueTime)
 	    	
+     			 handler.open({
+     	            name: '素匠泰茶',
+     	            description: '商品信息',
+     	            currency: 'usd',
+     	            amount: _this.allGoods.allGDOrderPrice * 100   //TODO:金额，单位分，变量,需乘以100
+     	        });	  
+	  
 	    	
 	    }
 	}

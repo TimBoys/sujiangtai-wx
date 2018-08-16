@@ -5,7 +5,7 @@
 		<!--热门三种按钮-->
 		<div class="topFire_cont" v-show="detailFireSrc.length">
 			<div v-for="(tf_src) in topFire_src" class="tf_cell">
-				<section @click="open(tf_src.linkTo,tf_src.indexNo)">
+				<section @click="open(tf_src.linkTo,tf_src.indexNo,tf_src.isOrder)">
 					<x-img v-lazy="tf_src.src" :web-src="`${tf_src.src}?type=webp`" class="tf_img"></x-img>
 					<div class="tf_title">{{tf_src.title}}</div>
 				</section>
@@ -103,7 +103,9 @@
 				}, {
 					src: "../../../static/images/home/tf_yuding.png",
 					title: this.$t('home.topFire_src.title_ydxd'),
-					linkTo: "/classification"
+					linkTo: "/classification",
+					indexNo:0,
+					isOrder:"isOrder"
 				}],
 				//首页最热的三类的图标
 				detailFire_icon:["../../../static/images/home/fire_icon.png","../../../static/images/home/zan_icon.png","../../../static/images/home/crown_icon.png"],
@@ -202,9 +204,7 @@
 						storeNo:"D00005",
 						lang:"zh"
 				}}).then((res) => {
-//					console.log(res)
 						if(res.status == 200 && res.data.rspCode == "00000"){
-//							console.log(res.data.data.data)
 							this.banner = res.data.data.data;
 						}
 					}).catch((err) => {
@@ -307,12 +307,16 @@
 			//通用方法
 			
 			//初试化店铺数据end
-			open(link,indexNo) {
+			open(link,indexNo,isOrder) {
 				console.log(link)
 				console.log(indexNo)
 				if (indexNo) {
 					DB.setItem("judeFromHome",{indexNo:indexNo})
-				} else{
+				}
+				if (isOrder == "isOrder") {
+					DB.setItem("isOrder","isOrder")
+				}else{
+					DB.setItem("isOrder","noOrder")
 				}
 				this.$router.openPage(link);
 			},

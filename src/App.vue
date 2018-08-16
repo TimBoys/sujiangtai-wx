@@ -34,7 +34,9 @@
 
 <script>
 import Rem from '@/assets/js/rem';
+import VueDB from './util/vue-db/vue-db-long'
 new Rem();
+var DB = new VueDB();
 
 export default {
   name: 'App',
@@ -83,8 +85,9 @@ export default {
 			return this.nowUrl.indexOf(name) != -1;
 		},
 		open(link){
-
-			this.$router.openPage(link)
+			DB.setItem("isOrder","noOrder");
+			this.$router.openPage(link);
+			
 		}
 	}
 }

@@ -19,8 +19,8 @@
 								<span>{{target.className}}</span>
 							</p>
 							<div class="shop-item-wrap clear">
-								<div class="shop-item" v-for="(goods,index) in target.goods" @click="showModel(goods)" :key="index">
-									<x-img v-lazy="goods.goodsPictureRound" alt=""></x-img>
+								<div class="shop-item" v-for="(goods,index) in target.goods"  :key="index">
+									<x-img v-lazy="goods.goodsPictureRound" alt="" @click.native="showModel(goods)"></x-img>
 									<div class="shop-detail">
 										<div class="shopd-title">{{goods.goodsName}}</div>
 										<div class="shopd-detail">
@@ -201,6 +201,8 @@
 		methods: {
 			showModel() {
 				//this.shopCar.removeAll();
+				console.log(123)
+				console.log(this.shopCar.getAll())
 			},
 			//初始化轮播
 			initGetCarousel() {
@@ -218,6 +220,10 @@
 				}).catch((err) => {
 					console.log(err)
 				})
+				
+				console.log("DB.getItem(isOrder).toString()")
+				console.log(DB.getItem("isOrder").toString())
+				
 			},
 
 			//初试化店铺数据
@@ -233,7 +239,11 @@
 				}).then((res) => {
 					console.log(res.data.data.data)
 					if(res.status == 200 && res.data.rspCode == "00000") {
+						//存储所有的规格数据
+						DB.setItem("allGoodsAttrs",JSON.stringify(res.data.data.data[0].goods[0].goodsAttrs));
+						
 						//合并购物车和初始化的数据
+						console.log("//合并购物车和初始化的数据")
 						this.dataInitItem = res.data.data.data;
 						//				this.concatGwcInit();
 						//				//初始化右侧菜单滚动 
@@ -345,7 +355,7 @@
 
 					});
 
-				}, 100);
+				}, 200);
 			},
 
 			//购物撤弹出框
@@ -472,12 +482,16 @@
 				console.log("add")
 				console.log(item)
 				console.log(fromGuige)
-				this.shopCar.add(item);
-				// 初始化购物车
-				this.initGwc();
-				if(fromGuige) {
-					this.thisGuiGeIsInGwc(fromGuige, item.goodsItem.goodsId);
-				}
+				console.log(this.shopCar.getAll())
+				setTimeout(()=>{
+					this.shopCar.add(item);
+					
+					// 初始化购物车
+					this.initGwc();
+					if(fromGuige) {
+						this.thisGuiGeIsInGwc(fromGuige, item.goodsItem.goodsId);
+					}
+				},200)
 
 			},
 			//购物车删除商品
