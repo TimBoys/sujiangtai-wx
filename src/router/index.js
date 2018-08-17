@@ -105,5 +105,12 @@ export default new Router({
 		       require(['@/views/forgetPassword/forgetPassword.vue'], resolve)
 		    }
 		},
+		{
+			path: '/mineOrder',
+			name: 'mineOrder',
+		    component(resolve){
+		       require(['@/views/mineOrder/mineOrder.vue'], resolve)
+		    }
+		},
 	]
 })

@@ -19,7 +19,7 @@
 						<cell title="自取电话" value-align="left" primary="content"  :value="storePhone">
 							 <!--@click.native="showPhone = true"-->
 						</cell>
-						<popup-picker title="时间" v-model="formatDemoValue" value-text-align="left" :data="ppAllYuyueTime" :display-format="format"></popup-picker>
+						<popup-picker title="预约时间" v-show="isShowOrderTime" v-model="formatDemoValue" value-text-align="left" :data="ppAllYuyueTime" :display-format="format"></popup-picker>
 						<popup-picker title="支付方式" :data="list2" v-model="value6" value-text-align="left" ></popup-picker>
 						
 				</group>	
@@ -128,8 +128,9 @@ export default{
 			value6: ['微信支付'],
 			showPhone:false,
 			showPhoneTitle:"更改自提电话",
-			formatDemoValue: [],
+			formatDemoValue: [],				//默认预约时间
 			ppAllYuyueTime:[], //所有预约时间
+			isShowOrderTime:false,
 			format: function (value, name) {
 				console.log(value)
 				if (value[1] == "closeDoor") {
@@ -160,7 +161,10 @@ export default{
 	},
 	mounted:function(){
 		this.shopCar = new shopCarTool(this.$store);
-		
+	    this.showLoading = true;	
+	    setTimeout(()=>{
+	    	this.showLoading = false;
+	    },20000)
 		//初始化预约时间
 		this.initYuyueTime();
 		
@@ -189,24 +193,28 @@ export default{
      		            // 接口地址/stripe/charge
 						var data={
      		                token:token.id,
-							amount:_this.allGoods.allGDOrderPrice,
-							description:'商品信息',
+							amount:_this.allGoods.allGDOrderPrice * 100,
+							description:'订单信息',
                             orderNum:_this.orderNo   //订单编号
 						}
      		           _this.$http.post("/stripe/charge",data).then((res) => {
-     		               console.log(res)
-	     		            if(DB.getItem("localLang").toString() == "en"){
-								var ErrorMsg = res.data.usErrorMsg;
-							}else{
-								var ErrorMsg = res.data.cnErrorMsg;
-							}
+     		              console.log(res)
+     		            if(DB.getItem("localLang").toString() == "en"){
+							var ErrorMsg = res.data.usErrorMsg;
+						}else{
+							var ErrorMsg = res.data.cnErrorMsg;
+						}
      		               if(res.status == 200 && res.data.rspCode == "00000") {
+     		               		_this.finishPayModfiyOrder();
+     		               		//青春店铺缓存
+								_this.shopCar.removeAll();
+								
 								_this.$vux.toast.show({
 									text: "支付成功！",
 									type: "text",
 								})     		               	
      		               }else{
-     		               		this.$vux.toast.show({
+     		               		_this.$vux.toast.show({
 									text: ErrorMsg,
 									type: "text",
 								})
@@ -224,6 +232,15 @@ export default{
 	    },
 	    //初始化预约时间
 	    initYuyueTime(){
+	    	//是否为预约单子
+			console.log("DB.getItem(isOrder).toString()")
+			console.log(DB.getItem("isOrder").toString())
+			if (DB.getItem("isOrder").toString() == "isOrder") {
+				this.isShowOrderTime = true;
+			}else{
+				this.isShowOrderTime = false;
+			}
+			
 	    	var theTimeHour = [];
 	    	var theTimeMin = [];
 	    	for (var i = 9 ; i < 18 ; i++) {
@@ -246,7 +263,8 @@ export default{
 				this.ppAllYuyueTime.push(theNowHour,theTimeMin);
 				this.formatDemoValue.push(theNowHour[0],theTimeMin[0])
 			}
-	    },
+	   },
+		
 		//模态框s
 	    onHide(){
 	    	console.log("关闭模态框")
@@ -287,7 +305,6 @@ export default{
 	    },
 	    //初始化订单
 	    initUserOrder(){
-	    		this.showLoading = true;
 				var telUserNo = DB.getItem("telUserNo").toJson();
 				var getAllShopCar = this.shopCar.getAll();
 				var listTeaOrderDetails = [];
@@ -364,20 +381,44 @@ export default{
 				this.showLoading = false;
 	    	
 	    },
-	    
+	    //更改订单
+	    finishPayModfiyOrder(){
+		    	if (this.isShowOrderTime) {
+		    		var theOrderTime = formatTime.ftNoHMS(new Date()) +" "+ this.formatDemoValue[0] + ":" + this.formatDemoValue[1] + ":00";
+		    	} else{
+					var theOrderTime = "";	    		
+		    	}
+		    	console.log("theOrderTime")
+		    	console.log(theOrderTime)
+		    	var data = {
+		    		orderTime:theOrderTime,
+					orderNo:this.orderNo,
+					remark:this.textAreaValue,
+				}
+	    	
+				this.$http.get("/userOrderInfo/finishPayModfiyOrder",{params:data}).then((res) => {
+					console.log("/userOrderInfo/finishPayModfiyOrder")
+					console.log(res.data)
+					if(res.status == 200 && res.data.rspCode == "00000") {
+						this.$router.openPage("/mineOrder");
+					}
+				}).catch((err) => {
+					console.log(err)
+				})		    	
+	    	
+	    	
+	    },
 	    //提交订单
 	    updateAccount(){
 	    	var _this = this;
-	    	var theYuYueTime = formatTime.ftNoHMS(new Date()) +" "+ this.formatDemoValue[0] + ":" + this.formatDemoValue[1];
-	    	console.log(theYuYueTime)
-	    	
-     			 handler.open({
-     	            name: '素匠泰茶',
-     	            description: '商品信息',
-     	            currency: 'usd',
-     	            amount: _this.allGoods.allGDOrderPrice * 100   //TODO:金额，单位分，变量,需乘以100
-     	        });	  
-	  
+			if(_this.allGoods.allGDOrderPrice){
+ 			 handler.open({
+ 	            name: '素匠泰茶',
+ 	            description: '商品信息',
+ 	            currency: 'usd',
+ 	            amount: _this.allGoods.allGDOrderPrice * 100   //TODO:金额，单位分，变量,需乘以100
+ 	        });	  
+			}
 	    	
 	    }
 	}

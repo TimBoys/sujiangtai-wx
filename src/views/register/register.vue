@@ -123,9 +123,10 @@
 		
 			//根据手机号码查找用户，移动端
 			findUserByTelephoneInWeb() {
-				this.$http.get("/userRegister/findUserByTelephone", {
+				this.$http.get("/userRegister/findUserByWeixinOpenid", {
 					params: {
-						telephone: this.register.telephone
+						telephone: this.register.telephone,
+						weixinOpenid:DB.getItem("weixinOpenid").toString()
 					}
 				}).then((res) => {
 					if(res.status == 200 && res.data.rspCode == "00000") {

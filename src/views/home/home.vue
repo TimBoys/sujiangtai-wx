@@ -29,7 +29,7 @@
 			<div class="detailFire_cont">
 				<div v-for="(detailFS,index) in detailFireSrc" class="df_cell">
 					<div class="df_header">
-						<x-img  v-lazy="detailFS.detailFireIcon"  class="dfh_img"></x-img>
+						<x-img  v-lazy="detailFS.classLogo"  class="dfh_img"></x-img>
 						<p class="dfh_title">{{detailFS.className}} ——</p>
 					</div>
 					<div class="df_body">
@@ -52,6 +52,7 @@
 <script>
 	import VueDB from '../../util/vue-db/vue-db-long'
 	import swiper from '../../components/swiper';
+	import shopCarTool from "../../util/shop-car-tool/index.js";
 	import { XImg, Flexbox, FlexboxItem, Actionsheet  } from 'vux';
 
 	var DB = new VueDB();
@@ -108,11 +109,11 @@
 					isOrder:"isOrder"
 				}],
 				//首页最热的三类的图标
-				detailFire_icon:["../../../static/images/home/fire_icon.png","../../../static/images/home/zan_icon.png","../../../static/images/home/crown_icon.png"],
 				detailFireSrc:[],
 			}
 		},
 		mounted: function() {
+			this.shopCar = new shopCarTool(this.$store);
 			//初始化获取本地语言
 			this.initLocalLang();
 			//初始化轮播图
@@ -122,7 +123,7 @@
 			//初始化店铺
 			this.initGetStoreId();
 			//初始化店铺数据
-			this.initStoreData();
+//			this.initStoreData();
 
 		},
 		methods: {
@@ -138,11 +139,9 @@
 					this.$http.get("/userInfoLogin", {params:{
 						code: resultCode
 					}}).then((res) => {
-						console.log(res)
+//						console.log(res)
 						var weixinOpenid = null;
 						DB.setItem("weixinOpenid",weixinOpenid);
-						//check 用户编号
-						this.findUserByWeixinOpenid();
 					}).catch((err) => {
 						console.log(err)
 					})				
@@ -166,27 +165,6 @@
 //					console.log(err)
 //				})
 			},
-			//根据微信号查询用户
-			findUserByWeixinOpenid() {
-				this.$http.get("/userRegister/findUserByWeixinOpenid", {
-					params: {
-						telephone: DB.getItem("weixinOpenid").toString()
-					}
-				}).then((res) => {
-					if(res.status == 200 && res.data.rspCode == "00000") {
-						console.log(res)
-						console.log("根据微信号查询用户")
-						if(res.data.data) {
-							var telUserNo = {telephone:"13888888888",usrNo:"123"}
-							DB.setItem("telUserNo",telUserNo);
-						} else {
-							
-						}
-					}
-				}).catch((err) => {
-					console.log(err)
-				})
-			},				
 			//初始化获取本地语言
 			initLocalLang() {
 				if(!DB.getItem("localLang").toString()) {
@@ -243,12 +221,15 @@
 									_this.menusAddr["storeName_"+item.storeNo]= item.storeName;
 								})
 								DB.setItem("storeList",res.data.data.data);
+								//初始化店铺数据
+								this.initStoreData();
 						}
 					}).catch((err) => {
 						console.log(err)
 					})	
 
 			},
+			
 			selectAddr(){
 				this.isShowAs = true;
 			},
@@ -260,7 +241,9 @@
 //				console.log(selectVal[1]);
 				if(selectVal[1] != DB.getItem("storeNo").toString()){
 					DB.setItem("storeNo",selectVal[1]);
-					this.localAddr.localName = val;				
+					this.localAddr.localName = val;		
+					//青春店铺缓存
+					this.shopCar.removeAll();
 					window.location.reload();
 				}
 				}
@@ -276,17 +259,15 @@
 						lang:DB.getItem("localLang").toString()
 					}
 				}).then((res) => {
-					console.log(res.data.data.data)
+						console.log("/userLogin/getClassGoods")
+						console.log(res)
+						console.log(res.data.data.data)
 						if(res.status == 200 && res.data.rspCode == "00000"){
 							this.detailFireSrc = res.data.data.data;
-							this.detailFireSrc.map(function(item,index){
-								item.detailFireIcon = _this.detailFire_icon[index]
-							})
 						}
 				}).catch((err) => {
 					console.log(err)
 				})				
-				
 			},
 			//切换语言
 			changeLang(item) {
@@ -302,7 +283,8 @@
 			//点击商品跳转到所有商品并弹出规格
 			selectThisGoods(item){
 				console.log(item)
-				
+				DB.setItem("selectThisGoods",JSON.stringify(item))
+				this.$router.openPage("/classification");
 			},
 			//通用方法
 			
@@ -318,6 +300,7 @@
 				}else{
 					DB.setItem("isOrder","noOrder")
 				}
+				DB.setItem("selectThisGoods",JSON.stringify({}));
 				this.$router.openPage(link);
 			},
 		},

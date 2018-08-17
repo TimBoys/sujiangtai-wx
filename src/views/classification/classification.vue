@@ -14,7 +14,7 @@
 				</div>
 				<div class="right-box absolute scroll-box-y" ref="rightView">
 					<ul>
-						<li class="item" v-for="(target,index) in dataItem" :key="index">
+						<li class="item rightItemView" v-for="(target,index) in dataItem" :key="index">
 							<p class="title">
 								<span>{{target.className}}</span>
 							</p>
@@ -200,7 +200,6 @@
 		},
 		methods: {
 			showModel() {
-				//this.shopCar.removeAll();
 				console.log(123)
 				console.log(this.shopCar.getAll())
 			},
@@ -220,9 +219,7 @@
 				}).catch((err) => {
 					console.log(err)
 				})
-				
-				console.log("DB.getItem(isOrder).toString()")
-				console.log(DB.getItem("isOrder").toString())
+
 				
 			},
 
@@ -245,11 +242,12 @@
 						//合并购物车和初始化的数据
 						console.log("//合并购物车和初始化的数据")
 						this.dataInitItem = res.data.data.data;
-						//				this.concatGwcInit();
-						//				//初始化右侧菜单滚动 
+						//初始化右侧菜单滚动 
 						this.initScroll();
 						// 初始化购物车
 						this.initGwc();
+						//是否是从首页过来的规格
+						this.selectThisGoods();
 					}
 				}).catch((err) => {
 					console.log(err)
@@ -304,7 +302,6 @@
 			// 左侧菜单跳转
 			jumpToTarget(index) {
 				this.$refs.rightView.scrollTop = this.offset[index];
-				console.log(this.$refs.rightView.scrollTop)
 				setTimeout(() => {
 					this.active = index;
 				}, 10)
@@ -317,11 +314,14 @@
 				};
 
 				setTimeout(() => {
+					this.offset.push(0);
 					_.forEach(
-						this.$refs.rightView.querySelectorAll(".right-box>ul>.item"),
+						this.$refs.rightView.querySelectorAll(".rightItemView"),
 						(value, key) => {
-							// console.dir(value.offsetHeight)
-							this.offset.push(value.offsetHeight * key + (11 * key));
+//							console.dir(value)
+//							console.log(key)
+							this.offset.push(this.offset[key] + value.offsetHeight);
+//							this.offset.push(value.offsetHeight * key + (11 * key));
 						}
 					);
 					var mySort = this.offset;
@@ -370,8 +370,18 @@
 					})
 				}
 			},
+			
+			//从首页带过来的规格
+			selectThisGoods(){
+				console.log("DB.getItem(selectThisGoods).toJson()")
+				console.log(DB.getItem("selectThisGoods").toJson())
+				if(DB.getItem("selectThisGoods").toJson().storeNo){
+					this.showGuiGe(DB.getItem("selectThisGoods").toJson());
+				}
+			},
 			//显示规格
 			showGuiGe(goodsItem) {
+				console.log("showGuiGe")
 				console.log(goodsItem);
 				if(goodsItem.goodsAttrs.length) {
 					//第一遍获取商品的所有规格种类
@@ -483,15 +493,13 @@
 				console.log(item)
 				console.log(fromGuige)
 				console.log(this.shopCar.getAll())
-				setTimeout(()=>{
-					this.shopCar.add(item);
-					
-					// 初始化购物车
-					this.initGwc();
-					if(fromGuige) {
-						this.thisGuiGeIsInGwc(fromGuige, item.goodsItem.goodsId);
-					}
-				},200)
+				this.shopCar.add(item);
+				
+				// 初始化购物车
+				this.initGwc();
+				if(fromGuige) {
+					this.thisGuiGeIsInGwc(fromGuige, item.goodsItem.goodsId);
+				}
 
 			},
 			//购物车删除商品
@@ -514,16 +522,6 @@
 			},
 			//去结算判断是否用户是注册
 			toAccount() {
-				//  	    this.$router.openPage("/closeAccount");
-				//微信登录
-				//			this.$http.get("/findUserByWeixinOpenid", {params:{
-				//				weixinOpenid: DB.getItem("weixinOpenid").toString()
-				//			}}).then((res) => {
-				//				console.log(res)
-				//			}).catch((err) => {
-				//				console.log(err)
-				//			})
-
 				console.log(DB.getItem("telUserNo").toJson())
 				//电话，用户编号都有去结算
 				if(DB.getItem("telUserNo").toJson()) {
@@ -532,7 +530,7 @@
 					//电话，用户编号没有去注册
 					this.$router.openPage("/register");
 				}
-
+				DB.setItem("selectThisGoods",JSON.stringify({}));
 			},
 			//绑定
 

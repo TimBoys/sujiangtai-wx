@@ -86,6 +86,7 @@ export default {
 		},
 		open(link){
 			DB.setItem("isOrder","noOrder");
+			DB.setItem("selectThisGoods",JSON.stringify({}));
 			this.$router.openPage(link);
 			
 		}
