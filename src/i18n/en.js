@@ -10,6 +10,66 @@ module.exports = {
       		title_zpty:"Signature cocktails",
       		title_ydxd:"Booking order",
       	}
+      },
+      classification:{
+      	headTitle:"All the goods",
+      	seleStyle:"Choose specifications",
+      	yixuanGoods:"The selected items",
+      	empltyGwc:"emplty",
+      	addCart:"Add Cart",
+      	totalPrice:"Total Price",
+      	toSettleAccounts:"To Settle Accounts",
+      	PleaseSelectGoods:"Please Select Goods",
+      	TheSecondItemHalfOff:"The second item is half off",
+      	inventory:"inventory"
+      },
+      closeAccount:{
+      	  submitOrder:"Submit order",
+      	  ToStoreComeUndone:"To store come undone",
+      	  DeliveryDistribution:"Delivery and distribution",
+      	  MustAddress:"Must Address",
+      	  Invitethephone:"Invite The Phone",
+      	  appointmentTime:"Appointment time", 
+      	  modeOfPayment:"mode Of Payment",
+      	  originalPrice:"original price",
+      	  discounts:"discounts",
+      	  theSellerMessage:"Leave a message to the seller",
+      	  subtotal:"subtotal",
+      	  holdSay:"Write down what you want to say to the seller",
+      	  commodityInformation:"commodity Information"
+      },
+      mine:{
+      	  VIPEnjoyMoreDiscounts:"VIP Enjoy more discounts",
+      	  favorable:"favorable",
+      		mineOrder:"mine Order",
+      		membershipCard:"membership Card",
+      		systematicNotification:"systematic Notification",
+      		helpCenter:"help Center"      		
+      	
+      },
+      login:{
+      	usersLogin:"users Login",
+      	holdPhone:"mobile phone number",
+      	holdPassword:"password",
+      	newUserReg:"New user? Please register",
+      	forgetPassword:"forget Password",
+      	login:"login"
+      },
+      register:{
+      	usersRegister:"users Register",
+      	holdPhone:"mobile phone number",
+      	holdPassword:"password",
+      	inputVerificationCode:"verification Code",
+      	newUserReg:"New user? Please register",
+      	login:"login",
+      	getCode:"get Code",
+      	regain:"regain",
+      	RegisteredTologin:"Registered To login",
+      },
+      forgetPassword:{
+      	forgetPassword:"forget Password"
       }
+      
+      
     }
 

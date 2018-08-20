@@ -7,31 +7,31 @@
 				<div>素匠泰茶</div>
 			</div>
 			<div class="sjtlc-title">
-				用户注册
+				{{$t('register.usersRegister')}}
 			</div>
 			<div class="sjtlc-cont">
 				<group class="sjtlc-group">
-					<x-input placeholder="输入手机号码" placeholder-align="left" class="gInput" v-model="register.telephone">
+					<x-input :placeholder="holdPhone" placeholder-align="left" class="gInput" v-model="register.telephone">
 
 					</x-input>
 				</group>
 				<group class="sjtlc-group">
-					<x-input placeholder="输入验证码" placeholder-align="left" class="gInput" v-model="register.identifyCode">
-						<x-button slot="right" type="primary" mini @click.native="getMsgCode" v-if="!isMsgShow">获取验证码</x-button>
+					<x-input :placeholder="inputVerificationCode" placeholder-align="left" class="gInput" v-model="register.identifyCode">
+						<x-button slot="right" type="primary" mini @click.native="getMsgCode" v-if="!isMsgShow">{{$t('register.getCode')}}</x-button>
 						<x-button slot="right" class="countDown" type="default" mini v-else disabled>
-							重新获取({{countDown}})
+							{{$t('register.regain')}}({{countDown}})
 						</x-button>
 					</x-input>
 				</group>
 				<group class="sjtlc-group">
-					<x-input placeholder="输入密码" class="gInput" v-model="register.passwords"></x-input>
+					<x-input :placeholder="holdPassword" class="gInput" v-model="register.passwords"></x-input>
 				</group>
 				<div class="sjtlc-foot">
-					<div @click="open('/login')">已注册？去登录</div>
+					<div @click="open('/login')">{{$t('register.RegisteredTologin')}}</div>
 				</div>
 			</div>
 			<div class="sjtlc-btn">
-				<x-button class="login-btn" type="primary" @click.native="userRegister()">登录</x-button>
+				<x-button class="login-btn" type="primary" @click.native="userRegister()">{{$t('login.login')}}</x-button>
 			</div>
 
 		</div>
@@ -50,6 +50,10 @@
 		name: "register",
 		data() {
 			return {
+				holdPhone:this.$t('register.holdPhone'),
+				holdPassword:this.$t('register.holdPassword'),				
+				inputVerificationCode:this.$t('register.inputVerificationCode'),
+				
 				isMsgShow: false,
 				countDown: 120,
 				sjtLogo: "../../../static/images/mine/sjtLogin.jpg",
@@ -123,10 +127,9 @@
 		
 			//根据手机号码查找用户，移动端
 			findUserByTelephoneInWeb() {
-				this.$http.get("/userRegister/findUserByWeixinOpenid", {
+				this.$http.get("/userRegister/findUserByTelephone", {
 					params: {
 						telephone: this.register.telephone,
-						weixinOpenid:DB.getItem("weixinOpenid").toString()
 					}
 				}).then((res) => {
 					if(res.status == 200 && res.data.rspCode == "00000") {
@@ -134,7 +137,6 @@
 						console.log("根据手机号码查找用户移动端")
 						if(res.data.data) {
 							//手机号码查询有参数的，表示这个用户已经存在，提示去登录，并
-							console.log("根据手机号码查找用户移动端11")
 							this.$vux.toast.show({
 								text: "当前手机号码已经注册，请去出登录！",
 								type: "text",
@@ -144,7 +146,6 @@
 							this.countDown = 120;
 							return false;
 						} else {
-							console.log("根据手机号码查找用户移动端22")
 							//注册
 							this.isUserInsert = true;
 							//发送短信
@@ -157,9 +158,10 @@
 			},
 			//根据手机号码查找用户，微商城端
 			findUserByTelephoneInWx() {
-				this.$http.get("/userRegister/findUserByTelephone", {
+				this.$http.get("/userRegister/findUserByWeixinOpenid", {
 					params: {
-						telephone: this.register.telephone
+						telephone: this.register.telephone,
+						weixinOpenid:DB.getItem("weixinOpenid").toString()
 					}
 				}).then((res) => {
 					if(res.status == 200 && res.data.rspCode == "00000") {

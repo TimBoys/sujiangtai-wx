@@ -7,31 +7,31 @@
 				<div>素匠泰茶</div>
 			</div>
 			<div class="sjtlc-title">
-				忘记密码
+				{{$t('forgetPassword.forgetPassword')}}
 			</div>
 			<div class="sjtlc-cont">
 				<group class="sjtlc-group">
-					<x-input placeholder="输入手机号码" placeholder-align="left" class="gInput" v-model="register.telephone">
+					<x-input :placeholder="holdPhone" placeholder-align="left" class="gInput" v-model="register.telephone">
 
 					</x-input>
 				</group>
 				<group class="sjtlc-group">
-					<x-input placeholder="输入验证码" placeholder-align="left" class="gInput" v-model="register.identifyCode">
-						<x-button slot="right" type="primary" mini @click.native="getMsgCode" v-if="!isMsgShow">获取验证码</x-button>
+					<x-input :placeholder="inputVerificationCode" placeholder-align="left" class="gInput" v-model="register.identifyCode">
+						<x-button slot="right" type="primary" mini @click.native="getMsgCode" v-if="!isMsgShow">{{$t('register.getCode')}}</x-button>
 						<x-button slot="right" class="countDown" type="default" mini v-else disabled>
-							重新获取({{countDown}})
+							{{$t('register.regain')}}({{countDown}})
 						</x-button>
 					</x-input>
 				</group>
 				<group class="sjtlc-group">
-					<x-input placeholder="输入密码" class="gInput" v-model="register.passwords"></x-input>
+					<x-input :placeholder="holdPassword" class="gInput" v-model="register.passwords"></x-input>
 				</group>
 				<div class="sjtlc-foot">
-					<div @click="open('/login')">有密码？去登录</div>
+					<div @click="open('/login')">{{$t('register.RegisteredTologin')}}</div>
 				</div>
 			</div>
 			<div class="sjtlc-btn">
-				<x-button class="login-btn" type="primary" @click.native="userRegister()">登录</x-button>
+				<x-button class="login-btn" type="primary" @click.native="userRegister()">{{$t('login.login')}}</x-button>
 			</div>
 
 		</div>
@@ -47,21 +47,27 @@
 	var DB = new VueDB();
 
 	export default {
-		name: "forgetPassword",
+		name: "register",
 		data() {
 			return {
+				holdPhone:this.$t('register.holdPhone'),
+				holdPassword:this.$t('register.holdPassword'),				
+				inputVerificationCode:this.$t('register.inputVerificationCode'),
+				
 				isMsgShow: false,
 				countDown: 120,
 				sjtLogo: "../../../static/images/mine/sjtLogin.jpg",
 				sjtLogo2: "../../../static/images/mine/circleLogo.png",
 				iconType: '',
+				//请求参数
 				register: {
-					telephone: "",
-					identifyCode: "",
-					passwords: ""
+					telephone: null,
+					identifyCode:null,
+					passwords: null
 				},
 				isUserInsert: true,
 				comparePollCodeData:null,
+				userNo:null, //用户编码
 			}
 		},
 		components: {
@@ -72,7 +78,7 @@
 		},
 		methods: {
 			initData() {
-				
+
 			},
 			open(link) {
 				this.$router.openPage(link);
@@ -91,10 +97,13 @@
 					}, 1000)
 
 					//判断是绑定还是插入
-					this.findUserByTelephone();
-					//发送短信
-					this.createPollCode();
-					
+					if (DB.getItem("weixinOpenid").toString()) {
+						//根据微信号查询用户能绑定
+						this.findUserByTelephoneInWx();
+					}else{
+						//根据手机号查询用户不能绑定
+						this.findUserByTelephoneInWeb();
+					}
 				} else {
 					this.$vux.toast.show({
 						text: "请填写手机号！",
@@ -114,31 +123,66 @@
 					this.comparePollCode();
 
 				}
-
 			},
-			//根据手机号码查找用户
-			findUserByTelephone() {
-				console.log("findUserByTelephone")
+		
+			//根据手机号码查找用户，移动端
+			findUserByTelephoneInWeb() {
 				this.$http.get("/userRegister/findUserByTelephone", {
 					params: {
-						telephone: this.register.telephone
+						telephone: this.register.telephone,
 					}
 				}).then((res) => {
 					if(res.status == 200 && res.data.rspCode == "00000") {
-//						console.log(res)
-						console.log("根据手机号码查找用户")
+						console.log(res.data.data)
+						console.log("根据手机号码查找用户移动端")
 						if(res.data.data) {
-							//插入
-							this.isUserInsert = false;
+							//手机号码查询有参数的，表示这个用户已经存在，提示去登录，并
+							this.$vux.toast.show({
+								text: "当前手机号码已经注册，请去出登录！",
+								type: "text",
+							})
+							clearInterval(intervalTime);
+							this.isMsgShow = false;
+							this.countDown = 120;
+							return false;
 						} else {
 							//注册
 							this.isUserInsert = true;
+							//发送短信
+							this.createPollCode();
 						}
 					}
 				}).catch((err) => {
 					console.log(err)
 				})
 			},
+			//根据手机号码查找用户，微商城端
+			findUserByTelephoneInWx() {
+				this.$http.get("/userRegister/findUserByWeixinOpenid", {
+					params: {
+						telephone: this.register.telephone,
+						weixinOpenid:DB.getItem("weixinOpenid").toString()
+					}
+				}).then((res) => {
+					if(res.status == 200 && res.data.rspCode == "00000") {
+						console.log(res.data.data)
+						console.log("根据手机号码查找用户微商城端")
+						this.userNo = res.data.data.userNo;
+						if(res.data.data) {
+							//手机号码查询有参数的，表示这个用户已经存在，提示去登录，并
+							this.isUserInsert = false;
+						} else {
+							//注册
+							this.isUserInsert = true;
+							//发送短信
+						}
+						this.createPollCode();
+					}
+				}).catch((err) => {
+					console.log(err)
+				})
+			},			
+			
 			//发送短信息msg
 			createPollCode() {
 				this.$http.get("/userRegister/createPollCode", {
@@ -146,7 +190,6 @@
 						telephone: this.register.telephone
 					}
 				}).then((res) => {
-//					console.log(res)
 					console.log("发送短信成功");
 					if(res.status == 200) {
 						console.log(res.data)
@@ -170,55 +213,91 @@
 					identifyCode: this.register.identifyCode
 				}).then((res) => {
 					console.log("比较验证码成功");
-					console.log(res)
 					console.log(res.data)
 					if(res.status == 200){
-						switch(res.data){
-							case 1:
+						if(DB.getItem("localLang").toString() == "en"){
+							var ErrorMsg = res.data.usErrorMsg;
+						}else{
+							var ErrorMsg = res.data.cnErrorMsg;
+						}
+						switch(res.data.rspCode){
+							case "00000":
 								this.comparePollCodeData = 1;
 							break;
-							case 0:
+							case "00008":
 								this.$vux.toast.show({
-									text: "输入验证码错误！",
+									text: ErrorMsg,
 									type: "text",
 								})
 							break;
-							case 98:
+							default:
 								this.$vux.toast.show({
-									text: "输入验证码错误！",
+									text: "server error！",
 									type: "text",
 								})
-							break;								
-							case 99:
-								this.$vux.toast.show({
-									text: "输入验证码已经过期，请重新输入！",
-									type: "text",
-								})
-							break;								
+							break;
 						}
 					//验证码正确
 					console.log(this.comparePollCodeData)
 					if(this.comparePollCodeData){
-						if (this.isUserInsert) {
-							this.insertTel();
-						}else{
-							this.bindOpenidTel();
-						}
+						//忘记密码
+						this.modifyUserPassword();
+//						//是插入用户
+//						if (this.isUserInsert) {
+//							this.insertTel();
+//						//是绑定用户
+//						}else{
+//							this.bindOpenidTel();
+//						}
 					}
 					}
 				}).catch((err) => {
 					console.log(err)
 				})
 			},
+			//修改密码
+			modifyUserPassword(){
+				this.$http.post("/userRegister/modifyUserPassword", {
+//					userNo:this.userNo,
+					telephone: this.register.telephone,
+					userPassword: this.register.passwords,
+//					weixinOpenid: DB.getItem("weixinOpenid").toString()
+				}).then((res) => {
+					console.log(res)
+					if(res.status == 200 && res.data.rspCode == "00000"){
+								this.$vux.toast.show({
+									text: "登录成功！",
+									type: "text",
+								})
+								this.findUserByTelephoneEnd();
+								setTimeout(()=>{
+									this.$router.openPage("/closeAccount");
+								},1000)
+					}
+				}).catch((err) => {
+					console.log(err)
+				})				
+			},
+			
 			//注册用户
 			bindOpenidTel() {
 				this.$http.post("/userRegister/bindOpenidTel", {
-					userNo:this.register.userNo,
+					userNo:this.userNo,
 					telephone: this.register.telephone,
 					userPassword: this.register.passwords,
 					weixinOpenid: DB.getItem("weixinOpenid").toString()
 				}).then((res) => {
 					console.log(res)
+					if(res.status == 200 && res.data.rspCode == "00000"){
+//								this.$vux.toast.show({
+//									text: "登录成功！",
+//									type: "text",
+//								})
+//								this.findUserByTelephoneEnd();
+//								setTimeout(()=>{
+//									this.$router.openPage("/closeAccount");
+//								},1000)
+					}
 				}).catch((err) => {
 					console.log(err)
 				})
@@ -228,13 +307,45 @@
 				this.$http.post("/userRegister/insert", {
 					telephone: this.register.telephone,
 					userPassword: this.register.passwords,
-					weixinOpenid: DB.getItem("weixinOpenid").toString()
+					weixinOpenid: DB.getItem("weixinOpenid").toString(),
+					userName:"000"
 				}).then((res) => {
 					console.log(res)
+					if(res.status == 200 && res.data.rspCode == "00000"){
+								this.$vux.toast.show({
+									text: "登录成功！",
+									type: "text",
+								})
+								this.findUserByTelephoneEnd();
+								setTimeout(()=>{
+									this.$router.openPage("/closeAccount");
+								},1000)
+					}
 				}).catch((err) => {
 					console.log(err)
 				})
-			}
+			},
+			//根据手机号码查找用户,确定用户已经存在了，存储userNo,telephone
+			findUserByTelephoneEnd() {
+				this.$http.get("/userRegister/findUserByTelephone", {
+					params: {
+						telephone: this.register.telephone
+					}
+				}).then((res) => {
+					if(res.status == 200 && res.data.rspCode == "00000") {
+						console.log("根据手机号码查找用户,确定用户已经存在了，存储userNo,telephone")
+						console.log(res.data.data)
+						if(res.data.data) {
+							var telUserNo = {telephone:res.data.data.telephone,userNo:res.data.data.userNo}
+							console.log("telUserNo")
+							console.log(telUserNo)
+							DB.setItem("telUserNo",telUserNo);
+						}
+					}
+				}).catch((err) => {
+					console.log(err)
+				})
+			},
 
 		}
 

@@ -7,25 +7,25 @@
 				<div>素匠泰茶</div>
 			</div>
 			<div class="sjtlc-title">
-				用户登录
+				{{$t('login.usersLogin')}}
 			</div>
 			<div class="sjtlc-cont">
 				   <group class="sjtlc-group">
-     					 <x-input  placeholder="输入手机号码"  placeholder-align="left" class="gInput" v-model="loginParams.telephone">
+     					 <x-input  :placeholder="holdPhone"  placeholder-align="left" class="gInput" v-model="loginParams.telephone">
      					 	
      					 	
      					 </x-input>
    				  </group>
 				   <group class="sjtlc-group">
-     					 <x-input  placeholder="输入密码"   class="gInput" v-model="loginParams.passwords"></x-input>
+     					 <x-input  :placeholder="holdPassword"   class="gInput" v-model="loginParams.passwords"></x-input>
    				  </group>
    				  <div class="sjtlc-foot">
-   				  		<div @click="open('/register')">新用户？请注册</div>
-   				  		<!--<div @click="open('/forgetPassword')">忘记密码</div>-->
+   				  		<div @click="open('/register')">{{$t('login.newUserReg')}}</div>
+   				  		<div @click="open('/forgetPassword')">{{$t('login.forgetPassword')}}</div>
    				  </div>
 			</div>
 			<div class="sjtlc-btn">
-				<x-button  class="login-btn" type="primary" @click.native="login()">登录</x-button>
+				<x-button  class="login-btn" type="primary" @click.native="login()">{{$t('login.login')}}</x-button>
 			</div>
 
 		</div>		
@@ -42,7 +42,9 @@
 		name:"login",
 		data(){
 			return {
-				test:"123",
+				holdPhone:this.$t('login.holdPhone'),
+				holdPassword:this.$t('login.holdPassword'),
+				
 				sjtLogo:"../../../static/images/mine/sjtLogin.jpg",
 				sjtLogo2:"../../../static/images/mine/circleLogo.png",
 				iconType: '',
@@ -67,6 +69,11 @@
 				}}).then((res) => {
 					console.log(res)
 					if(res.status == 200 && res.data.rspCode == "00000"){
+						if(DB.getItem("localLang").toString() == "en"){
+							var ErrorMsg = res.data.usErrorMsg;
+						}else{
+							var ErrorMsg = res.data.cnErrorMsg;
+						}
 						if(res.data.data) {
 							this.$vux.toast.show({
 								text: "登录成功！",
@@ -80,7 +87,7 @@
 							},1000)
 						}else{
 							this.$vux.toast.show({
-									text: "账号密码错误！",
+									text: ErrorMsg,
 									type: "text",
 						})							
 					} 						

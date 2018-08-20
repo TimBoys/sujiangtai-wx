@@ -8,19 +8,19 @@
 		<!--头部三个选择s-->
 			<div class="groupCont">
 			    <tab bar-active-color="#FDA544" >
-			      <tab-item selected active-class="tabItem">到店自取</tab-item>
-			      <tab-item disabled active-class="tabItem">外卖配送</tab-item>
+			      <tab-item selected active-class="tabItem">{{$t('closeAccount.ToStoreComeUndone')}}</tab-item>
+			      <tab-item disabled active-class="tabItem" @click.native="nextWait">{{$t('closeAccount.DeliveryDistribution')}}</tab-item>
 			    </tab>
 				<group label-width="4.5em" label-margin-right="2em" gutter="0" label-align="left" class="groupItem" >
 						<!--<popup-picker title="配送方式" :data="list" v-model="value5" value-text-align="left" ></popup-picker>-->
-						<cell title="自取地址" value-align="left" primary="content"   :value="storeAddress">
+						<cell :title="mustAddress" value-align="left" primary="content"   :value="storeAddress">
 							
 						</cell>
-						<cell title="自取电话" value-align="left" primary="content"  :value="storePhone">
+						<cell :title="invitethephone" value-align="left" primary="content"  :value="storePhone">
 							 <!--@click.native="showPhone = true"-->
 						</cell>
-						<popup-picker title="预约时间" v-show="isShowOrderTime" v-model="formatDemoValue" value-text-align="left" :data="ppAllYuyueTime" :display-format="format"></popup-picker>
-						<popup-picker title="支付方式" :data="list2" v-model="value6" value-text-align="left" ></popup-picker>
+						<popup-picker :title="appointmentTime" v-show="isShowOrderTime" v-model="formatDemoValue" value-text-align="left" :data="ppAllYuyueTime" :display-format="format"></popup-picker>
+						<popup-picker :title="modeOfPayment" :data="list2" v-model="value6" value-text-align="left" ></popup-picker>
 						
 				</group>	
 
@@ -30,7 +30,7 @@
 		<!--商品详情-->
 		<div class="goodsDetail">
 			<div class="gd-title">
-				素匠泰茶(Whiterock)
+				{{gdTitle}}
 			</div>
 			<div class="gd-cont">
 				<div class="gdc-detail" v-for="(item,index) in allGoods.allGDPage">
@@ -50,17 +50,17 @@
 				</div>
 					<div class="gdc-footer">
 						<div class="gdcf-allPrice">
-							原价：${{allGoods.allGDOrigPrice}}
+							{{$t('closeAccount.originalPrice')}}：${{allGoods.allGDOrigPrice}}
 						</div>
 						<div class="gdcf-allPrice">
-							<span class="fl"></span>优惠({{promotionName}})：${{allGoods.allGDDiscount}}
+							<span class="fl"></span>{{$t('closeAccount.discounts')}}({{promotionName}})：${{allGoods.allGDDiscount}}
 						</div>
 						
 						<div class="gdcf-allPrice">
-							小计：${{allGoods.allGDOrderPrice}}
+							{{$t('closeAccount.subtotal')}}：${{allGoods.allGDOrderPrice}}
 						</div>
-						<group title="卖家留言" class="gdc-textarea">
-      						<x-textarea  name="detail" placeholder="写下想对卖家说的话" :show-counter="false" v-model="textAreaValue"></x-textarea>
+						<group :title="theSellerMessage" class="gdc-textarea">
+      						<x-textarea  name="detail" :placeholder="holdSay" :show-counter="false" v-model="textAreaValue"></x-textarea>
     					</group>
 					</div>
 				
@@ -80,10 +80,10 @@
 			</div>
 		</div>
 				<div class="cf-center">
-			总价:${{allGoods.allGDOrderPrice}}
+			{{$t('classification.totalPrice')}}:${{allGoods.allGDOrderPrice}}
 		</div>
 				<div class="cf-right" @click="updateAccount()">
-			提交订单
+			{{$t('closeAccount.submitOrder')}}
 		</div>
 	</div>
 	<!--底部结算按钮e-->
@@ -102,7 +102,9 @@
     
     <!--loadding弹出框-->
 	<loading :show="showLoading" is-show-mask :text="showText"></loading>
-		
+
+	 <toast  v-model="showPositionValue"  type="text" :time="800" is-show-mask text="尽情期待" :position="position"></toast>
+
 		
 	</div>
 	
@@ -122,7 +124,17 @@ export default{
 	name:"closeAccount",
 	data(){
 		return{
-			headTitle: "提交订单",
+			showPositionValue: false, //toast弹出
+							position: 'default',
+			headTitle:this.$t('closeAccount.submitOrder'), //加入购物车
+			mustAddress:this.$t('closeAccount.MustAddress'), //自取地址
+			invitethephone:this.$t('closeAccount.Invitethephone'), //自取电话
+			appointmentTime:this.$t('closeAccount.appointmentTime'), //预约时间
+			modeOfPayment:this.$t('closeAccount.modeOfPayment'), //支付方式
+			theSellerMessage:this.$t('closeAccount.theSellerMessage'), //给卖家留言
+			holdSay:this.$t('closeAccount.holdSay'), //写下想对卖家说的话
+			
+			gdTitle:"",
 			sjtLogo:"../../../static/images/mine/sjtLogo.jpg",
 			list2: [['微信支付', '支付宝', 'VISA/Master Card',"银行卡"]],
 			value6: ['微信支付'],
@@ -194,7 +206,7 @@ export default{
 						var data={
      		                token:token.id,
 							amount:_this.allGoods.allGDOrderPrice * 100,
-							description:'订单信息',
+							description:'奶茶',
                             orderNum:_this.orderNo   //订单编号
 						}
      		           _this.$http.post("/stripe/charge",data).then((res) => {
@@ -228,7 +240,7 @@ export default{
 	    	    window.addEventListener('popstate', function() {
 			        handler.close();
 			    });
-	    	
+			        	
 	    },
 	    //初始化预约时间
 	    initYuyueTime(){
@@ -282,6 +294,7 @@ export default{
 	    	DB.getItem("storeList").toJson().forEach((item,index)=>{
 	    		if (DB.getItem("storeNo").toString() == item.storeNo) {
 	    			this.storeAddress = item.storeAddress;
+	    			this.gdTitle = "素匠泰茶("+item.storeAddress+")";
 	    			this.storePhone = item.storePhone;
 	    		}
 	    	})
@@ -411,16 +424,23 @@ export default{
 	    //提交订单
 	    updateAccount(){
 	    	var _this = this;
+	    	var commodityInformation = _this.$t("closeAccount.commodityInformation");
 			if(_this.allGoods.allGDOrderPrice){
  			 handler.open({
  	            name: '素匠泰茶',
- 	            description: '商品信息',
+ 	            description: commodityInformation,
  	            currency: 'usd',
  	            amount: _this.allGoods.allGDOrderPrice * 100   //TODO:金额，单位分，变量,需乘以100
  	        });	  
 			}
 	    	
-	    }
+	    },
+	    
+	    //通用
+	    //敬请期待
+	    nextWait(){
+	      this.showPositionValue = true;
+	    },	    
 	}
 	
 	

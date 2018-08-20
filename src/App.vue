@@ -34,7 +34,7 @@
 
 <script>
 import Rem from '@/assets/js/rem';
-import VueDB from './util/vue-db/vue-db-long'
+import VueDB from './util/vue-db/vue-db-long';
 new Rem();
 var DB = new VueDB();
 
@@ -66,14 +66,14 @@ export default {
 	computed:{
 		leaveComp(){
 			var resout = false;
-			var base = ['home','classification','mine',"login","register","helpCenter","hcDetail"];
+			var base = ['home','classification','mine',"login","register","helpCenter","hcDetail","forgetPassword"];
 			
         for(var i=0; i<base.length; i++){
           if(this.isActive(base[i])){
             resout = false;
           }
         }
-			if (this.isActive("classification") || this.isActive("closeAccount") ||  this.isActive("login") ||  this.isActive("register") || this.isActive("helpCenter") || this.isActive("hcDetail")) {
+			if (this.isActive("classification") || this.isActive("closeAccount") ||  this.isActive("login") ||  this.isActive("register") || this.isActive("helpCenter") || this.isActive("hcDetail") || this.isActive("forgetPassword")) {
 				resout = true;
 			}			
 			

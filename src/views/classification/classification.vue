@@ -25,13 +25,13 @@
 										<div class="shopd-title">{{goods.goodsName}}</div>
 										<div class="shopd-detail">
 											<div>{{goods.goodsIntroduction}}</div>
-											<div>库存{{goods.goodsStock}}</div>
+											<div>{{$t('classification.inventory')}} {{goods.goodsStock}}</div>
 										</div>
 										<div class="shopd-pAdd">
 											<div class="shopdpa-price">${{goods.goodsPrice}}</div>
 											<div class="shopdpa-add">
 												<!--<x-icon type="ios-plus" class="cell-x-icon" @click="showGuiGe"></x-icon>-->
-												<x-button class="shopdpa-select" @click.native="showGuiGe(goods)" type="primary" mini>选择规格
+												<x-button class="shopdpa-select" @click.native="showGuiGe(goods)" type="primary" mini>{{seleStyle}}
 													<badge class="guigeBadge" :text="goods.selGoodsNum" v-if="goods.selGoodsNum"></badge>
 												</x-button>
 											</div>
@@ -71,8 +71,8 @@
 			<div class="gwc-mask" @click.self="gwcMask">
 				<div class="gwc-cont absolute">
 					<div class="gwc-clear">
-						<span class="gwcc-yixuan">已选商品</span>
-						<span class="gwcc-qk" @click="clearGwc"><span class="delete iconfont icon-del"></span>清空</span>
+						<span class="gwcc-yixuan">{{yixuanGoods}}</span>
+						<span class="gwcc-qk" @click="clearGwc"><span class="delete iconfont icon-del"></span>{{emptyGwc}}</span>
 					</div>
 					<div class="gwc-detail">
 						<div class="gwcd-item" v-for="(gwcItem,index) in gwcInitData" :key="index">
@@ -125,7 +125,7 @@
 					</div>
 					<div class="guiGef-right">
 						<x-button type="primary" mini style="border-radius:44px;" action-type="button" @click.native="addItemGoods(initGuiGeBottomSC,initGuiGeBottomSC.iGAGAllGuige)" v-if="!hasTheGgInGwcLen">
-							<div class="iconfont icon-gouwuche ftl-gwc">加入购物车</div>
+							<div class="iconfont icon-gouwuche ftl-gwc">{{joinGwc}}</div>
 						</x-button>
 						<div class="gwcdir-right" v-if="hasTheGgInGwcLen">
 							<x-icon type="ios-minus" class="cell-x-icon" @click.native="minusItemGoods(initGuiGeBottomSC,initGuiGeBottomSC.iGAGAllGuige)"></x-icon>
@@ -159,7 +159,11 @@
 			return {
 				msg: "",
 				active: 0,
-				headTitle: "所有商品",
+				headTitle: this.$t('classification.headTitle'), //所有商品
+				seleStyle:this.$t('classification.seleStyle'), //选择规格
+				yixuanGoods:this.$t('classification.yixuanGoods'), //已选规格
+				emptyGwc:this.$t('classification.empltyGwc'), //清空
+				joinGwc:this.$t('classification.joinGwc'), //加入购物车
 				isMaskLeave: true,
 				isShowGuiGe: false,
 				offset: [],
@@ -289,12 +293,12 @@
 						console.log(item)
 						allGoodsPrice += item.iGAGPrice * item.itemGuige.itemOneGuigeLen;
 					})
-					this.hasGwcData.allGoodsPrice = "总价：" + "$" + allGoodsPrice;
-					this.hasGwcData.allGoodsBtn = "去结算";
+					this.hasGwcData.allGoodsPrice = this.$t('classification.totalPrice') + "：" + "$" + allGoodsPrice;
+					this.hasGwcData.allGoodsBtn = this.$t('classification.toSettleAccounts');
 				} else {
 					this.hasGwcData.hasGoodsData = false;
-					this.hasGwcData.allGoodsBtn = "请选择商品";
-					this.hasGwcData.allGoodsPrice = "第二件商品半折";
+					this.hasGwcData.allGoodsBtn = this.$t('classification.PleaseSelectGoods');
+					this.hasGwcData.allGoodsPrice = this.$t('classification.TheSecondItemHalfOff');
 				}
 				this.concatGwcInit();
 			},
@@ -404,13 +408,17 @@
 						goodsItem.goodsAttrs.forEach((item2) => {
 							if(item2.attrType == item3) {
 								if(item3 == 0) {
-									allSelGuiGeObj.guiGeBigName = "杯型";
+									var cupType = DB.getItem("localLang").toString() == "zh" ? "杯型" : "Cup Type";
+									allSelGuiGeObj.guiGeBigName = cupType;
 								} else if(item3 == 1) {
-									allSelGuiGeObj.guiGeBigName = "添加辅料";
+									var addaccessories = DB.getItem("localLang").toString() == "zh" ? "添加辅料" : "Add accessories";
+									allSelGuiGeObj.guiGeBigName = addaccessories;
 								} else if(item3 == 2) {
-									allSelGuiGeObj.guiGeBigName = "温度 ";
+									var temperature = DB.getItem("localLang").toString() == "zh" ? "温度" : "temperature";
+									allSelGuiGeObj.guiGeBigName = temperature;
 								} else if(item3 == 3) {
-									allSelGuiGeObj.guiGeBigName = "甜度";
+									var sweetness = DB.getItem("localLang").toString() == "zh" ? "甜度" : "sweetness";
+									allSelGuiGeObj.guiGeBigName = sweetness;
 								}
 								allSelGuiGeObj.theGuiGeArr.push(item2);
 							}
@@ -696,6 +704,7 @@
             	font-size: 0.26rem;
             	overflow: visible;
             	position: relative;
+            	padding: 0 1em;
             	.guigeBadge{
             		position: absolute;
             		top: -0.1rem;

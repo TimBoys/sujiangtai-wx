@@ -81,7 +81,7 @@
 		data() {
 			return {
 				home: "home",
-				localLang: "en",
+				localLang: "zh",
 				localAddr: {
 					localPos: "../../../static/images/home/local_position.png",
 					localName: ""
@@ -136,12 +136,37 @@
 	//			console.log(resultCode);
 				//code存在是wx端，不存在是pc端
 				if (resultCode) {
-					this.$http.get("/userInfoLogin", {params:{
-						code: resultCode
+					this.$http.get("/userLogin/weixin", {params:{
+						code: resultCode,
+						accessToken:DB.getItem("accessToken").toString(),
+						openId:DB.getItem("weixinOpenid").toString()
 					}}).then((res) => {
-//						console.log(res)
-						var weixinOpenid = null;
-						DB.setItem("weixinOpenid",weixinOpenid);
+					console.log("/userLogin/weixin")
+					console.log(res)
+					if(res.status == 200 && res.data.rspCode == "00000"){
+						if(DB.getItem("localLang").toString() == "en"){
+							var ErrorMsg = res.data.usErrorMsg;
+						}else{
+							var ErrorMsg = res.data.cnErrorMsg;
+						}
+						
+						if(res.data.data) {
+							var weixinOpenid = res.data.data.weixinOpenid;
+							var accessToken = res.data.data.accessToken;
+							console.log(res.data.data)
+							console.log(weixinOpenid)
+							console.log(accessToken)
+							DB.setItem("weixinOpenid",weixinOpenid);
+							DB.setItem("accessToken",accessToken);
+							DB.setItem("wxUserInfo",JSON.stringify(res.data.data));
+						}else{
+							this.$vux.toast.show({
+									text: ErrorMsg,
+									type: "text",
+						})							
+					} 						
+					}						
+
 					}).catch((err) => {
 						console.log(err)
 					})				
@@ -168,10 +193,11 @@
 			//初始化获取本地语言
 			initLocalLang() {
 				if(!DB.getItem("localLang").toString()) {
-					this.localLang = "en";
-					DB.setItem("localLang",this.localLang);
+					this.localLang = "zh";
+//					DB.setItem("localLang",this.localLang);
+					DB.setItem("localLang","en");
 				} else {
-					this.localLang = DB.getItem("localLang").toString();
+					this.localLang = DB.getItem("localLang").toString() == "en" ? "zh" : "en";
 				}
 			},
 			//初始化轮播
@@ -220,7 +246,7 @@
 								res.data.data.data.forEach(function(item,index){
 									_this.menusAddr["storeName_"+item.storeNo]= item.storeName;
 								})
-								DB.setItem("storeList",res.data.data.data);
+								DB.setItem("storeList",JSON.stringify(res.data.data.data));
 								//初始化店铺数据
 								this.initStoreData();
 						}
@@ -274,10 +300,11 @@
 				console.log(item);
 				if(item == "zh") {
 					this.localLang = "en";
+					DB.setItem("localLang", "zh");
 				} else {
 					this.localLang = "zh";
+					DB.setItem("localLang", "en");
 				}
-				DB.setItem("localLang", this.localLang);
 				window.location.reload();
 			},
 			//点击商品跳转到所有商品并弹出规格

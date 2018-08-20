@@ -27,9 +27,9 @@
 		},
 		methods:{
 			leftBack(title){
-				if(this.title == "所有商品"){
+				if(this.title == "所有商品" || this.title == "All the goods"){
 					this.$router.openPage("/home");
-				}else if(this.title == "提交订单"){
+				}else if(this.title == "提交订单" || this.title == "Submit order"){
 					this.$router.openPage("/classification");
 				}else if(this.title == "我的订单"){
 					this.$router.openPage("/mine");
