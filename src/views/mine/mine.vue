@@ -19,7 +19,7 @@
 
 			<div class="groupCont">
 				<group label-width="9em" label-margin-right="2em" label-align="left" class="groupItem">
-						<cell :title="mineOrder"  is-link @click.native="open('/indent')">
+						<cell :title="mineOrder"  is-link @click.native="open('/mineOrder')">
 							<x-img slot="icon" class="mineItem" v-lazy="groupCont.mineDingdan">
 							</x-img>
 						</cell>

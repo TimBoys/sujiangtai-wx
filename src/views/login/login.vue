@@ -68,17 +68,17 @@
 					userPassword:this.loginParams.passwords,
 				}}).then((res) => {
 					console.log(res)
-					if(res.status == 200 && res.data.rspCode == "00000"){
+					if(res.status == 200){
 						if(DB.getItem("localLang").toString() == "en"){
 							var ErrorMsg = res.data.usErrorMsg;
 						}else{
 							var ErrorMsg = res.data.cnErrorMsg;
 						}
 						if(res.data.data) {
-							this.$vux.toast.show({
-								text: "登录成功！",
-								type: "text",
-							})
+								this.$vux.toast.show({
+									text: this.$t("reminder.loginSucc"),
+									type: "text",
+								})
 							var telUserNo = {telephone:res.data.data.telephone,userNo:res.data.data.userNo}
 							console.log(telUserNo)
 							DB.setItem("telUserNo",telUserNo);
@@ -98,7 +98,7 @@
 	    		
 	    	}else{
 				this.$vux.toast.show({
-						text: "请填写正确的信息！",
+						text: this.$t("reminder.correctInformation"),
 						type: "text",
 					})	    		
 	    	}

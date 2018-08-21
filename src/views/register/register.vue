@@ -97,6 +97,9 @@
 					}, 1000)
 
 					//判断是绑定还是插入
+					
+					console.log(DB.getItem("weixinOpenid").toString())
+					console.log("DB.getItem(weixinOpenid).toString()")
 					if (DB.getItem("weixinOpenid").toString()) {
 						//根据微信号查询用户能绑定
 						this.findUserByTelephoneInWx();
@@ -106,18 +109,21 @@
 					}
 				} else {
 					this.$vux.toast.show({
-						text: "请填写手机号！",
+						text: this.$t("reminder.writePhoneNumber"),
 						type: "text",
 					})
 				}
 			},
 			//用户注册
 			userRegister() {
-				if(!this.register.telephone && !this.register.passwords && !this.register.identifyCode) {
+				console.log(this.register.telephone)
+				console.log(this.register.passwords)
+				console.log(this.register.identifyCode)
+				if(!this.register.telephone || !this.register.passwords || !this.register.identifyCode) {
 					this.$vux.toast.show({
-						text: "请填写正确的用户信息！",
-						type: "cancel",
-					})
+						text: this.$t("reminder.correctInformation"),
+						type: "text",
+					})	
 					return;
 				} else {
 					this.comparePollCode();
@@ -138,7 +144,7 @@
 						if(res.data.data) {
 							//手机号码查询有参数的，表示这个用户已经存在，提示去登录，并
 							this.$vux.toast.show({
-								text: "当前手机号码已经注册，请去出登录！",
+								text: this.$t("reminder.pleaseLogout"),
 								type: "text",
 							})
 							clearInterval(intervalTime);
@@ -158,25 +164,37 @@
 			},
 			//根据手机号码查找用户，微商城端
 			findUserByTelephoneInWx() {
-				this.$http.get("/userRegister/findUserByWeixinOpenid", {
+				this.$http.get("/userRegister/findUserByTelephone", {
 					params: {
-						telephone: this.register.telephone,
-						weixinOpenid:DB.getItem("weixinOpenid").toString()
+						telephone: this.register.telephone
 					}
 				}).then((res) => {
 					if(res.status == 200 && res.data.rspCode == "00000") {
 						console.log(res.data.data)
 						console.log("根据手机号码查找用户微商城端")
-						this.userNo = res.data.data.userNo;
 						if(res.data.data) {
+						if(res.data.data.weixinId) {
 							//手机号码查询有参数的，表示这个用户已经存在，提示去登录，并
-							this.isUserInsert = false;
+							this.$vux.toast.show({
+								text: "该手机号已经绑定过微信，请使用是其他手机号绑定!",
+								type: "text",
+							})
+							clearInterval(intervalTime);
+							this.isMsgShow = false;
+							this.countDown = 120;
+							return false;
 						} else {
+							//绑定
+							this.isUserInsert = false;
+							//发送短信
+							this.createPollCode();
+						}
+						}else{
 							//注册
 							this.isUserInsert = true;
 							//发送短信
+							this.createPollCode();							
 						}
-						this.createPollCode();
 					}
 				}).catch((err) => {
 					console.log(err)
@@ -195,7 +213,7 @@
 						console.log(res.data)
 						if(res.data) {
 							this.$vux.toast.show({
-								text: "信息已发送,请注意查收！",
+								text:  this.$t("reminder.pleaseCheckInfo"),
 								type: "text",
 							})
 						}
@@ -256,7 +274,7 @@
 			//注册用户
 			bindOpenidTel() {
 				this.$http.post("/userRegister/bindOpenidTel", {
-					userNo:this.userNo,
+					userNo:DB.getItem("userNo").toString(),
 					telephone: this.register.telephone,
 					userPassword: this.register.passwords,
 					weixinOpenid: DB.getItem("weixinOpenid").toString()
@@ -264,7 +282,7 @@
 					console.log(res)
 					if(res.status == 200 && res.data.rspCode == "00000"){
 								this.$vux.toast.show({
-									text: "登录成功！",
+									text: this.$t("reminder.loginSucc"),
 									type: "text",
 								})
 								this.findUserByTelephoneEnd();
@@ -287,7 +305,7 @@
 					console.log(res)
 					if(res.status == 200 && res.data.rspCode == "00000"){
 								this.$vux.toast.show({
-									text: "登录成功！",
+									text: this.$t("reminder.loginSucc"),
 									type: "text",
 								})
 								this.findUserByTelephoneEnd();

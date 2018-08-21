@@ -21,7 +21,7 @@ module.exports =  {
       		toSettleAccounts:"去结算",
       		PleaseSelectGoods:"请选择商品",
       		TheSecondItemHalfOff:"第二件商品半折",
-      		inventory:"库存"
+      		inventory:"库存",
       },
       closeAccount:{
       	  submitOrder:"提交订单",
@@ -36,7 +36,11 @@ module.exports =  {
       	  theSellerMessage:"给卖家留言",
       	  subtotal:"小计",
       	  holdSay:"写下想对卖家说的话",
-      	  commodityInformation:"商品信息"
+      	  commodityInformation:"商品信息",
+      	  changePhone:"更改自提电话",
+      	  paymentSuccess:"支付成功",
+      	  shopHasNot:"本店暂未开业!",
+      	  enjoyLooking:"尽情期待"
       },
       mine:{
       	  VIPEnjoyMoreDiscounts:"VIP Enjoy more discounts",
@@ -68,5 +72,16 @@ module.exports =  {
       forgetPassword:{
       	forgetPassword:"忘记密码",
       	
+      },
+      reminder:{
+      	loginSucc:"登录成功！",
+      	correctInformation:"请填写正确的信息!",
+      	writePhoneNumber:"请填写手机号!",
+      	pleaseLogout:"当前手机号码已经注册，请去出登录!",
+      	pleaseCheckInfo:"信息已发送,请注意查收!",
+				systemError:"系统错误!",
+      	dataLoading:"数据加载中..."
+      	
       }
+      
     }

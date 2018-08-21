@@ -167,9 +167,9 @@
 					if(res.status == 200 && res.data.rspCode == "00000") {
 						console.log(res.data.data)
 						console.log("根据手机号码查找用户微商城端")
-						this.userNo = res.data.data.userNo;
 						if(res.data.data) {
-							//手机号码查询有参数的，表示这个用户已经存在，提示去登录，并
+							//绑定
+							this.userNo = res.data.data.userNo;
 							this.isUserInsert = false;
 						} else {
 							//注册

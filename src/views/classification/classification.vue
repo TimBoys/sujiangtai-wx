@@ -163,7 +163,7 @@
 				seleStyle:this.$t('classification.seleStyle'), //选择规格
 				yixuanGoods:this.$t('classification.yixuanGoods'), //已选规格
 				emptyGwc:this.$t('classification.empltyGwc'), //清空
-				joinGwc:this.$t('classification.joinGwc'), //加入购物车
+				joinGwc:this.$t('classification.addCart'), //加入购物车
 				isMaskLeave: true,
 				isShowGuiGe: false,
 				offset: [],
@@ -182,8 +182,8 @@
 				pushGuige: "", //选中的规格
 				hasGwcData: {
 					hasGoodsData: true,
-					allGoodsPrice: "第二件商品半折",
-					allGoodsBtn: "请选择商品"
+					allGoodsPrice: this.$t('classification.TheSecondItemHalfOff'),
+					allGoodsBtn: this.$t('classification.PleaseSelectGoods')
 				}, //购物车中是否有商品
 				hasTheGgInGwc: false,
 				hasTheGgInGwcLen: 0
@@ -369,7 +369,7 @@
 					this.isMaskLeave = !this.isMaskLeave;
 				} else {
 					this.$vux.toast.show({
-						text: "请选择商品！",
+						text: this.$t("classification.PleaseSelectGoods"),
 						type: "text",
 					})
 				}
@@ -530,6 +530,8 @@
 			},
 			//去结算判断是否用户是注册
 			toAccount() {
+				console.log("gwcRedPoint" + this.gwcRedPoint)
+				if (this.gwcRedPoint) {
 				console.log(DB.getItem("telUserNo").toJson())
 				//电话，用户编号都有去结算
 				if(DB.getItem("telUserNo").toJson()) {
@@ -539,6 +541,12 @@
 					this.$router.openPage("/register");
 				}
 				DB.setItem("selectThisGoods",JSON.stringify({}));
+				}else{
+					this.$vux.toast.show({
+						text: this.$t("classification.PleaseSelectGoods"),
+						type: "text",
+					})					
+				}
 			},
 			//绑定
 

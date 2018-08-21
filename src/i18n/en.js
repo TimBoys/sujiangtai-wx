@@ -21,7 +21,7 @@ module.exports = {
       	toSettleAccounts:"To Settle Accounts",
       	PleaseSelectGoods:"Please Select Goods",
       	TheSecondItemHalfOff:"The second item is half off",
-      	inventory:"inventory"
+      	inventory:"inventory",
       },
       closeAccount:{
       	  submitOrder:"Submit order",
@@ -36,7 +36,11 @@ module.exports = {
       	  theSellerMessage:"Leave a message to the seller",
       	  subtotal:"subtotal",
       	  holdSay:"Write down what you want to say to the seller",
-      	  commodityInformation:"commodity Information"
+      	  commodityInformation:"commodity Information",
+      		changePhone:"Change your phone number",
+      	  paymentSuccess:"Payment Success",
+      	  shopHasNot:"The shop has not opened yet!",
+      	  enjoyLooking:"Enjoy Looking"
       },
       mine:{
       	  VIPEnjoyMoreDiscounts:"VIP Enjoy more discounts",
@@ -68,8 +72,16 @@ module.exports = {
       },
       forgetPassword:{
       	forgetPassword:"forget Password"
-      }
-      
+      },
+      reminder:{
+      	loginSucc:"login successfully！",
+      	correctInformation:"Please fill in the correct information!",
+      	writePhoneNumber:"Please fill in your phone number!",
+      	pleaseLogout:"The current mobile phone number has been registered, please log out!",      	
+      	pleaseCheckInfo:"The information has been sent. Please check!",     	
+				systemError:"system Error!",      	
+      	dataLoading:"Data Loading..."      	
+      }      
       
     }
 

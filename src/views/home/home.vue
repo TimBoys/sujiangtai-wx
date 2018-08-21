@@ -117,7 +117,7 @@
 			//初始化获取本地语言
 			this.initLocalLang();
 			//初始化轮播图
-			this.initGetCarousel();
+//			this.initGetCarousel();
 			//根据code获取并存储openId
 			this.initOpenId();			
 			//初始化店铺
@@ -143,14 +143,8 @@
 					}}).then((res) => {
 					console.log("/userLogin/weixin")
 					console.log(res)
-					if(res.status == 200 && res.data.rspCode == "00000"){
-						if(DB.getItem("localLang").toString() == "en"){
-							var ErrorMsg = res.data.usErrorMsg;
-						}else{
-							var ErrorMsg = res.data.cnErrorMsg;
-						}
-						
-						if(res.data.data) {
+					if(res.status == 200){
+						if(res.data.data && res.data.rspCode == "00000") {
 							var weixinOpenid = res.data.data.weixinOpenid;
 							var accessToken = res.data.data.accessToken;
 							console.log(res.data.data)
@@ -159,37 +153,54 @@
 							DB.setItem("weixinOpenid",weixinOpenid);
 							DB.setItem("accessToken",accessToken);
 							DB.setItem("wxUserInfo",JSON.stringify(res.data.data));
+							//
+							this.findUserByWeixinOpenid();
 						}else{
+							if(DB.getItem("localLang").toString() == "en"){
+								var ErrorMsg = res.data.usErrorMsg;
+							}else{
+								var ErrorMsg = res.data.cnErrorMsg;
+							}
 							this.$vux.toast.show({
-									text: ErrorMsg,
-									type: "text",
-						})							
+										text: ErrorMsg,
+										type: "text",
+							})	
 					} 						
-					}						
-
+					}
 					}).catch((err) => {
 						console.log(err)
 					})				
 				}else{
 					console.log("no-code")
 				}
-//				var telUserNo = {telephone:"13916702735",userNo:"6"}
-//				DB.setItem("telUserNo",telUserNo);
-//				DB.removeItem("telUserNo")
-//				this.$http.get("/userRegister/findUserByTelephone", {
-//					params: {
-//						telephone: 13916702735 //userNo: "6"曹总
-////						telephone: 17621503621 //userNo: "8",曹星星
-//					}
-//				}).then((res) => {
-//					if(res.status == 200 && res.data.rspCode == "00000") {
-//						console.log("根据手机号码查找用户,确定用户已经存在了，存储userNo,telephone")
-//						console.log(res.data.data)
-//					}
-//				}).catch((err) => {
-//					console.log(err)
-//				})
 			},
+			//获取电话用户编号
+			findUserByWeixinOpenid(){
+				this.$http.get("/userRegister/findUserByWeixinOpenid", {
+					params: {
+						weixinOpenid:DB.getItem("weixinOpenid").toString()
+					}
+				}).then((res) => {
+					console.log(res)
+					if(res.status == 200 && res.data.rspCode == "00000") {
+						console.log("根据手机号码查找用户,确定用户已经存在了，存储userNo,telephone")
+						console.log(res.data.data)
+						if(res.data.data && res.data.data.telephone && res.data.data.userNo) {
+							var telUserNo = {telephone:res.data.data.telephone,userNo:res.data.data.userNo}
+							console.log(telUserNo)
+							DB.setItem("telUserNo",telUserNo);
+						}
+						if(res.data.data && res.data.data.userNo) {
+							DB.setItem("userNo",res.data.data.userNo);
+						}						
+					}
+				}).catch((err) => {
+					console.log(err)
+				})			
+				
+				
+			},
+			
 			//初始化获取本地语言
 			initLocalLang() {
 				if(!DB.getItem("localLang").toString()) {
@@ -204,8 +215,8 @@
 			initGetCarousel(){
 				this.$http.get("/userLogin/getCarouselFigure",{
 						params:{
-//						storeNo:DB.getItem("storeNo").toString(),
-						storeNo:"D00005",
+						storeNo:DB.getItem("storeNo").toString(),
+//						storeNo:"D00005",
 						lang:"zh"
 				}}).then((res) => {
 						if(res.status == 200 && res.data.rspCode == "00000"){
@@ -249,6 +260,8 @@
 								DB.setItem("storeList",JSON.stringify(res.data.data.data));
 								//初始化店铺数据
 								this.initStoreData();
+								
+								this.initGetCarousel();
 						}
 					}).catch((err) => {
 						console.log(err)
@@ -305,6 +318,7 @@
 					this.localLang = "zh";
 					DB.setItem("localLang", "en");
 				}
+				this.shopCar.removeAll();
 				window.location.reload();
 			},
 			//点击商品跳转到所有商品并弹出规格

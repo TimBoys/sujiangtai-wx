@@ -103,7 +103,7 @@
     <!--loadding弹出框-->
 	<loading :show="showLoading" is-show-mask :text="showText"></loading>
 
-	 <toast  v-model="showPositionValue"  type="text" :time="800" is-show-mask text="尽情期待" :position="position"></toast>
+	 <toast  v-model="showPositionValue"  type="text" :time="800" is-show-mask :text="enjoyLooking" :position="position"></toast>
 
 		
 	</div>
@@ -125,7 +125,7 @@ export default{
 	data(){
 		return{
 			showPositionValue: false, //toast弹出
-							position: 'default',
+			position: 'default',
 			headTitle:this.$t('closeAccount.submitOrder'), //加入购物车
 			mustAddress:this.$t('closeAccount.MustAddress'), //自取地址
 			invitethephone:this.$t('closeAccount.Invitethephone'), //自取电话
@@ -133,13 +133,13 @@ export default{
 			modeOfPayment:this.$t('closeAccount.modeOfPayment'), //支付方式
 			theSellerMessage:this.$t('closeAccount.theSellerMessage'), //给卖家留言
 			holdSay:this.$t('closeAccount.holdSay'), //写下想对卖家说的话
-			
+			enjoyLooking:this.$t('closeAccount.enjoyLooking'), //尽情期待
 			gdTitle:"",
 			sjtLogo:"../../../static/images/mine/sjtLogo.jpg",
 			list2: [['微信支付', '支付宝', 'VISA/Master Card',"银行卡"]],
 			value6: ['微信支付'],
 			showPhone:false,
-			showPhoneTitle:"更改自提电话",
+			showPhoneTitle:this.$t("closeAccount.changePhone"),
 			formatDemoValue: [],				//默认预约时间
 			ppAllYuyueTime:[], //所有预约时间
 			isShowOrderTime:false,
@@ -158,7 +158,7 @@ export default{
 		    storeAddress:"shanghai",
 		    storePhone:"110",
 		    showLoading:false,
-		    showText:"数据加载中...",
+		    showText:this.$t("reminder.dataLoading"),
 		    orderNo:null,
 		}
 	},
@@ -211,18 +211,18 @@ export default{
 						}
      		           _this.$http.post("/stripe/charge",data).then((res) => {
      		              console.log(res)
-     		            if(DB.getItem("localLang").toString() == "en"){
-							var ErrorMsg = res.data.usErrorMsg;
-						}else{
-							var ErrorMsg = res.data.cnErrorMsg;
-						}
+	     		            if(DB.getItem("localLang").toString() == "en"){
+								var ErrorMsg = res.data.usErrorMsg;
+							}else{
+								var ErrorMsg = res.data.cnErrorMsg;
+							}
      		               if(res.status == 200 && res.data.rspCode == "00000") {
      		               		_this.finishPayModfiyOrder();
      		               		//青春店铺缓存
 								_this.shopCar.removeAll();
 								
 								_this.$vux.toast.show({
-									text: "支付成功！",
+									text: _this.$t("closeAccount.paymentSuccess"),
 									type: "text",
 								})     		               	
      		               }else{
@@ -268,7 +268,7 @@ export default{
 //	    	console.log(theTimeHour)
 //	    	console.log(theTimeMin)
 			if (theTimeHour.slice(0,theTimeHour.length -1).indexOf(nowHour) == -1) {
-				this.formatDemoValue.push("本店暂未开业！","closeDoor")
+				this.formatDemoValue.push(this.$t("closeAccount.shopHasNot"),"closeDoor")
 			}else{
 				var theNowHour = theTimeHour.slice(theTimeHour.indexOf(nowHour) + 1)
 				console.log(theNowHour)
