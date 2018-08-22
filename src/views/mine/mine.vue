@@ -4,15 +4,18 @@
 				<x-img v-lazy="maskImg" class="maskCont"></x-img>				
 				<div class="mineCont">
 					<div class="mineContTop">
-						<x-img v-lazy="maskImg" class="headIcon"></x-img>
+						<x-img v-lazy="maskImg" class="headIcon" @click.native="showImgText">
+						</x-img>
+						<div class="isImgText" v-if="isImgText"><span >#</span>现有客户交易积分有效，累计核算在之后的积分系统里。</div>
 						<div class="headJieShao">
 							<div>{{headName}}</div>
-							<!--<div>积分：30</div>-->
+							<div>积分：30</div>
 						</div>
 					</div>
 					<div class="mineContBottom" @click="nextWait">
 						<div>{{$t('mine.VIPEnjoyMoreDiscounts')}}</div>
-						<div>{{$t('mine.favorable')}}</div>
+						<div @click="showFavorText">{{$t('mine.favorable')}}</div>
+						<div class="isFavorText" v-if="isFavorText"><span >#</span>充值系统即将开放，敬请期待。</div>
 					</div>
 				</div>
 			</div>
@@ -33,14 +36,14 @@
 							<x-img slot="icon" class="mineItem" v-lazy="groupCont.mineHelp">
 							</x-img>
 						</cell>
-						<cell :title="helpCenter"  is-link @click.native="open('/helpCenter')">
+						<cell :title="aboutUs"  is-link @click.native="open('/aboutUs')">
 							<x-img slot="icon" class="mineItem" v-lazy="groupCont.mineMsg">
 							</x-img>
 						</cell>
 				</group>
 			</div>
 			
-			 <toast  v-model="showPositionValue"  type="text" :time="800" is-show-mask text="尽情期待" :position="position"></toast>
+			 <toast  v-model="showPositionValue"  type="text" :time="800" is-show-mask :text="$t('reminder.comingSoon')" :position="position"></toast>
 			
 	</div>
 </template>
@@ -58,8 +61,9 @@
 				mineOrder:this.$t('mine.mineOrder'), //我的订单
 				membershipCard:this.$t('mine.membershipCard'), //会员卡
 				systematicNotification:this.$t('mine.systematicNotification'), //系统通知
-				helpCenter:this.$t('mine.helpCenter'), //帮助中心
+				aboutUs:this.$t('mine.aboutUs'), //帮助中心
 				maskImg:"../../../static/images/home/testImg1.jpg",
+				maskImg2:null,
 				headName:"素匠泰 PRIME'S HAI TEA",
 				groupCont:{
 					mineDingdan:"../../../static/images/mine/groupDingDan.png",
@@ -69,7 +73,9 @@
 				},
 				value:"",
 				position: 'default',
-      			showPositionValue: false
+      			showPositionValue: false,
+      			isImgText:false, //图片显示字段
+      			isFavorText:false,//优惠显示字段
 			}
 		},
 		mounted:function(){
@@ -84,8 +90,8 @@
 				console.log("DB.getItem(wxUserInfo).toJson()")
 				console.log(DB.getItem("wxUserInfo").toJson())
 				var wxUserInfo = DB.getItem("wxUserInfo").toJson();
-				if (DB.getItem("wxUserInfo").toJson()) {
-					this.maskImg = wxUserInfo.headimgurl;
+				if (wxUserInfo) {
+					this.maskImg2 = wxUserInfo.headimgurl;
 					this.headName = wxUserInfo.weixinNickname;
 				}
 				
@@ -95,11 +101,17 @@
 		      this.showPositionValue = true;
 		    },
 		    nextWait(){
-		      this.showPositionValue = true;
+//		      this.showPositionValue = true;
 		    },
 		    open(link){
 		    	this.$router.openPage(link);
-		    }
+		    },
+		    showImgText(){
+		    	this.isImgText = !this.isImgText;
+		    },
+		    showFavorText(){
+		    	this.isFavorText = !this.isFavorText;
+		    },		    
 		},
 		components:{
 			XImg,
@@ -142,6 +154,20 @@
 				display:flex;
 				justify-content: space-between;
 				align-items: center;
+				position: relative;
+				.isImgText{
+					position: absolute;
+					top:1.6rem ;
+					left: 1.2rem;
+					background-color: #fff;
+					border: 1px solid #333;
+					color: #333;
+					font-size: 0.24rem;
+					padding:0 0.04rem;
+					span{
+						color: red;
+					}
+				}
 				.headIcon{
 					width: 1.8rem;
 					height: 1.8rem;
@@ -158,6 +184,20 @@
 				align-items: center;
 				padding:0.2rem;
 				justify-content: space-between;
+				position: relative;
+				.isFavorText{
+					position: absolute;
+					top:0.6rem ;
+					right: 0.9rem;
+					background-color: #fff;
+					border: 1px solid #333;
+					color: #333;
+					font-size: 0.24rem;
+					padding:0 0.04rem;
+					span{
+						color: red;
+					}					
+				}
 			}
 		}
 	}
@@ -173,5 +213,5 @@
 		}
 		}
 	}
-
+	
 </style>

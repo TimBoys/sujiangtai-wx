@@ -48,7 +48,7 @@ module.exports = {
       		mineOrder:"mine Order",
       		membershipCard:"membership Card",
       		systematicNotification:"systematic Notification",
-      		helpCenter:"help Center"      		
+      		aboutUs:"About Us"      		
       	
       },
       login:{
@@ -80,7 +80,8 @@ module.exports = {
       	pleaseLogout:"The current mobile phone number has been registered, please log out!",      	
       	pleaseCheckInfo:"The information has been sent. Please check!",     	
 				systemError:"system Error!",      	
-      	dataLoading:"Data Loading..."      	
+      	dataLoading:"Data Loading...",
+      	comingSoon:"coming soon!"
       }      
       
     }

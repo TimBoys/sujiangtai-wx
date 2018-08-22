@@ -31,7 +31,7 @@
 											<div class="shopdpa-price">${{goods.goodsPrice}}</div>
 											<div class="shopdpa-add">
 												<!--<x-icon type="ios-plus" class="cell-x-icon" @click="showGuiGe"></x-icon>-->
-												<x-button class="shopdpa-select" @click.native="showGuiGe(goods)" type="primary" mini>{{seleStyle}}
+												<x-button class="shopdpa-select" @click.native="showGuiGe(goods)"  mini>{{seleStyle}}
 													<badge class="guigeBadge" :text="goods.selGoodsNum" v-if="goods.selGoodsNum"></badge>
 												</x-button>
 											</div>
@@ -124,7 +124,7 @@
 						<span class="guiGef-guiGe">({{initGuiGeBottomSC.iGAGAllGuige}})</span>
 					</div>
 					<div class="guiGef-right">
-						<x-button type="primary" mini style="border-radius:44px;" action-type="button" @click.native="addItemGoods(initGuiGeBottomSC,initGuiGeBottomSC.iGAGAllGuige)" v-if="!hasTheGgInGwcLen">
+						<x-button class="gr-btn" mini style="border-radius:44px;" action-type="button" @click.native="addItemGoods(initGuiGeBottomSC,initGuiGeBottomSC.iGAGAllGuige)" v-if="!hasTheGgInGwcLen">
 							<div class="iconfont icon-gouwuche ftl-gwc">{{joinGwc}}</div>
 						</x-button>
 						<div class="gwcdir-right" v-if="hasTheGgInGwcLen">
@@ -359,7 +359,7 @@
 
 					});
 
-				}, 200);
+				}, 300);
 			},
 
 			//购物撤弹出框
@@ -610,7 +610,7 @@
     height: calc(100vh - 2.6rem);
     position: absolute;
     width: 100%;
-    top: 3rem;
+    top: 4rem;
     left: 0px;
     bottom: 0rem;
     .left-menu {
@@ -713,15 +713,17 @@
             	overflow: visible;
             	position: relative;
             	padding: 0 1em;
+            	background-color:#FDA544;
             	.guigeBadge{
             		position: absolute;
             		top: -0.1rem;
+            		right: -0.1rem;
             		font-size: 0.22rem;
             	}
             }
           }
           .cell-x-icon {
-            fill: limegreen;
+            fill: #FDA544;
           }
         }
       }
@@ -746,7 +748,7 @@
       width: 1.2rem;
       height: 1.2rem;
       border-radius: 50%;
-      background-color: rgb(49, 144, 231);
+      background-color: #FDA544;
       text-align: center;
       position: relative;
       top: -0.4rem;
@@ -779,7 +781,7 @@
   }
   .cf-right {
     flex: 1.5;
-    background-color: rgb(46, 163, 69);
+    background-color: #FDA544;
     color: #fff;
     text-align: center;
     line-height: $footerHeight;
@@ -853,7 +855,7 @@
             .gwcdir-right {
               display: flex;
               align-items: center;
-              fill: rgb(32, 150, 250);
+              fill: #FDA544;
               span {
                 padding: 0 0.2rem;
               }
@@ -915,14 +917,22 @@
         font-size: 0.54rem;
       }
       .guiGef-guiGe{
+      	display: inline-block;
         font-size: 0.3rem;
+        max-width: 4rem;
+        overflow: hidden;
+        text-align: left;
+        vertical-align: middle;
       }
     }
     .guiGef-right{
+    	  .gr-btn{
+    	  	background-color: #FDA544;
+    	  }
           .gwcdir-right {
 		      display: flex;
 		      align-items: center;
-		      fill: rgb(32, 150, 250);
+		      fill: #FDA544;
 		      span {
 		        padding: 0 0.2rem;
 		      }

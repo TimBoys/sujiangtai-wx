@@ -19,7 +19,14 @@
 				<div class="addrCont" @click="selectAddr">
 					<x-img v-lazy="localAddr.localPos" class="localPos"></x-img>
 					<div>{{localAddr.localName}}</div>
+					<div class="triangle_border_down">
+					    <span></span>
+					</div>
 				</div>
+			</div>
+			<!--店铺选择-->
+			<div class="storeDetail" v-if="isShowAs2">
+				<div class="sd-item" v-for="(sdItem,index) in menusStore" @click="selectMenu2(sdItem)" ><span :class="{'colorYellow':localAddr.localName == sdItem.storeName}">{{sdItem.storeName}}</span></div>
 			</div>
 		</div>
 		
@@ -83,12 +90,14 @@
 				home: "home",
 				localLang: "zh",
 				localAddr: {
-					localPos: "../../../static/images/home/local_position.png",
+					localPos: "../../../static/images/home/local_position2.png",
 					localName: ""
 				},
 				isShowAs: false,
+				isShowAs2: false,
 				testUrl:false,
 				menusAddr: {},
+				menusStore:[], //店铺数据
 				detailFSsrc:"../../../static/images/home/fire_icon.png",
 				banner: [],
 				topFire_src: [{
@@ -130,10 +139,14 @@
 			//初试化start
 			//根据code获取并存储openId
 			initOpenId(){
+				DB.removeItem("telUserNo")
 				var strUrl = location.href.split('#')[0];
 	//			console.log("url:"+ location.href);
 				var resultCode = getUrlParam(strUrl, "code");
-	//			console.log(resultCode);
+				var telUserNo = DB.getItem("telUserNo").toJson();
+				console.log("telUserNo")
+				console.log(DB.getItem("telUserNo2222").toJson())
+				if (!telUserNo) {
 				//code存在是wx端，不存在是pc端
 				if (resultCode) {
 					this.$http.get("/userLogin/weixin", {params:{
@@ -153,7 +166,7 @@
 							DB.setItem("weixinOpenid",weixinOpenid);
 							DB.setItem("accessToken",accessToken);
 							DB.setItem("wxUserInfo",JSON.stringify(res.data.data));
-							//
+							//获取手机号码用户编号
 							this.findUserByWeixinOpenid();
 						}else{
 							if(DB.getItem("localLang").toString() == "en"){
@@ -172,6 +185,7 @@
 					})				
 				}else{
 					console.log("no-code")
+				}
 				}
 			},
 			//获取电话用户编号
@@ -197,7 +211,6 @@
 				}).catch((err) => {
 					console.log(err)
 				})			
-				
 				
 			},
 			
@@ -254,6 +267,7 @@
 								})
 							}
 								//初始化上拉店铺 ，缓存三个店铺数据
+								this.menusStore = res.data.data.data;
 								res.data.data.data.forEach(function(item,index){
 									_this.menusAddr["storeName_"+item.storeNo]= item.storeName;
 								})
@@ -270,11 +284,12 @@
 			},
 			
 			selectAddr(){
-				this.isShowAs = true;
+//				this.isShowAs = true;
+				this.isShowAs2 = !this.isShowAs2;
 			},
-			//切换店铺 存储店铺编号 更新选择框
+			//切换店铺 存储店铺编号 更新选择框vux插件的
 			selectMenu(key,val){
-//				console.log(key)
+				console.log(key)
 				if(key != "cancel"){
 				var selectVal = key.split("_");
 //				console.log(selectVal[1]);
@@ -287,7 +302,19 @@
 				}
 				}
 			},		
-			
+			//切换店铺 存储店铺编号 更新选择框自定义
+			selectMenu2(key,val){
+				console.log(key)
+				var selectVal = key.storeNo;
+//				console.log(selectVal[1]);
+				if(selectVal != DB.getItem("storeNo").toString()){
+					DB.setItem("storeNo",selectVal);
+					this.localAddr.localName = val;		
+					//青春店铺缓存
+					this.shopCar.removeAll();
+					window.location.reload();
+				}
+			},				
 			//初试化店铺数据
 			initStoreData(){
 				var _this = this;
@@ -363,7 +390,7 @@
 		width: 100%;
 		left: 0;
 		background-color: #fff;
-		top: 5rem;
+		top: 6rem;
 		bottom: 1.43rem;
 	}
 	
@@ -375,9 +402,9 @@
 			text-align: center;
 			line-height: 0.44rem;
 			position: absolute;
-			top: -2.8rem;
+			top: -3.8rem;
 			right: 0.2rem;
-			background-color: rgb(19, 194, 67);
+			background-color: #FDA544;
 			font-size: 0.34rem;
 			padding: .1rem;
 			color: #FFF;
@@ -387,7 +414,7 @@
 		.localAddr {
 			line-height: 0.44rem;
 			position: absolute;
-			top: -2.8rem;
+			top: -3.8rem;
 			left: 0.2rem;
 			z-index: 999;
 			word-break: keep-all;
@@ -398,6 +425,31 @@
 				background-color: #FFF;
 				border: 1px solid #c5c5c5;
 				line-height: 0.4rem;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				.triangle_border_down{
+					display: inline-block;
+				    width:0;
+				    height:0;
+				    border-width:0.14rem 0.14rem 0;
+				    margin-left: 0.04rem;
+				    border-style:solid;
+				    border-color:#FDA544 transparent transparent;/*灰 透明 透明 */
+				    position:relative;
+				    top: 0;
+				}
+				.triangle_border_down span{
+				    display:block;
+				    width:0;
+				    height:0;
+				    border-width:0.14px 0.14px 0;
+				    border-style:solid;
+				    border-color:#fc0 transparent transparent;/*黄 透明 透明 */
+				    position:absolute;
+				    top:0px;
+				    left:0px;
+				}
 				.localPos {
 					width: 0.4rem;
 					height: 0.4rem;
@@ -412,6 +464,23 @@
 					max-width: 3rem;
 				}
 			}
+		}
+		.storeDetail{
+			position: absolute;
+			top: -3.26rem;
+			left: 0.2rem;			
+			z-index: 999;
+			font-size: 0.32rem;
+			background-color: #fff;
+			border: 1px solid #FDA544;
+			.sd-item{
+				.colorYellow{
+					color: #FDA544;
+				}
+				padding:0.1rem 0.2rem;
+				border-bottom: 1px solid #FDA544;
+			}
+			
 		}
 		.tf_cell {
 			width: calc(100% / 3);
@@ -468,9 +537,9 @@
 					padding: 0.2rem;
 					@include box-sizing;
 					.dfb_img {
-						width: 2rem;
-						height: 1.2rem;
-						border-radius: 1.2rem;
+						width: 1.6rem;
+						height: 1.6rem;
+						border-radius: 50%;
 						padding-bottom: 0.1rem;
 					}
 					.dfb_name,

@@ -25,7 +25,7 @@ module.exports =  {
       },
       closeAccount:{
       	  submitOrder:"提交订单",
-      	  ToStoreComeUndone:"到店自取",
+      	  ToStoreComeUndone:"在线下单",
       	  DeliveryDistribution:"外面配送",
       	  MustAddress:"自取地址",
       	  Invitethephone:"自取电话",
@@ -40,15 +40,15 @@ module.exports =  {
       	  changePhone:"更改自提电话",
       	  paymentSuccess:"支付成功",
       	  shopHasNot:"本店暂未开业!",
-      	  enjoyLooking:"尽情期待"
+      	  enjoyLooking:"敬请期待"
       },
       mine:{
-      	  VIPEnjoyMoreDiscounts:"VIP Enjoy more discounts",
+      	  VIPEnjoyMoreDiscounts:"VIP 卡享更多优惠",
       		favorable:"优惠",
       		mineOrder:"我的订单",
       		membershipCard:"会员卡",
       		systematicNotification:"系统通知",
-      		helpCenter:"帮助中心"
+      		aboutUs:"关于我们"
       },
       login:{
       	usersLogin:"用户登录",
@@ -80,7 +80,8 @@ module.exports =  {
       	pleaseLogout:"当前手机号码已经注册，请去出登录!",
       	pleaseCheckInfo:"信息已发送,请注意查收!",
 				systemError:"系统错误!",
-      	dataLoading:"数据加载中..."
+      	dataLoading:"数据加载中...",
+      	comingSoon:"敬请期待!"
       	
       }
       

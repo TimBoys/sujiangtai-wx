@@ -1,5 +1,5 @@
 <template>
-	<div class="app-init">
+	<div class="app-init ca-cont">
     <div class="classification-header">
     	<header-back :title="headTitle"></header-back>
 
@@ -7,12 +7,18 @@
 	<div class="absolute closeAccountCont">
 		<!--头部三个选择s-->
 			<div class="groupCont">
-			    <tab bar-active-color="#FDA544" >
+			    <!--<tab bar-active-color="#FDA544" >
 			      <tab-item selected active-class="tabItem">{{$t('closeAccount.ToStoreComeUndone')}}</tab-item>
 			      <tab-item disabled active-class="tabItem" @click.native="nextWait">{{$t('closeAccount.DeliveryDistribution')}}</tab-item>
-			    </tab>
+			    </tab>-->
 				<group label-width="4.5em" label-margin-right="2em" gutter="0" label-align="left" class="groupItem" >
 						<!--<popup-picker title="配送方式" :data="list" v-model="value5" value-text-align="left" ></popup-picker>-->
+						<cell title="配送方式" value-align="left" primary="content" >
+					      <checker v-model="checkerDemo" radio-required default-item-class="demo1-item" selected-item-class="demo1-item-selected" disabled-item-class="demo1-item-disabled" @on-change="changeChecker">
+					        <checker-item :value="item" v-for="(item, index) in checkerItems" :key="index">{{item.value}}</checker-item>
+					        <checker-item :value="demo3" disabled>外卖</checker-item>
+					      </checker>					
+						</cell>
 						<cell :title="mustAddress" value-align="left" primary="content"   :value="storeAddress">
 							
 						</cell>
@@ -133,7 +139,18 @@ export default{
 			modeOfPayment:this.$t('closeAccount.modeOfPayment'), //支付方式
 			theSellerMessage:this.$t('closeAccount.theSellerMessage'), //给卖家留言
 			holdSay:this.$t('closeAccount.holdSay'), //写下想对卖家说的话
-			enjoyLooking:this.$t('closeAccount.enjoyLooking'), //尽情期待
+			enjoyLooking:this.$t('closeAccount.enjoyLooking'), //敬请期待
+			checkerItems: [{
+		        key: '0',
+		        value: '预定'
+		      }, {
+		        key: '1',
+		        value: '堂吃'
+		      }],
+		    checkerDemo: {key: '1', value: '堂吃'},
+   			demo1: {key: '1', value: '堂吃'},
+   			demo2: {key: '0', value: '预定'},
+   			demo3: {key: '2', value: '外卖'},
 			gdTitle:"",
 			sjtLogo:"../../../static/images/mine/sjtLogo.jpg",
 			list2: [['微信支付', '支付宝', 'VISA/Master Card',"银行卡"]],
@@ -209,6 +226,10 @@ export default{
 							description:'奶茶',
                             orderNum:_this.orderNo   //订单编号
 						}
+						_this.showLoading = true;	
+						setTimeout(()=>{
+					    	_this.showLoading = false;
+					    },20000)
      		           _this.$http.post("/stripe/charge",data).then((res) => {
      		              console.log(res)
 	     		            if(DB.getItem("localLang").toString() == "en"){
@@ -216,11 +237,12 @@ export default{
 							}else{
 								var ErrorMsg = res.data.cnErrorMsg;
 							}
-     		               if(res.status == 200 && res.data.rspCode == "00000") {
+     		               if(res.status == 200) {
+     		               		if(res.data.rspCode == "00000"){
      		               		_this.finishPayModfiyOrder();
      		               		//青春店铺缓存
 								_this.shopCar.removeAll();
-								
+								_this.showLoading = false;	
 								_this.$vux.toast.show({
 									text: _this.$t("closeAccount.paymentSuccess"),
 									type: "text",
@@ -231,8 +253,11 @@ export default{
 									type: "text",
 								})
      		               }
+     		               }
+     		               
      					}).catch((res) => {
      						console.log(res)
+     						_this.showLoading = false;	
      					})   		        
      		        }
      		    });     			
@@ -249,13 +274,15 @@ export default{
 			console.log(DB.getItem("isOrder").toString())
 			if (DB.getItem("isOrder").toString() == "isOrder") {
 				this.isShowOrderTime = true;
+				this.checkerDemo = this.demo2;
 			}else{
 				this.isShowOrderTime = false;
+				this.checkerDemo = this.demo1;
 			}
 			
 	    	var theTimeHour = [];
 	    	var theTimeMin = [];
-	    	for (var i = 9 ; i < 18 ; i++) {
+	    	for (var i = 9 ; i < 18; i++) {
 	    		var iHour = i < 10 ? "0"+i : i;
 	    		theTimeHour.push(iHour);
 	    	}
@@ -264,16 +291,20 @@ export default{
 	    		theTimeMin.push(iMin);
 	    	}
 	    	var nowHour = new Date().getHours() < 10 ? "0"+new Date().getHours() : new Date().getHours();
+	    	var nowMinutes = new Date().getMinutes() < 10 ? "0"+new Date().getMinutes() : new Date().getMinutes();
 //	    	console.log(nowHour)
 //	    	console.log(theTimeHour)
-//	    	console.log(theTimeMin)
-			if (theTimeHour.slice(0,theTimeHour.length -1).indexOf(nowHour) == -1) {
+//	    	console.log(theTimeHour.indexOf(nowHour))
+			if (theTimeHour.indexOf(nowHour) == -1) {
 				this.formatDemoValue.push(this.$t("closeAccount.shopHasNot"),"closeDoor")
 			}else{
 				var theNowHour = theTimeHour.slice(theTimeHour.indexOf(nowHour) + 1)
-				console.log(theNowHour)
-				this.ppAllYuyueTime.push(theNowHour,theTimeMin);
-				this.formatDemoValue.push(theNowHour[0],theTimeMin[0])
+				var theNowHour = nowHour == 17 ? theTimeHour.slice(theTimeHour.indexOf(nowHour)) : theTimeHour.slice(theTimeHour.indexOf(nowHour) + 1)
+//				console.log(theNowHour)
+//				console.log(theTimeMin.indexOf(nowMinutes))
+//				console.log(theTimeMin.slice(theTimeMin.indexOf(nowMinutes),59))
+				this.ppAllYuyueTime.push(theNowHour,theTimeMin.slice(theTimeMin.indexOf(nowMinutes),59));
+				this.formatDemoValue.push(theNowHour[0],theTimeMin.slice(theTimeMin.indexOf(nowMinutes),59)[0])
 			}
 	   },
 		
@@ -440,7 +471,17 @@ export default{
 	    //敬请期待
 	    nextWait(){
 	      this.showPositionValue = true;
-	    },	    
+	    },
+	    changeChecker(value){
+	    	console.log(value.key)
+			if (value.key == 0) {
+				this.isShowOrderTime = true;
+				this.checkerDemo = this.demo2;
+			}else{
+				this.isShowOrderTime = false;
+				this.checkerDemo = this.demo1;
+			}	    	
+	    }
 	}
 	
 	
@@ -451,7 +492,9 @@ export default{
 
 <style lang="scss" type="text/scss" scoped="scoped">
 @import "../../../assets/scss/util";
-
+.ca-cont{
+  background: linear-gradient(#FDA544 0%,#FFF 60%); /* 标准的语法 */
+	
 .classification-footer {
   left: 0;
   right: 0px;
@@ -498,7 +541,7 @@ export default{
   }
   .cf-right {
     flex: 1.5;
-    background-color: rgb(46, 163, 69);
+    background-color: #FDA544;
     color: #fff;
     text-align: center;
     line-height: $footerHeight;
@@ -507,7 +550,8 @@ export default{
 
 /*中间*/
 .closeAccountCont{
-	width: 100%;
+	padding: 0.4rem ;
+	width: 9.2rem;
 	top: 1.2rem;
 	bottom:  $footerHeight;
 	overflow-y: auto;
@@ -590,6 +634,23 @@ export default{
 		}
 	}
 	}
+	}
 
-
+.demo1-item {
+  border: 1px solid #ececec;
+  margin-right: 0.2rem;
+  padding: 0.06rem 0.08rem;
+  font-size: 0.38rem;
+}
+.demo1-item-selected {
+  border: 1px solid #FDA544;
+  background-color: #FDA544;
+  color: #FFF;
+}
+.demo1-item-disabled,.disabled{
+  border: 1px solid #999;
+  background-color: #FFF;
+  color: #999;
+  opacity: 0.2;
+}
 </style>

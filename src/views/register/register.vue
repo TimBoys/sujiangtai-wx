@@ -300,7 +300,7 @@
 					telephone: this.register.telephone,
 					userPassword: this.register.passwords,
 					weixinOpenid: DB.getItem("weixinOpenid").toString(),
-					userName:"000"
+					userName:this.register.telephone,
 				}).then((res) => {
 					console.log(res)
 					if(res.status == 200 && res.data.rspCode == "00000"){

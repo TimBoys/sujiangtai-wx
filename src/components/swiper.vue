@@ -65,7 +65,7 @@
   @import "../assets/swiper/swiper-3.4.2.min.css";
   .swiper-container img{
     width: 100%;
-    height: 3rem;
+    height: 4rem;
   }
 
   .vue-swiper .swiper-pagination-bullet{

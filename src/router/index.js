@@ -70,18 +70,18 @@ export default new Router({
 		    }
 		},
 		{
-			path: '/helpCenter',
-			name: 'helpCenter',
+			path: '/aboutUs',
+			name: 'aboutUs',
 		    component(resolve){
 		    	console.log(124444444444)
-		       require(['@/views/helpCenter/helpCenter.vue'], resolve)
+		       require(['@/views/aboutUs/aboutUs.vue'], resolve)
 		    },
 		},
 		{
 		    	path:'/hcDetail',
 		    	name:'hcDetail',
 			    component(resolve){
-			       require(['@/views/helpCenter/hcDetail/hcDetail.vue'], resolve)
+			       require(['@/views/aboutUs/hcDetail/hcDetail.vue'], resolve)
 			    },		    	
 		},
 		{
@@ -112,5 +112,12 @@ export default new Router({
 		       require(['@/views/mineOrder/mineOrder.vue'], resolve)
 		    }
 		},
+		{
+			path: '/mineOrderDetail',
+			name: 'mineOrderDetail',
+		    component(resolve){
+		       require(['@/views/mineOrderDetail/mineOrderDetail.vue'], resolve)
+		    }
+		},		
 	]
 })
