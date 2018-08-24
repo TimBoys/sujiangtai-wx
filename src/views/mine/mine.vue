@@ -43,7 +43,7 @@
 				</group>
 			</div>
 			
-			 <toast  v-model="showPositionValue"  type="text" :time="800" is-show-mask :text="$t('reminder.comingSoon')" :position="position"></toast>
+			 <toast  v-model="showPositionValue"  type="text" :time="2000" is-show-mask :text="$t('reminder.comingSoon')" :position="position"></toast>
 			
 	</div>
 </template>

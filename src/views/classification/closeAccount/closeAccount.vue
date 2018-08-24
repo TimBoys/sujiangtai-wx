@@ -109,7 +109,7 @@
     <!--loadding弹出框-->
 	<loading :show="showLoading" is-show-mask :text="showText"></loading>
 
-	 <toast  v-model="showPositionValue"  type="text" :time="800" is-show-mask :text="enjoyLooking" :position="position"></toast>
+	 <toast  v-model="showPositionValue"  type="text" :time="2000" is-show-mask :text="enjoyLooking" :position="position"></toast>
 
 		
 	</div>
@@ -190,10 +190,26 @@ export default{
 	},
 	mounted:function(){
 		this.shopCar = new shopCarTool(this.$store);
+		//商品个数为0退出到所有商品
+//		console.log("商品个数为01退出到所有商品")
+//		console.log(this.shopCar.length())
+		if (!this.shopCar.length()) {
+			console.log("isNUll")
+			this.$vux.toast.show({
+				text: "请先选择商品后再结算！",
+				type: "text",
+			})
+			setTimeout(()=>{
+				this.$router.openPage("/classification");
+			},1000)
+			return false;
+		}	
+		
 	    this.showLoading = true;	
 	    setTimeout(()=>{
 	    	this.showLoading = false;
-	    },20000)
+	    },20000)		
+	    
 		//初始化预约时间
 		this.initYuyueTime();
 		
@@ -239,14 +255,15 @@ export default{
 							}
      		               if(res.status == 200) {
      		               		if(res.data.rspCode == "00000"){
-     		               		_this.finishPayModfiyOrder();
-     		               		//青春店铺缓存
+//   		               		_this.finishPayModfiyOrder();
+     		               		//清除店铺缓存
 								_this.shopCar.removeAll();
 								_this.showLoading = false;	
 								_this.$vux.toast.show({
 									text: _this.$t("closeAccount.paymentSuccess"),
 									type: "text",
-								})     		               	
+								}) 
+								_this.$router.openPage("/mineOrder");
      		               }else{
      		               		_this.$vux.toast.show({
 									text: ErrorMsg,
@@ -423,7 +440,9 @@ export default{
 				console.log(allGoodsDataPage)
 				this.allGoods = allGoodsDataPage;
 				this.showLoading = false;
-	    	
+	    		
+
+	    		
 	    },
 	    //更改订单
 	    finishPayModfiyOrder(){
@@ -444,7 +463,7 @@ export default{
 					console.log("/userOrderInfo/finishPayModfiyOrder")
 					console.log(res.data)
 					if(res.status == 200 && res.data.rspCode == "00000") {
-						this.$router.openPage("/mineOrder");
+						
 					}
 				}).catch((err) => {
 					console.log(err)
@@ -457,6 +476,7 @@ export default{
 	    	var _this = this;
 	    	var commodityInformation = _this.$t("closeAccount.commodityInformation");
 			if(_this.allGoods.allGDOrderPrice){
+			_this.finishPayModfiyOrder();
  			 handler.open({
  	            name: '素匠泰茶',
  	            description: commodityInformation,

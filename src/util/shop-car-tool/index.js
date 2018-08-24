@@ -118,8 +118,8 @@ class shopCarTool{
 	    for(var i in this.shopCarDB){
 	      n += this.shopCarDB[i].length
 	    }
-	    console.log(this.shopCarDB)
-	    console.log(n)
+//	    console.log(this.shopCarDB)
+//	    console.log(n)
 	    return n		
 	}
 	

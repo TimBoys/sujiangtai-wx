@@ -1,12 +1,12 @@
 module.exports =  {
       BottomNav:{
-      	nav_djjx:"单季精选",
+      	nav_djjx:"当季精选",
       	nav_sysp:"所有商品",
       	nav_grzx:"个人中心"
       },
       home:{
       	topFire_src:{
-      		title_djjx:"单季精选",
+      		title_djjx:"当季精选",
       		title_zpty:"招牌特饮",
       		title_ydxd:"预定下单",
       	}
@@ -20,7 +20,7 @@ module.exports =  {
       		totalPrice:"总价",
       		toSettleAccounts:"去结算",
       		PleaseSelectGoods:"请选择商品",
-      		TheSecondItemHalfOff:"第二件商品半折",
+      		TheSecondItemHalfOff:"第二件商品半价",
       		inventory:"库存",
       },
       closeAccount:{

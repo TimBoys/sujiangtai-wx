@@ -67,6 +67,7 @@
 					telephone:this.loginParams.telephone,
 					userPassword:this.loginParams.passwords,
 				}}).then((res) => {
+					console.log("userLogin")
 					console.log(res)
 					if(res.status == 200){
 						if(DB.getItem("localLang").toString() == "en"){
@@ -75,13 +76,13 @@
 							var ErrorMsg = res.data.cnErrorMsg;
 						}
 						if(res.data.data) {
-								this.$vux.toast.show({
+							this.$vux.toast.show({
 									text: this.$t("reminder.loginSucc"),
 									type: "text",
 								})
 							var telUserNo = {telephone:res.data.data.telephone,userNo:res.data.data.userNo}
 							console.log(telUserNo)
-							DB.setItem("telUserNo",telUserNo);
+							DB.setItem("telUserNo",JSON.stringify(telUserNo));
 							setTimeout(()=>{
 									this.$router.openPage("/closeAccount");
 							},1000)
