@@ -23,10 +23,10 @@
 					    <span></span>
 					</div>
 				</div>
-			</div>
-			<!--店铺选择-->
-			<div class="storeDetail" v-if="isShowAs2">
-				<div class="sd-item" v-for="(sdItem,index) in menusStore" @click="selectMenu2(sdItem)" ><span :class="{'colorYellow':localAddr.localName == sdItem.storeName}">{{sdItem.storeName}}</span></div>
+				<!--店铺选择-->
+				<div class="storeDetail" v-if="isShowAs2">
+					<div class="sd-item" v-for="(sdItem,index) in menusStore" @click="selectMenu2(sdItem)" ><span :class="{'colorYellow':localAddr.localName == sdItem.storeName}">{{sdItem.storeName}}</span></div>
+				</div>
 			</div>
 		</div>
 		
@@ -139,7 +139,6 @@
 			//初试化start
 			//根据code获取并存储openId
 			initOpenId(){
-				DB.removeItem("telUserNo")
 				var strUrl = location.href.split('#')[0];
 	//			console.log("url:"+ location.href);
 				var resultCode = getUrlParam(strUrl, "code");
@@ -395,14 +394,14 @@
 	}
 	
 	.topFire_cont {
-		position: relative;
+		/*position: relative;*/
 		.localLang {
 			width: 0.44rem;
 			height: 0.44rem;
 			text-align: center;
 			line-height: 0.44rem;
 			position: absolute;
-			top: -3.8rem;
+			top: 0.2rem;
 			right: 0.2rem;
 			background-color: #FDA544;
 			font-size: 0.34rem;
@@ -411,17 +410,19 @@
 			border-radius: 50%;
 			z-index: 999;
 		}
+		/*店铺切换*/
 		.localAddr {
 			line-height: 0.44rem;
 			position: absolute;
-			top: -3.8rem;
+			top: 0.2rem;
 			left: 0.2rem;
 			z-index: 999;
-			word-break: keep-all;
-			overflow: hidden;
+			word-break:keep-all;
+			/*overflow: hidden;*/
+			/*店铺选择框*/
 			.addrCont {
 				padding: 0.05rem 0.1rem;
-				max-width: 4rem;
+				max-width: 6rem;
 				background-color: #FFF;
 				border: 1px solid #c5c5c5;
 				line-height: 0.4rem;
@@ -461,14 +462,34 @@
 					color: #FDA544;
 					overflow: hidden;
 					text-overflow: ellipsis;
-					max-width: 3rem;
+					max-width: 4rem;
 				}
 			}
-		}
+		/*店铺下拉*/
 		.storeDetail{
 			position: absolute;
-			top: -3.26rem;
-			left: 0.2rem;			
+			top: 0.54rem;
+			/*left: 0.2rem;*/			
+			z-index: 999;
+			font-size: 0.32rem;
+			background-color: #fff;
+			border: 1px solid #FDA544;
+			.sd-item{
+				.colorYellow{
+					color: #FDA544;
+				}
+				padding:0.1rem 0.2rem;
+				border-bottom: 1px solid #FDA544;
+			}
+			
+		}			
+			
+		}
+		/*店铺下拉*/
+		.storeDetail{
+			position: absolute;
+			top: 0.54rem;
+			left: 0rem;			
 			z-index: 999;
 			font-size: 0.32rem;
 			background-color: #fff;

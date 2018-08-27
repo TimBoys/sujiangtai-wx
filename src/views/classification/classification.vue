@@ -21,6 +21,8 @@
 							<div class="shop-item-wrap clear">
 								<div class="shop-item" v-for="(goods,index) in target.goods"  :key="index">
 									<x-img v-lazy="goods.goodsPictureRound" alt="" @click.native="showModel(goods)"></x-img>
+									<x-img v-lazy="goodsSellOut" alt="" @click.native="showModel(goods)" class="sellOut" v-if="!goods.goodsStock"></x-img>
+									
 									<div class="shop-detail">
 										<div class="shopd-title">{{goods.goodsName}}</div>
 										<div class="shopd-detail">
@@ -31,9 +33,11 @@
 											<div class="shopdpa-price">${{goods.goodsPrice}}</div>
 											<div class="shopdpa-add">
 												<!--<x-icon type="ios-plus" class="cell-x-icon" @click="showGuiGe"></x-icon>-->
-												<x-button class="shopdpa-select" @click.native="showGuiGe(goods)"  mini>{{seleStyle}}
+												<x-button class="shopdpa-select" @click.native="showGuiGe(goods)" mini v-if="goods.goodsStock">{{seleStyle}}
 													<badge class="guigeBadge" :text="goods.selGoodsNum" v-if="goods.selGoodsNum"></badge>
 												</x-button>
+												<x-button class="shopdpa-select disabled" mini v-else>{{seleStyle}}</x-button>												
+												
 											</div>
 										</div>
 									</div>
@@ -186,7 +190,8 @@
 					allGoodsBtn: this.$t('classification.PleaseSelectGoods')
 				}, //购物车中是否有商品
 				hasTheGgInGwc: false,
-				hasTheGgInGwcLen: 0
+				hasTheGgInGwcLen: 0,
+				goodsSellOut:"../../../static/images/home/sellOut.jpg"
 			};
 		},
 		computed: {
@@ -378,9 +383,10 @@
 			//从首页带过来的规格
 			selectThisGoods(){
 				console.log("DB.getItem(selectThisGoods).toJson()")
-				console.log(DB.getItem("selectThisGoods").toJson())
-				if(DB.getItem("selectThisGoods").toJson().storeNo){
-					this.showGuiGe(DB.getItem("selectThisGoods").toJson());
+				var selectThisGoods = DB.getItem("selectThisGoods").toJson();
+				console.log(selectThisGoods);
+				if(selectThisGoods.storeNo && selectThisGoods.goodsStock){
+					this.showGuiGe(selectThisGoods);
 				}
 			},
 			//显示规格
@@ -530,9 +536,9 @@
 			},
 			//去结算判断是否用户是注册
 			toAccount() {
-				console.log("gwcRedPoint" + this.gwcRedPoint)
+//				console.log("gwcRedPoint" + this.gwcRedPoint)
 				if (this.gwcRedPoint) {
-				console.log(DB.getItem("telUserNo").toJson())
+//				console.log(DB.getItem("telUserNo").toJson())
 				//电话，用户编号都有去结算
 				if(DB.getItem("telUserNo").toJson()) {
 					this.$router.openPage("/closeAccount");
@@ -680,10 +686,19 @@
         color: #757575;
         margin-bottom: 0.3rem;
         @include f12px;
+        position: relative;
         img {
           width: getIphoneWidth(140px);
           height: getIphoneWidth(140px);
           padding-bottom: 0.1rem;
+        }
+        .sellOut{
+        	position: absolute;
+        	top: 0;
+        	left: 0;
+          width: getIphoneWidth(140px);
+          height: getIphoneWidth(140px);
+          opacity: 0.5;
         }
         .shop-detail {
           display: inline-block;
@@ -720,6 +735,10 @@
             		right: -0.1rem;
             		font-size: 0.22rem;
             	}
+            }
+            .disabled{
+            	background-color:#767676;
+            	color: #FFF;
             }
           }
           .cell-x-icon {

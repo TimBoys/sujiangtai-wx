@@ -3,10 +3,10 @@
 		<header-back :title="headTitle"></header-back>
 		<div class="tabCont">
 		    <tab bar-active-color="#FDA544" active-color="#FDA544" height="1rem">
-		      <tab-item selected @on-item-click="onItemClick(1)"  v-if="mineOrderType == 1" selected>堂吃</tab-item>
-		      <tab-item selected @on-item-click="onItemClick(1)" v-else>堂吃</tab-item>
-		      <tab-item @on-item-click="onItemClick(0)" v-if="mineOrderType == 0" selected>预定</tab-item>
-		      <tab-item @on-item-click="onItemClick(0)" v-else>预定</tab-item>
+		      <tab-item selected @on-item-click="onItemClick(1)"  v-if="mineOrderType == 1" selected>{{$t('closeAccount.eatIn')}}</tab-item>
+		      <tab-item selected @on-item-click="onItemClick(1)" v-else>{{$t('closeAccount.eatIn')}}</tab-item>
+		      <tab-item @on-item-click="onItemClick(0)" v-if="mineOrderType == 0" selected>{{$t('closeAccount.reserve')}}</tab-item>
+		      <tab-item @on-item-click="onItemClick(0)" v-else>{{$t('closeAccount.reserve')}}</tab-item>
 		    </tab>
 		    
  <!--堂吃-->	
@@ -22,34 +22,34 @@
 			   	  		<div class="tit_orderNo">{{item.orderNo}}</div>
 			   	  		<div class="tit_orderTime">{{item.orderTime}}</div>
 			   	  	</div>
-			   	  	<div class="ti_detail"><span>查看详情</span></div>
+			   	  	<div class="ti_detail"><span>{{$t('mine.viewDetails')}}</span></div>
 		   	  	</div>
 		   	  	<div class="bottomItem">
 			   	  	<div class="bi_cont">
-			   	  		<div v-if="item.payStatus == 0">待支付</div>
-			   	  		<div v-else-if="item.payStatus == 1">支付成功</div>
-			   	  		<div v-else="item.payStatus == 2">支付失败</div>
+			   	  		<div v-if="item.payStatus == 0">{{$t('mine.unpaid')}}</div>
+			   	  		<div v-else-if="item.payStatus == 1">{{$t('mine.paymentSuccess')}}</div>
+			   	  		<div v-else-if="item.payStatus == 2">{{$t('mine.paymentSuccess')}}</div>
 			   	  		
-			   	  		<div v-if="item.orderStatus == 0">已下单</div>
-			   	  		<div v-else-if="item.orderStatus == 1">制作完成</div>
-			   	  		<div v-else="item.orderStatus == 2">取货完成</div>
-			   	  		<div v-else="item.orderStatus == 3">外送</div>
-			   	  		<div v-else="item.orderStatus == 4">撤销</div>
+			   	  		<div v-if="item.orderStatus == 0">{{$t('mine.placedAnOrder')}}</div>
+			   	  		<div v-else-if="item.orderStatus == 1">{{$t('mine.finishedOrder')}}</div>
+			   	  		<div v-else-if="item.orderStatus == 2">{{$t('mine.PickupToComplete')}}</div>
+			   	  		<div v-else-if="item.orderStatus == 3">{{$t('mine.delivery')}}</div>
+			   	  		<div v-else-if="item.orderStatus == 4">{{$t('mine.revocation')}}</div>
 			   	  		
 			   	  	</div>
 		   	  	</div>	
 		   	  	
 		   	  	<div class="bottomItem">
 			   	  	<div class="bi_cont">
-			   	  		<div v-for="(itemName,indexName) in item.orderDetails" v-if="!indexName">{{itemName.goodsName}}等 {{item.orderDetails.length}}件商品</div>
-						<div>${{item.origPrice}}</div>
+			   	  		<div v-for="(itemName,indexName) in item.orderDetails" v-if="!indexName">{{itemName.goodsName}}{{$t('mine.andSoOn')}} {{item.orderDetails.length}} {{$t('mine.items')}}</div>
+						<div class="bi-origPrice">${{item.origPrice}}</div>
 			   	  	</div>
 		   	  	</div>	
 		   	  	
 		   	  	
 		   	  </div>
  				  <!--<load-more v-if="tcNoData" tip="loading"></load-more>-->
- 				   <load-more v-if="!tcNoData" :show-loading="false" tip="已无更多了" background-color="#fbf9fe"></load-more>
+ 				   <load-more v-if="!tcNoData" :show-loading="false" :tip="noMore" background-color="#fbf9fe"></load-more>
 			      </div>
 			    </scroller>		   	  	
 		   </div>
@@ -68,34 +68,34 @@
 			   	  		<div class="tit_orderNo">{{item.orderNo}}</div>
 			   	  		<div class="tit_orderTime">{{item.orderTime}}</div>
 			   	  	</div>
-			   	  	<div class="ti_detail"><span>查看详情</span></div>
+			   	  	<div class="ti_detail"><span>{{$t('mine.viewDetails')}}</span></div>
 		   	  	</div>
 		   	  	<div class="bottomItem">
 			   	  	<div class="bi_cont">
-			   	  		<div v-if="item.payStatus == 0">待支付</div>
-			   	  		<div v-else-if="item.payStatus == 1">支付成功</div>
-			   	  		<div v-else="item.payStatus == 2">支付失败</div>
+			   	  		<div v-if="item.payStatus == 0">{{$t('mine.unpaid')}}</div>
+			   	  		<div v-else-if="item.payStatus == 1">{{$t('mine.paymentSuccess')}}</div>
+			   	  		<div v-else-if="item.payStatus == 2">{{$t('mine.paymentSuccess')}}</div>
 			   	  		
-			   	  		<div v-if="item.orderStatus == 0">已下单</div>
-			   	  		<div v-else-if="item.orderStatus == 1">制作完成</div>
-			   	  		<div v-else="item.orderStatus == 2">取货完成</div>
-			   	  		<div v-else="item.orderStatus == 3">外送</div>
-			   	  		<div v-else="item.orderStatus == 4">撤销</div>
+			   	  		<div v-if="item.orderStatus == 0">{{$t('mine.placedAnOrder')}}</div>
+			   	  		<div v-else-if="item.orderStatus == 1">{{$t('mine.finishedOrder')}}</div>
+			   	  		<div v-else-if="item.orderStatus == 2">{{$t('mine.PickupToComplete')}}</div>
+			   	  		<div v-else-if="item.orderStatus == 3">{{$t('mine.delivery')}}</div>
+			   	  		<div v-else-if="item.orderStatus == 4">{{$t('mine.revocation')}}</div>
 			   	  		
 			   	  	</div>
 		   	  	</div>	
 		   	  	
 		   	  	<div class="bottomItem">
 			   	  	<div class="bi_cont">
-			   	  		<div v-for="(itemName,indexName) in item.orderDetails" v-if="!indexName">{{itemName.goodsName}}等 {{item.orderDetails.length}}件商品</div>
-						<div>${{item.origPrice}}</div>
+			   	  		<div v-for="(itemName,indexName) in item.orderDetails" v-if="!indexName">{{itemName.goodsName}}{{$t('mine.andSoOn')}} {{item.orderDetails.length}} {{$t('mine.items')}}</div>
+						<div class="bi-origPrice">${{item.origPrice}}</div>
 			   	  	</div>
 		   	  	</div>	
 		   	  	
 		   	  	
 		   	  </div>
  				  <!--<load-more v-if="yyNoData" tip="loading"></load-more>-->
- 				  <load-more v-if="!yyNoData" :show-loading="false" tip="已无更多了" background-color="#fbf9fe"></load-more>
+ 				  <load-more v-if="!yyNoData" :show-loading="false" :tip="noMore" background-color="#fbf9fe"></load-more>
 			      </div>
 			    </scroller>		   	  	
 		   </div>
@@ -117,7 +117,7 @@ import { Scroller, Divider, Spinner, XButton, Group, Cell, LoadMore } from 'vux'
 		name:"mineOrder",
 		data(){
 			return{
-				headTitle:"我的订单",
+				headTitle:this.$t('mine.mineOrder'), //我的订单
 				mineOrderType:null,  //1堂吃0预约
 				yyData:[],  //堂吃
 				tcData:[],  //预定
@@ -129,6 +129,7 @@ import { Scroller, Divider, Spinner, XButton, Group, Cell, LoadMore } from 'vux'
      			yyNoData:true,
       			tcNoData:true,      
       			flgtcyy:null,
+      			noMore:this.$t("reminder.noMore"),
 			}
 		},
 		mounted:function(){
@@ -140,7 +141,7 @@ import { Scroller, Divider, Spinner, XButton, Group, Cell, LoadMore } from 'vux'
 				this.showLoading = true;
 				setTimeout(()=>{
 					this.showLoading = false;
-				},20000)
+				},30000)
 				//是否有堂吃预定缓存
 				var isYyTc = DB.getItem("isYyTc").toNumber();
 				console.log("isYyTc")
@@ -159,13 +160,14 @@ import { Scroller, Divider, Spinner, XButton, Group, Cell, LoadMore } from 'vux'
 				}else{
 					this.queryOrdersByUserNoPage();
 				}
-						
+						console.log("isYyTc1")
 			},
 			
 			//分页查询数据接口
 			queryOrdersByUserNoPage(val,flg){
 				var pageNumber = 1;
 				var mineOrderType = null;
+				console.log("isYyTc2")
 				if (flg) {
 					//第一次默认都加载预定堂吃
 					mineOrderType = val;
@@ -175,8 +177,9 @@ import { Scroller, Divider, Spinner, XButton, Group, Cell, LoadMore } from 'vux'
 					console.log("pageNumber")
 					console.log(pageNumber)
 				}
-				
+				console.log("isYyTc322")
 				var telUserNo = DB.getItem("telUserNo").toJson(); 
+				console.log(telUserNo)
 				//判断是否登录
 				if(telUserNo){
 				//封装请求数据
@@ -206,7 +209,6 @@ import { Scroller, Divider, Spinner, XButton, Group, Cell, LoadMore } from 'vux'
 							}else{
 								var ErrorMsg = res.data.data.cnErrorMsg;
 							}
-							this.showLoading = false;
 							
 						if(res.data.data.rspCode == "00000" ){
 							if(res.data.data.rows){
@@ -223,11 +225,6 @@ import { Scroller, Divider, Spinner, XButton, Group, Cell, LoadMore } from 'vux'
 									console.log("tcData")
 									console.log(this.tcData)
 								}
-								//第一次进来设置nav
-								console.log("第一次进来设置nav")
-								console.log(this.mineOrderType)
-
-								
 							}else{
 								console.log("已经没有更多了")
 								console.log(this.mineOrderType)
@@ -240,17 +237,18 @@ import { Scroller, Divider, Spinner, XButton, Group, Cell, LoadMore } from 'vux'
 								type: "text",
 							})								
 						}
-						
+						this.showLoading = false;
 					}
 				}).catch((err) => {
 					console.log(err)
 					this.showLoading = false;
 				})				
 			}else{
-           		_this.$vux.toast.show({
+           		this.$vux.toast.show({
 					text: "该用户还未登录！",
 					type: "text",
-				})				
+				})	
+				this.$router.openPage("/mine");
 			}
 			},			
 			
@@ -294,7 +292,6 @@ import { Scroller, Divider, Spinner, XButton, Group, Cell, LoadMore } from 'vux'
 		          	}
 		          	this.initData();
 		          })
-		          console.log("xx")
 		          this.onFetching = false
 		        }, 2000)
 		      }
@@ -340,10 +337,10 @@ import { Scroller, Divider, Spinner, XButton, Group, Cell, LoadMore } from 'vux'
 					flex-direction: column;
 					justify-content:center;	
 					.tit_orderNo{
-						font-size: 0.34rem;
+						font-size: 0.38rem;
 					}
 					.tit_orderTime{
-						font-size: 0.26rem;
+						font-size: 0.28rem;
 					}					
 				}
 				.ti_detail{
@@ -361,7 +358,11 @@ import { Scroller, Divider, Spinner, XButton, Group, Cell, LoadMore } from 'vux'
 			.bottomItem{
 				.bi_cont{
 					display: flex;
-					justify-content: space-between;						
+					justify-content: space-between;		
+					.bi-origPrice{
+						color: red;
+						font-size: 0.34rem;
+					}				
 				}
 			}
 		}

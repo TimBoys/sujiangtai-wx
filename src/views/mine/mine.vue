@@ -4,8 +4,7 @@
 				<x-img v-lazy="maskImg" class="maskCont"></x-img>				
 				<div class="mineCont">
 					<div class="mineContTop">
-						<x-img v-lazy="maskImg" class="headIcon" @click.native="showImgText">
-						</x-img>
+						<img :src="maskImg2" class="headIcon" @click="showImgText" />
 						<div class="isImgText" v-if="isImgText"><span >#</span>现有客户交易积分有效，累计核算在之后的积分系统里。</div>
 						<div class="headJieShao">
 							<div>{{headName}}</div>
@@ -93,6 +92,8 @@
 				if (wxUserInfo) {
 					this.maskImg2 = wxUserInfo.headimgurl;
 					this.headName = wxUserInfo.weixinNickname;
+				}else{
+					this.maskImg2 = this.maskImg;
 				}
 				
 			},

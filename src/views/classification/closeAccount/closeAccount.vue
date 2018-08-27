@@ -13,10 +13,10 @@
 			    </tab>-->
 				<group label-width="4.5em" label-margin-right="2em" gutter="0" label-align="left" class="groupItem" >
 						<!--<popup-picker title="配送方式" :data="list" v-model="value5" value-text-align="left" ></popup-picker>-->
-						<cell title="配送方式" value-align="left" primary="content" >
+						<cell :title="modeDistribution" value-align="left" primary="content" >
 					      <checker v-model="checkerDemo" radio-required default-item-class="demo1-item" selected-item-class="demo1-item-selected" disabled-item-class="demo1-item-disabled" @on-change="changeChecker">
 					        <checker-item :value="item" v-for="(item, index) in checkerItems" :key="index">{{item.value}}</checker-item>
-					        <checker-item :value="demo3" disabled>外卖</checker-item>
+					        <checker-item :value="demo3" disabled>{{takeOut}}</checker-item>
 					      </checker>					
 						</cell>
 						<cell :title="mustAddress" value-align="left" primary="content"   :value="storeAddress">
@@ -142,15 +142,17 @@ export default{
 			enjoyLooking:this.$t('closeAccount.enjoyLooking'), //敬请期待
 			checkerItems: [{
 		        key: '0',
-		        value: '预定'
+		        value: this.$t('closeAccount.reserve')
 		      }, {
 		        key: '1',
-		        value: '堂吃'
+		        value:  this.$t('closeAccount.eatIn')
 		      }],
-		    checkerDemo: {key: '1', value: '堂吃'},
-   			demo1: {key: '1', value: '堂吃'},
-   			demo2: {key: '0', value: '预定'},
-   			demo3: {key: '2', value: '外卖'},
+		    checkerDemo: {key: '1', value:  this.$t('closeAccount.eatIn')},
+   			demo1: {key: '1', value:  this.$t('closeAccount.eatIn')},
+   			demo2: {key: '0', value: this.$t('closeAccount.reserve')},
+   			demo3: {key: '2', value: this.$t('closeAccount.takeOut')},
+   			takeOut:this.$t('closeAccount.takeOut'),
+   			modeDistribution:this.$t('closeAccount.modeDistribution'),
 			gdTitle:"",
 			sjtLogo:"../../../static/images/mine/sjtLogo.jpg",
 			list2: [['微信支付', '支付宝', 'VISA/Master Card',"银行卡"]],
@@ -196,7 +198,7 @@ export default{
 		if (!this.shopCar.length()) {
 			console.log("isNUll")
 			this.$vux.toast.show({
-				text: "请先选择商品后再结算！",
+				text: this.$t("closeAccount.pleaseSelGoods"),
 				type: "text",
 			})
 			setTimeout(()=>{
@@ -239,7 +241,7 @@ export default{
 						var data={
      		                token:token.id,
 							amount:_this.allGoods.allGDOrderPrice * 100,
-							description:'奶茶',
+							description:_this.$t("closeAccount.milkyTea"),
                             orderNum:_this.orderNo   //订单编号
 						}
 						_this.showLoading = true;	
@@ -299,6 +301,10 @@ export default{
 			
 	    	var theTimeHour = [];
 	    	var theTimeMin = [];
+//	    	var n=new Date().getTime();
+//	    	var theSecondStart = new Date(n + 1000*60*30).getMinutes() < 10 ? "0" + new Date(n + 1000*60*30).getMinutes() : new Date(n + 1000*60*30).getMinutes();
+//	    	console.log("theSecondStart")
+//	    	console.log(theSecondStart)
 	    	for (var i = 9 ; i < 18; i++) {
 	    		var iHour = i < 10 ? "0"+i : i;
 	    		theTimeHour.push(iHour);
@@ -307,6 +313,7 @@ export default{
 	    		var iMin = j < 10 ? "0"+j : j;
 	    		theTimeMin.push(iMin);
 	    	}
+//	    	console.log(theTimeMin)
 	    	var nowHour = new Date().getHours() < 10 ? "0"+new Date().getHours() : new Date().getHours();
 	    	var nowMinutes = new Date().getMinutes() < 10 ? "0"+new Date().getMinutes() : new Date().getMinutes();
 //	    	console.log(nowHour)
@@ -407,10 +414,25 @@ export default{
 				
 				this.$http.post("/userOrderInfo/userOrderOper",toPushData).then((res) => {
 					console.log("/userOrderInfo/userOrderOper")
-					if(res.status == 200 && res.data.rspCode == "00000") {
-						console.log(res.data.data)
-						this.initOrderPage(res.data.data);
-						this.orderNo = res.data.data.orderNo;
+					if(res.status == 200) {
+						if(DB.getItem("localLang").toString() == "en"){
+							var ErrorMsg = res.data.usErrorMsg;
+						}else{
+							var ErrorMsg = res.data.cnErrorMsg;
+						}						
+						if(res.data.rspCode == "00000"){
+							console.log(res.data.data)
+							this.initOrderPage(res.data.data);
+							this.orderNo = res.data.data.orderNo;
+						}else{
+     		               		this.$vux.toast.show({
+									text: ErrorMsg,
+									type: "text",
+								})							
+							this.$router.openPage("/classification");
+						}
+						
+
 					}
 				}).catch((err) => {
 					console.log(err)

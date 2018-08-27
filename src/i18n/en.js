@@ -40,7 +40,13 @@ module.exports = {
       		changePhone:"Change your phone number",
       	  paymentSuccess:"Payment Success",
       	  shopHasNot:"The shop has not opened yet!",
-      	  enjoyLooking:"Enjoy Looking"
+      	  enjoyLooking:"Enjoy Looking",
+      	  eatIn:"Eat In",
+      	  reserve:"Reserve",
+      	  takeOut:"Take-out",
+      	  pleaseSelGoods:"Please select the goods first before settling！",
+      	  milkyTea:"Milky Tea",
+      	  modeDistribution:"Mode of distribution"
       },
       mine:{
       	  VIPEnjoyMoreDiscounts:"VIP Enjoy more discounts",
@@ -48,8 +54,26 @@ module.exports = {
       		mineOrder:"mine Order",
       		membershipCard:"membership Card",
       		systematicNotification:"systematic Notification",
-      		aboutUs:"About Us"      		
-      	
+      		aboutUs:"About Us",      		
+      		viewDetails:"View Details",  
+      		unpaid:"Unpaid",
+      		paymentSuccess:"Payment Success",
+      		paymentFailure:"Payment Failure", 
+      		placedAnOrder:"placed An Order",
+      		finishedOrder:"Finished Order",
+      		PickupToComplete:"Pickup To Complete",
+      		delivery:"Delivery",
+      		revocation:"Revocation",    
+      		orderDetails:"Order Details",      		
+      		orderNumber:"Order Number：",      		
+      		orderInformation:"Order Information",
+      		orderTime:"Order Time：",
+      		orderType:"Order Type：",
+      		modeOfPayment:"Mode Of Payment：",
+      		onlinePayment:"Online Payment",
+      		BuyerMessage:"Buyer Message：",
+      		andSoOn:"and so on",
+      		items:"items",
       },
       login:{
       	usersLogin:"users Login",
@@ -63,12 +87,14 @@ module.exports = {
       	usersRegister:"users Register",
       	holdPhone:"mobile phone number",
       	holdPassword:"password",
+      	holdNewPassword:"New Password",
       	inputVerificationCode:"verification Code",
       	newUserReg:"New user? Please register",
       	login:"login",
       	getCode:"get Code",
       	regain:"regain",
       	RegisteredTologin:"Registered To login",
+      	HavePasswordTologin:"Have password to login",
       },
       forgetPassword:{
       	forgetPassword:"forget Password"
@@ -81,7 +107,8 @@ module.exports = {
       	pleaseCheckInfo:"The information has been sent. Please check!",     	
 				systemError:"system Error!",      	
       	dataLoading:"Data Loading...",
-      	comingSoon:"coming soon!"
+      	comingSoon:"coming soon!",
+      	noMore:"There is no more！",
       }      
       
     }
