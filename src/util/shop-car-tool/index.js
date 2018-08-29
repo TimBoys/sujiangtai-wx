@@ -28,6 +28,10 @@ class shopCarTool{
 		console.log("value" )
 		console.dir( value)
 	    var key = value.goodsItem.goodsId;
+	    var valInitGuiGeSC = "";
+	    valInitGuiGeSC = JSON.stringify(value.initGuiGeSC)
+	    console.log("valInitGuiGeSC")
+	    console.log(valInitGuiGeSC)
 	    if(!key){
 	      return
 	    }
@@ -44,30 +48,38 @@ class shopCarTool{
 				} else{
 					initLeng++;
 					if (itemGuigeLength == initLeng) {
-						this.shopCarDB[key].itemGuige.push({
+						var data = {};
+						data = {
 							itemOneGuigeLen:1,
 							hasGuigePrice:value.iGAGPrice,
 							guiGePrice:value.iGAGPrice - value.goodsItem.goodsPrice,
 							iGAGAllGuige:value.iGAGAllGuige,
-							initGuiGeSC:value.initGuiGeSC
-						})
+							initGuiGeSC:valInitGuiGeSC
+						};
+						this.shopCarDB[key].itemGuige.push(data);
+						console.log(data)
 					}
 				}
 			}	    	
 	    	this.shopCarDB[key].length += 1;
+	    	console.log("this.shopCarDB[key]")
+	    	console.log(this.shopCarDB[key])
 	    }else{
 	    	console.log("商品不在购物车中")
 	     	// 过滤需要的信息
 	      	var filter = {};
 			filter.length =1;
 			//选择规格数组和规格所属的商品
-			filter.itemGuige = [{
+			var data = {};
+			data = {
 				itemOneGuigeLen:1,
 				hasGuigePrice:value.iGAGPrice,
 				guiGePrice:value.iGAGPrice - value.goodsItem.goodsPrice,
 				iGAGAllGuige:value.iGAGAllGuige,
-				initGuiGeSC:value.initGuiGeSC
-			}]
+				initGuiGeSC:valInitGuiGeSC
+			};
+			filter.itemGuige = [];
+			filter.itemGuige.push(data);
 			filter.goodsId = value.goodsItem.goodsId //规格所属的商品
 			filter.goodsName = value.goodsItem.goodsName //规格所属的商品
 			filter.iGAGPrice = value.iGAGPrice //选择商品加上规格的价格

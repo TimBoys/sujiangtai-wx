@@ -154,7 +154,7 @@ li {
     position: absolute;
     z-index: 400;
     background-color: #fff;
-    bottom: 0px;
+    bottom: 0px!important;
     width: 100%;
     height: $footerHeight;
     left: 0;
@@ -282,4 +282,7 @@ li {
 
 .red{
     color:red;
+}
+.ft2{
+    font-size: 0.24rem;
 }

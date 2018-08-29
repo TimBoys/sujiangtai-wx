@@ -8,7 +8,7 @@
 						<div class="isImgText" v-if="isImgText"><span >#</span>现有客户交易积分有效，累计核算在之后的积分系统里。</div>
 						<div class="headJieShao">
 							<div>{{headName}}</div>
-							<div>积分：30</div>
+							<div>积分：{{points}}</div>
 						</div>
 					</div>
 					<div class="mineContBottom" @click="nextWait">
@@ -31,18 +31,23 @@
 						</cell>
 				</group>
 				<group label-width="9em" label-margin-right="2em" label-align="left" class="groupItem">
-						<cell :title="systematicNotification"  is-link>
+						<cell @click.native="showPosition2('middle')" :title="systematicNotification"  is-link>
 							<x-img slot="icon" class="mineItem" v-lazy="groupCont.mineHelp">
 							</x-img>
 						</cell>
-						<cell :title="aboutUs"  is-link @click.native="open('/aboutUs')">
+						<cell @click.native="showPosition('middle')" :title="aboutUs" is-link>
 							<x-img slot="icon" class="mineItem" v-lazy="groupCont.mineMsg">
 							</x-img>
 						</cell>
+						<!--<cell @click.native="showPosition('middle')" :title="aboutUs" is-link @click.native="open('/aboutUs')">
+							<x-img slot="icon" class="mineItem" v-lazy="groupCont.mineMsg">
+							</x-img>
+						</cell>-->						
 				</group>
 			</div>
 			
-			 <toast  v-model="showPositionValue"  type="text" :time="2000" is-show-mask :text="$t('reminder.comingSoon')" :position="position"></toast>
+			 <toast  v-model="showPositionValue" width="5rem"  type="text" :time="2000" is-show-mask :text="$t('reminder.comingSoon')" :position="position"></toast>
+			 <toast  v-model="showPositionValue2" width="5rem"  type="text" :time="2000" is-show-mask :text="$t('reminder.comingSoon2')" :position="position"></toast>
 			
 	</div>
 </template>
@@ -73,8 +78,10 @@
 				value:"",
 				position: 'default',
       			showPositionValue: false,
+      			showPositionValue2: false,
       			isImgText:false, //图片显示字段
       			isFavorText:false,//优惠显示字段
+      			points:0, //积分
 			}
 		},
 		mounted:function(){
@@ -96,11 +103,22 @@
 					this.maskImg2 = this.maskImg;
 				}
 				
+				//获取积分
+//				console.log(DB.getItem("telUserNo").toJson())
+				if(DB.getItem("telUserNo").toJson()) {
+					this.findUserByTelephone();
+				}
+				
+				
 			},
 			showPosition (position) {
 		      this.position = position;
 		      this.showPositionValue = true;
 		    },
+			showPosition2 (position) {
+		      this.position2 = position;
+		      this.showPositionValue2 = true;
+		    },		    
 		    nextWait(){
 //		      this.showPositionValue = true;
 		    },
@@ -112,7 +130,25 @@
 		    },
 		    showFavorText(){
 		    	this.isFavorText = !this.isFavorText;
-		    },		    
+		    },	
+			//根据手机号码查找用户，移动端
+			findUserByTelephone() {
+				this.$http.get("/userRegister/findUserByTelephone", {
+					params: {
+						telephone: DB.getItem("telUserNo").toJson().telephone,
+					}
+				}).then((res) => {
+					if(res.status == 200 && res.data.rspCode == "00000") {
+						console.log(res.data.data)
+						if(res.data.data) {
+							//手机号码查询有参数的
+							this.points = res.data.data.points;
+						}
+					}
+				}).catch((err) => {
+					console.log(err)
+				})
+			},		    
 		},
 		components:{
 			XImg,

@@ -38,49 +38,52 @@
 			<div class="gd-title">
 				{{gdTitle}}
 			</div>
-			<div class="gd-cont">
+			<div class="gd-cont" v-if="showInitData">
 				<div class="gdc-detail" v-for="(item,index) in allGoods.allGDPage">
 					<x-img  class="gdcd-img" v-lazy="item.goodsItem.goodsPictureRound"></x-img>
 					<div  class="gdcd-price">
 						<div class="gdcdp-right">
 							<div class="gdcdpr-title">{{item.goodsItem.goodsName}}</div>
-							<div>{{item.iGAGAllGuige}}</div>
+							<div>{{item.iGAGAllGuige}} <span class="ft2" v-if="item.goodsItem.goodsGuigePrice">(${{item.goodsItem.goodsGuigePrice}})</span></div>
 							<div>x{{item.itemOneGuigeLen}}</div>
 						</div>
 						<div class="gdcdp-plus">
-							<span>{{item.goodsItem.goodsPrice}}</span>
-							<span>{{item.goodsItem.goodsGuigePrice}}</span>
-							
+							<span>${{item.hasGuigePrice * item.itemOneGuigeLen}}</span>
+							<!--<span>${{item.goodsItem.goodsPrice}}</span>
+							<span>${{item.goodsItem.goodsGuigePrice}}</span>-->
 						</div>
 					</div>
 				</div>
-					<div class="gdc-footer">
-						<div class="gdcf-allPrice">
-							{{$t('closeAccount.originalPrice')}}：${{allGoods.allGDOrigPrice}}
-						</div>
-						<div class="gdcf-allPrice">
-							<span class="fl"></span>{{$t('closeAccount.discounts')}}({{promotionName}})：${{allGoods.allGDDiscount}}
-						</div>
-						
-						<div class="gdcf-allPrice">
-							{{$t('closeAccount.subtotal')}}：${{allGoods.allGDOrderPrice}}
-						</div>
-						<group :title="theSellerMessage" class="gdc-textarea">
-      						<x-textarea  name="detail" :placeholder="holdSay" :show-counter="false" v-model="textAreaValue"></x-textarea>
-    					</group>
+				<div class="gdc-footer">
+					<div class="gdcf-allPrice">
+						{{$t('closeAccount.originalPrice')}}：
+						<span class="red">${{allGoods.allGDOrigPrice}}</span>
 					</div>
-				
+					<div class="gdcf-allPrice">
+						{{$t('closeAccount.discounts')}}<span class="ft2">({{promotionName}})</span>：
+						<span class="red">${{allGoods.allGDDiscount}}</span>
+					</div>
+					
+					<div class="gdcf-allPrice">
+						{{$t('closeAccount.subtotal')}}：
+						<span class="red">${{allGoods.allGDOrderPrice}}</span>
+					</div>
+					<group :title="theSellerMessage" class="gdc-textarea">
+  						<x-textarea  name="detail" :placeholder="holdSay" :show-counter="false" v-model="textAreaValue"></x-textarea>
+					</group>
+				</div>
 			</div>
-			
-			
 		</div>
+		<!--商品详情-->
+		
+		
 	</div>		
 		<!--底部结算按钮s-->
 	<div class="classification-footer absolute">
 		<div class="cf-left">
 			<div class="cfl-cont" >
 				<x-img v-lazy="sjtLogo" class="iconfont icon-gouwuche ftl-gwc"></x-img>
-				<div class="ftl-redPoint">
+				<div class="ftl-redPoint" v-if="allGoods.allGDLength">
 					{{allGoods.allGDLength}}
 				</div>
 			</div>
@@ -155,8 +158,10 @@ export default{
    			modeDistribution:this.$t('closeAccount.modeDistribution'),
 			gdTitle:"",
 			sjtLogo:"../../../static/images/mine/sjtLogo.jpg",
-			list2: [['微信支付', '支付宝', 'VISA/Master Card',"银行卡"]],
-			value6: ['微信支付'],
+//			list2: [['微信支付', '支付宝', 'VISA/Master Card',"银行卡"]],
+			list2: [['VISA/Master Card']],
+//			value6: ['微信支付'],
+			value6: ['VISA/Master Card'],
 			showPhone:false,
 			showPhoneTitle:this.$t("closeAccount.changePhone"),
 			formatDemoValue: [],				//默认预约时间
@@ -176,7 +181,8 @@ export default{
 		    promotionName:null,
 		    storeAddress:"shanghai",
 		    storePhone:"110",
-		    showLoading:false,
+		    showLoading:false, //loading加载
+		    showInitData:false, //初始化数据加载
 		    showText:this.$t("reminder.dataLoading"),
 		    orderNo:null,
 		}
@@ -228,8 +234,8 @@ export default{
 	    initPayData(){
      			 var _this = this;
      		     handler = StripeCheckout.configure({
-					 key:'pk_test_ujKHOw9xZM2QYfJwDZIt890W',  //测试key
-     		         //key: 'pk_live_3aqw1J17VC1gcSxl29khgL3u',  //TODO:正式key,正式发布时替换
+//					 key:'pk_test_ujKHOw9xZM2QYfJwDZIt890W',  //测试key
+       		         key: 'pk_live_3aqw1J17VC1gcSxl29khgL3u',  //TODO:正式key,正式发布时替换
      		        image: 'https://stripe.com/img/documentation/checkout/marketplace.png',
      		        locale: 'auto',
      		        token: function(token) {
@@ -303,7 +309,7 @@ export default{
 	    	var theTimeMin = [];
 //	    	var n=new Date().getTime();
 //	    	var theSecondStart = new Date(n + 1000*60*30).getMinutes() < 10 ? "0" + new Date(n + 1000*60*30).getMinutes() : new Date(n + 1000*60*30).getMinutes();
-//	    	console.log("theSecondStart")
+	    	console.log("theSecondStart")
 //	    	console.log(theSecondStart)
 	    	for (var i = 9 ; i < 18; i++) {
 	    		var iHour = i < 10 ? "0"+i : i;
@@ -315,19 +321,20 @@ export default{
 	    	}
 //	    	console.log(theTimeMin)
 	    	var nowHour = new Date().getHours() < 10 ? "0"+new Date().getHours() : new Date().getHours();
-	    	var nowMinutes = new Date().getMinutes() < 10 ? "0"+new Date().getMinutes() : new Date().getMinutes();
+	    	var n=new Date().getTime()  - 1000*60*30;
+	    	var nowMinutes = new Date(n).getMinutes() < 10 ? "0"+new Date(n).getMinutes() : new Date(n).getMinutes();
 //	    	console.log(nowHour)
 //	    	console.log(theTimeHour)
 //	    	console.log(theTimeHour.indexOf(nowHour))
 			if (theTimeHour.indexOf(nowHour) == -1) {
 				this.formatDemoValue.push(this.$t("closeAccount.shopHasNot"),"closeDoor")
 			}else{
-				var theNowHour = theTimeHour.slice(theTimeHour.indexOf(nowHour) + 1)
 				var theNowHour = nowHour == 17 ? theTimeHour.slice(theTimeHour.indexOf(nowHour)) : theTimeHour.slice(theTimeHour.indexOf(nowHour) + 1)
-//				console.log(theNowHour)
+				console.log(theNowHour)
 //				console.log(theTimeMin.indexOf(nowMinutes))
 //				console.log(theTimeMin.slice(theTimeMin.indexOf(nowMinutes),59))
-				this.ppAllYuyueTime.push(theNowHour,theTimeMin.slice(theTimeMin.indexOf(nowMinutes),59));
+//				this.ppAllYuyueTime.push(theNowHour,theTimeMin.slice(theTimeMin.indexOf(nowMinutes),59));  //半个小时以后
+				this.ppAllYuyueTime.push(theNowHour,theTimeMin);
 				this.formatDemoValue.push(theNowHour[0],theTimeMin.slice(theTimeMin.indexOf(nowMinutes),59)[0])
 			}
 	   },
@@ -373,29 +380,37 @@ export default{
 	    },
 	    //初始化订单
 	    initUserOrder(){
+	    	console.log("queryPromotionByStoreNoNation-telUserNo")
 				var telUserNo = DB.getItem("telUserNo").toJson();
 				var getAllShopCar = this.shopCar.getAll();
 				var listTeaOrderDetails = [];
+//				console.log(getAllShopCar)
+//				console.log(DB.getItem("allGoodsAttrs").toJson())
 				for (var itemKey in getAllShopCar) {
 					for (var i =0; i < getAllShopCar[itemKey].itemGuige.length; i++) {
-						console.log(getAllShopCar[itemKey].itemGuige[i].initGuiGeSC)
+//						console.log(getAllShopCar[itemKey].itemGuige[i].initGuiGeSC)
 						for (var k = 0; k < getAllShopCar[itemKey].itemGuige[i].itemOneGuigeLen; k++) {
 							var pushGoods = {};
 							var oneStyleItemArr = [];
 							pushGoods.goodsId = getAllShopCar[itemKey].goodsId;
-							getAllShopCar[itemKey].itemGuige[i].iGAGAllGuige.split("、").forEach((oneStyleItem,osIndex)=>{
-								DB.getItem("allGoodsAttrs").toJson().forEach((agaItem,agiIndex)=>{
-										if (oneStyleItem == agaItem.attrName) {
-											oneStyleItemArr.push(agaItem);
-										}									
-								})
-								
-							})
+							oneStyleItemArr = JSON.parse(getAllShopCar[itemKey].itemGuige[i].initGuiGeSC);
+							
+//							console.log(getAllShopCar[itemKey].itemGuige[i].iGAGAllGuige.split("、"))
+//							getAllShopCar[itemKey].itemGuige[i].iGAGAllGuige.split("、").forEach((oneStyleItem,osIndex)=>{
+//								console.log(DB.getItem("allGoodsAttrs").toJson())
+//								DB.getItem("allGoodsAttrs").toJson().forEach((agaItem,agiIndex)=>{
+//										if (oneStyleItem == agaItem.attrName) {
+//											oneStyleItemArr.push(agaItem);
+//										}									
+//								})
+//							})
+							
 							pushGoods.listTeaOrderDetailsAttr = oneStyleItemArr;
 							listTeaOrderDetails.push(pushGoods)
 						}
 					}
 				}
+				console.log("listTeaOrderDetails")
 //				console.log(listTeaOrderDetails)
 				
 				var toPushData = {
@@ -409,8 +424,8 @@ export default{
 				};
 				
 				console.log("toPushData")
-				console.log(toPushData)
-				console.log(toPushData.listTeaOrderDetailsAttr)
+//				console.log(toPushData)
+//				console.log(toPushData.listTeaOrderDetailsAttr)
 				
 				this.$http.post("/userOrderInfo/userOrderOper",toPushData).then((res) => {
 					console.log("/userOrderInfo/userOrderOper")
@@ -424,6 +439,7 @@ export default{
 							console.log(res.data.data)
 							this.initOrderPage(res.data.data);
 							this.orderNo = res.data.data.orderNo;
+							this.showInitData = true;
 						}else{
      		               		this.$vux.toast.show({
 									text: ErrorMsg,
@@ -431,8 +447,6 @@ export default{
 								})							
 							this.$router.openPage("/classification");
 						}
-						
-
 					}
 				}).catch((err) => {
 					console.log(err)
@@ -459,6 +473,7 @@ export default{
 						allGoodsDataPage.allGDPage.push(allGDPageObj)
 				})
 				}
+				console.log("allGoodsDataPage")
 				console.log(allGoodsDataPage)
 				this.allGoods = allGoodsDataPage;
 				this.showLoading = false;
@@ -649,10 +664,10 @@ export default{
 						flex-direction: column;
 						justify-content: space-between;		
 						padding-right: 0.6rem;		
-						font-size: 0.42rem;		
+						font-size: 0.38rem;		
 						span{
 							display: inline-block;
-							height: 0.62rem;
+							height: 0.6rem;
 						}
 					}			
 				}			

@@ -64,7 +64,7 @@
       			width: getIphoneWidth(88px);
       			line-height: 0.3rem;
       			top: getIphoneWidth(30px);
-      			color: #919191;
+      			color: #333;
       			font-size: 0.6rem;
 			}
     .back{

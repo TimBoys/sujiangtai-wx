@@ -81,8 +81,8 @@
 			  		{{$t('mine.orderType')}}
 			  	</div>
 			  	<div class="odcc-cont">
-		   	  		<div v-if="orderDetail.orderType == 0">{{$t('closeAccount.eatIn')}}</div>
-		   	  		<div v-else="orderDetail.orderType == 1">{{$t('closeAccount.reserve')}}</div>	
+		   	  		<div v-if="orderDetail.orderType == 0">{{$t('closeAccount.reserve')}}</div>
+		   	  		<div v-else="orderDetail.orderType == 1">{{$t('closeAccount.eatIn')}}</div>	
 			  	</div>
 			  </div> 				  
 			  <div class="odc-cont">

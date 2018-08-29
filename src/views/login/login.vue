@@ -17,7 +17,7 @@
      					 </x-input>
    				  </group>
 				   <group class="sjtlc-group">
-     					 <x-input  :placeholder="holdPassword"   class="gInput" v-model="loginParams.passwords"></x-input>
+     					 <x-input  :placeholder="holdPassword" type="password"  class="gInput" v-model="loginParams.passwords"></x-input>
    				  </group>
    				  <div class="sjtlc-foot">
    				  		<div @click="open('/register')">{{$t('login.newUserReg')}}</div>
@@ -75,7 +75,7 @@
 						}else{
 							var ErrorMsg = res.data.cnErrorMsg;
 						}
-						if(res.data.data) {
+						if(res.data.data && res.data.rspCode == "00000") {
 							this.$vux.toast.show({
 									text: this.$t("reminder.loginSucc"),
 									type: "text",

@@ -173,7 +173,7 @@
 						console.log(res.data.data)
 						console.log("根据手机号码查找用户微商城端")
 						if(res.data.data) {
-						if(res.data.data.weixinId) {
+						if(res.data.data.weixinOpenid) {
 							//手机号码查询有参数的，表示这个用户已经存在，提示去登录，并
 							this.$vux.toast.show({
 								text: "该手机号已经绑定过微信，请使用是其他手机号绑定!",

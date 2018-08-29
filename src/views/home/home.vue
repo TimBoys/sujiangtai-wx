@@ -144,7 +144,7 @@
 				var resultCode = getUrlParam(strUrl, "code");
 				var telUserNo = DB.getItem("telUserNo").toJson();
 				console.log("telUserNo")
-				console.log(DB.getItem("telUserNo2222").toJson())
+				console.log(DB.getItem("telUserNo").toJson())
 				if (!telUserNo) {
 				//code存在是wx端，不存在是pc端
 				if (resultCode) {

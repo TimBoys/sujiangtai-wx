@@ -106,9 +106,11 @@ module.exports = {
       	pleaseLogout:"The current mobile phone number has been registered, please log out!",      	
       	pleaseCheckInfo:"The information has been sent. Please check!",     	
 				systemError:"system Error!",      	
-      	dataLoading:"Data Loading...",
+      	dataLoading:"Loading...",
       	comingSoon:"coming soon!",
+      	comingSoon2:"No current notification!",
       	noMore:"There is no more！",
+      	upError:"User name or password error!",
       }      
       
     }

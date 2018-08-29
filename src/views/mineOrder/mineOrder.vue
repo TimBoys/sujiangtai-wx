@@ -102,7 +102,7 @@
 		   <!--预定-->
 		   
     	</div>
-			<loading :show="showLoading" is-show-mask :text="showText"></loading>	
+			<loading :show="showLoading" width="5rem" is-show-mask :text="showText"></loading>	
 		</div>
 </template>
 
@@ -146,13 +146,13 @@ import { Scroller, Divider, Spinner, XButton, Group, Cell, LoadMore } from 'vux'
 				var isYyTc = DB.getItem("isYyTc").toNumber();
 				console.log("isYyTc")
 				console.log(isYyTc)
-				if (isYyTc != null) {
+				if (!isNaN(parseInt(isYyTc))) {
 					this.mineOrderType = isYyTc;
 				}else{
 					DB.setItem("isYyTc","1");
-					this.mineOrderType = DB.getItem("isYyTc").toNumber();
+					this.mineOrderType = 1;
 				}
-				console.log(this.mineOrderType)
+//				console.log(this.mineOrderType)
 				
 				if(val){
 					this.queryOrdersByUserNoPage(0,1); //预约
@@ -160,14 +160,12 @@ import { Scroller, Divider, Spinner, XButton, Group, Cell, LoadMore } from 'vux'
 				}else{
 					this.queryOrdersByUserNoPage();
 				}
-						console.log("isYyTc1")
 			},
 			
 			//分页查询数据接口
 			queryOrdersByUserNoPage(val,flg){
 				var pageNumber = 1;
 				var mineOrderType = null;
-				console.log("isYyTc2")
 				if (flg) {
 					//第一次默认都加载预定堂吃
 					mineOrderType = val;
@@ -177,7 +175,6 @@ import { Scroller, Divider, Spinner, XButton, Group, Cell, LoadMore } from 'vux'
 					console.log("pageNumber")
 					console.log(pageNumber)
 				}
-				console.log("isYyTc322")
 				var telUserNo = DB.getItem("telUserNo").toJson(); 
 				console.log(telUserNo)
 				//判断是否登录

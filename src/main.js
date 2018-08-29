@@ -28,7 +28,7 @@ axios.defaults.baseURL = apiUrl;
 Vue.prototype.$http = axios;
 
 //配置vux
-Vue.use(ToastPlugin)
+Vue.use(ToastPlugin, {position: 'middle',time:2000,width:"5rem"})
 Vue.component('x-button', XButton);
 Vue.component('group', Group);
 Vue.component('cell', Cell);

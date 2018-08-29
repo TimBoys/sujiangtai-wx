@@ -21,7 +21,7 @@
 							<div class="shop-item-wrap clear">
 								<div class="shop-item" v-for="(goods,index) in target.goods"  :key="index">
 									<x-img v-lazy="goods.goodsPictureRound" alt="" @click.native="showModel(goods)"></x-img>
-									<x-img v-lazy="goodsSellOut" alt="" @click.native="showModel(goods)" class="sellOut" v-if="!goods.goodsStock"></x-img>
+									<x-img v-lazy="goodsSellOut" alt="" @click.native="showModel(goods)" class="sellOut" v-if="goods.goodsStock < 1"></x-img>
 									
 									<div class="shop-detail">
 										<div class="shopd-title">{{goods.goodsName}}</div>
@@ -33,7 +33,7 @@
 											<div class="shopdpa-price">${{goods.goodsPrice}}</div>
 											<div class="shopdpa-add">
 												<!--<x-icon type="ios-plus" class="cell-x-icon" @click="showGuiGe"></x-icon>-->
-												<x-button class="shopdpa-select" @click.native="showGuiGe(goods)" mini v-if="goods.goodsStock">{{seleStyle}}
+												<x-button class="shopdpa-select" @click.native="showGuiGe(goods)" mini v-if="goods.goodsStock > 0">{{seleStyle}}
 													<badge class="guigeBadge" :text="goods.selGoodsNum" v-if="goods.selGoodsNum"></badge>
 												</x-button>
 												<x-button class="shopdpa-select disabled" mini v-else>{{seleStyle}}</x-button>												
@@ -243,9 +243,13 @@
 						lang: DB.getItem("localLang").toString()
 					}
 				}).then((res) => {
+					console.log("getClassGoods")
 					console.log(res.data.data.data)
 					if(res.status == 200 && res.data.rspCode == "00000") {
 						//存储所有的规格数据
+						console.log("allGoodsAttrs")
+						console.log(res)
+						console.log(JSON.stringify(res.data.data.data[0].goods[0].goodsAttrs))
 						DB.setItem("allGoodsAttrs",JSON.stringify(res.data.data.data[0].goods[0].goodsAttrs));
 						
 						//合并购物车和初始化的数据
@@ -558,7 +562,7 @@
 
 			//重置数据
 			concatGwcInit() {
-				console.log("concatGwcInit")
+				
 				console.log(this.gwcInitData);
 				console.log(this.dataInitItem);
 				// 		this.dataItem = this.dataInitItem;
@@ -573,6 +577,8 @@
 						})
 					})
 				})
+				console.log("concatGwcInit")
+				console.log(this.dataInitItem)
 				this.dataItem = this.dataInitItem;
 
 			}

@@ -110,7 +110,9 @@ module.exports =  {
 				systemError:"系统错误!",
       	dataLoading:"数据加载中...",
       	comingSoon:"敬请期待!",
+      	comingSoon2:"当前无通知!",
       	noMore:"已无更多了",
+      	upError:"用户名或密码错误!",
       }
       
     }
