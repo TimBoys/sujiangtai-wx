@@ -143,6 +143,14 @@
 						if(res.data.data) {
 							//手机号码查询有参数的
 							this.points = res.data.data.points;
+							if (!DB.getItem("wxUserInfo").toJson()) {
+								this.headName = res.data.data.telephone;
+								if(res.data.data.headimgurl){
+									this.maskImg2 = res.data.data.headimgurl;
+								}else{
+									this.maskImg2 = this.maskImg;
+								}
+							}
 						}
 					}
 				}).catch((err) => {
