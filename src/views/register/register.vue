@@ -328,7 +328,7 @@
 						console.log("根据手机号码查找用户,确定用户已经存在了，存储userNo,telephone")
 						console.log(res.data.data)
 						if(res.data.data) {
-							var telUserNo = {telephone:res.data.data.telephone,userNo:res.data.data.userNo}
+							var telUserNo = {telephone:res.data.data.telephone,userNo:res.data.data.userNo,weixinOpenid:res.data.data.weixinOpenid}
 							console.log("telUserNo")
 							console.log(telUserNo)
 							DB.setItem("telUserNo",telUserNo);

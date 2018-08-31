@@ -69,7 +69,7 @@
 						<span class="red">${{allGoods.allGDOrderPrice}}</span>
 					</div>
 					<group :title="theSellerMessage" class="gdc-textarea">
-  						<x-textarea  name="detail" :placeholder="holdSay" :show-counter="false" v-model="textAreaValue"></x-textarea>
+  						<x-textarea  name="detail"  :max="maxNum" :placeholder="holdSay" :show-counter="true" v-model="textAreaValue"></x-textarea>
 					</group>
 				</div>
 			</div>
@@ -185,6 +185,7 @@ export default{
 		    showInitData:false, //初始化数据加载
 		    showText:this.$t("reminder.dataLoading"),
 		    orderNo:null,
+		    maxNum:250,  //最长留言
 		}
 	},
 	components:{

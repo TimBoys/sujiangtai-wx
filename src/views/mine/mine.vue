@@ -109,6 +109,13 @@
 					this.findUserByTelephone();
 				}
 				
+				//获取头像
+				var weixinOpenid = DB.getItem("telUserNo").toJson().weixinOpenid;
+//				console.log(weixinOpenid)
+				if(weixinOpenid && !wxUserInfo){
+					this.getWeixinInfor(weixinOpenid);
+				}
+				
 				
 			},
 			showPosition (position) {
@@ -145,18 +152,34 @@
 							this.points = res.data.data.points;
 							if (!DB.getItem("wxUserInfo").toJson()) {
 								this.headName = res.data.data.telephone;
-								if(res.data.data.headimgurl){
-									this.maskImg2 = res.data.data.headimgurl;
-								}else{
-									this.maskImg2 = this.maskImg;
-								}
 							}
 						}
 					}
 				}).catch((err) => {
 					console.log(err)
 				})
-			},		    
+			},
+			//更新用户头像在pc端/userRegister/getWeixinInfor
+			getWeixinInfor(weixinOpenid){
+				this.$http.get("/userRegister/getWeixinInfor", {
+					params: {
+						weixinOpenId: weixinOpenid,
+					}
+				}).then((res) => {
+					if(res.status == 200) {
+						console.log(res.data.data)
+						if(res.data.data.headimgurl){
+							this.maskImg2 = res.data.data.headimgurl;
+						}else{
+							this.maskImg2 = this.maskImg;
+						}						
+					}
+				}).catch((err) => {
+					console.log(err)
+				})				
+				
+			}
+			
 		},
 		components:{
 			XImg,

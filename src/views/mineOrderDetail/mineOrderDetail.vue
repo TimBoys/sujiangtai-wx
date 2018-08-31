@@ -97,7 +97,7 @@
 			  	<div class="odcc-title">
 			  		{{$t('mine.BuyerMessage')}}
 			  	</div>
-			  	<div class="odcc-cont">
+			  	<div class="odcc-cont odcc-contRemark">
 			  		{{orderDetail.remark}}
 			  	</div>
 			  </div>			  	
@@ -386,7 +386,9 @@ import { XImg } from 'vux'
 								color:#000;
 								max-width: 6rem;
 							}
-							
+							.odcc-contRemark{
+								word-break: break-all;
+							}
 							
 						}						
 						

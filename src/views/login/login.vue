@@ -80,8 +80,8 @@
 									text: this.$t("reminder.loginSucc"),
 									type: "text",
 								})
-							var telUserNo = {telephone:res.data.data.telephone,userNo:res.data.data.userNo}
-//							console.log(telUserNo)
+							var telUserNo = {telephone:res.data.data.telephone,userNo:res.data.data.userNo,weixinOpenid:res.data.data.weixinOpenid}
+							console.log(telUserNo)
 							DB.setItem("telUserNo",JSON.stringify(telUserNo));
 							setTimeout(()=>{
 									this.$router.openPage("/closeAccount");
