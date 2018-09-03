@@ -1,6 +1,6 @@
 <template>
 	<div class="header-back" :class="{'active':active}">
-		<p>{{title}}</p>
+		<p :class="{'titleColor':tActive}">{{title}}</p>
     	<span class="iconfont icon-backer myicon back" @click="leftBack(title)"></span>		
 		
 	</div>
@@ -18,11 +18,15 @@
 		data(){
 			return{
 				active:false,
+				tActive:false,
 			}
 		},
 		mounted(){
 			setTimeout(()=>{
 				this.active = true;
+				if(this.title == "所有商品" || this.title == "All the goods"){
+					this.tActive = true;
+				}				
 			},10)
 		},
 		methods:{
@@ -59,6 +63,9 @@
     		text-align: center;
     		position: relative;
     		top: 0;
+    		.titleColor{
+    			color: #fda544;
+    		}
 		    .myicon{
       			position: absolute;
       			width: getIphoneWidth(88px);

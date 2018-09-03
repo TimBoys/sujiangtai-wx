@@ -16,7 +16,7 @@
 						<cell :title="modeDistribution" value-align="left" primary="content" >
 					      <checker v-model="checkerDemo" radio-required default-item-class="demo1-item" selected-item-class="demo1-item-selected" disabled-item-class="demo1-item-disabled" @on-change="changeChecker">
 					        <checker-item :value="item" v-for="(item, index) in checkerItems" :key="index">{{item.value}}</checker-item>
-					        <checker-item :value="demo3" disabled>{{takeOut}}</checker-item>
+					        <checker-item :value="demo3" disabled @click.native="nextWait">{{takeOut}}</checker-item>
 					      </checker>					
 						</cell>
 						<cell :title="mustAddress" value-align="left" primary="content"   :value="storeAddress">
@@ -158,6 +158,7 @@ export default{
    			modeDistribution:this.$t('closeAccount.modeDistribution'),
 			gdTitle:"",
 			sjtLogo:"../../../static/images/mine/sjtLogo.jpg",
+			sjtStripeLogo:"../../../static/images/mine/sjtStripeLogo.png",
 //			list2: [['微信支付', '支付宝', 'VISA/Master Card',"银行卡"]],
 			list2: [['VISA/Master Card']],
 //			value6: ['微信支付'],
@@ -237,7 +238,7 @@ export default{
      		     handler = StripeCheckout.configure({
 //					 key:'pk_test_ujKHOw9xZM2QYfJwDZIt890W',  //测试key
        		         key: 'pk_live_3aqw1J17VC1gcSxl29khgL3u',  //TODO:正式key,正式发布时替换
-     		        image: 'https://stripe.com/img/documentation/checkout/marketplace.png',
+     		        image: _this.sjtStripeLogo,
      		        locale: 'auto',
      		        token: function(token) {
      		            // You can access the token ID with `token.id`.
@@ -517,7 +518,7 @@ export default{
 			_this.finishPayModfiyOrder();
  			 handler.open({
  	            name: '素匠泰茶',
- 	            description: commodityInformation,
+   	            description: commodityInformation,
  	            currency: 'usd',
  	            amount: _this.allGoods.allGDOrderPrice * 100   //TODO:金额，单位分，变量,需乘以100
  	        });	  
@@ -557,10 +558,10 @@ export default{
   left: 0;
   right: 0px;
   bottom: 0px;
-  top: calc(100vh - 1.4rem);
+  /*top: calc(100vh - 1.4rem);*/
   height: $footerHeight;
   display: flex;
-  z-index: 111;
+  z-index: 333;
   .cf-left {
     flex: 1;
     background-color: rgb(80, 80, 83);
@@ -701,9 +702,13 @@ export default{
   font-size: 0.38rem;
 }
 .demo1-item-selected {
-  border: 1px solid #FDA544;
+  /*border: 1px solid #FDA544;
   background-color: #FDA544;
-  color: #FFF;
+  color: #FFF;*/
+   border: 1px solid #000;
+  background-color: #000;
+  color: #FFF; 
+  
 }
 .demo1-item-disabled,.disabled{
   border: 1px solid #999;

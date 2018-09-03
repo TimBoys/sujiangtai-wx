@@ -4,10 +4,12 @@
 			<header-back :title="headTitle"></header-back>
 		</div>
 		<!--左右侧滑动商品-->
+		<swiper :list="banner"></swiper>
 		<div class="warp-box" ref="boxCont">
-			<swiper :list="banner"></swiper>
+			<!--<swiper :list="banner"></swiper>-->
 			<div class="classificationCont">
 				<div class="left-menu absolute scroll-box-y" ref="left">
+					<x-img v-lazy="sjtLogo" alt="" class="leftLogo" ></x-img>
 					<ul>
 						<li class="item" v-for="(target,index) in dataItem" :class="{ 'active': index == active }" @click="jumpToTarget(index)" :key="index">{{target.className}}</li>
 					</ul>
@@ -15,7 +17,7 @@
 				<div class="right-box absolute scroll-box-y" ref="rightView">
 					<ul>
 						<li class="item rightItemView" v-for="(target,index) in dataItem" :key="index">
-							<p class="title">
+							<p class="title publicColor">
 								<span>{{target.className}}</span>
 							</p>
 							<div class="shop-item-wrap clear">
@@ -30,7 +32,7 @@
 											<div>{{$t('classification.inventory')}} {{goods.goodsStock}}</div>
 										</div>
 										<div class="shopd-pAdd">
-											<div class="shopdpa-price">${{goods.goodsPrice}}</div>
+											<div class="shopdpa-price red">$<span>{{goods.goodsPrice}}</span>{{$t('classification.start')}}</div>
 											<div class="shopdpa-add">
 												<!--<x-icon type="ios-plus" class="cell-x-icon" @click="showGuiGe"></x-icon>-->
 												<x-button class="shopdpa-select" @click.native="showGuiGe(goods)" mini v-if="goods.goodsStock > 0">{{seleStyle}}
@@ -191,7 +193,8 @@
 				}, //购物车中是否有商品
 				hasTheGgInGwc: false,
 				hasTheGgInGwcLen: 0,
-				goodsSellOut:"../../../static/images/home/sellOut.jpg"
+				goodsSellOut:"../../../static/images/home/sellOut.jpg",
+				sjtLogo:"../../static/images/mine/sjtLogo.jpg", //sjt-logo
 			};
 		},
 		computed: {
@@ -209,7 +212,6 @@
 		},
 		methods: {
 			showModel() {
-				console.log(123)
 				console.log(this.shopCar.getAll())
 			},
 			//初始化轮播
@@ -333,7 +335,7 @@
 						(value, key) => {
 //							console.dir(value)
 //							console.log(key)
-							this.offset.push(this.offset[key] + value.offsetHeight);
+							this.offset.push(this.offset[key] + value.offsetHeight + 12);
 //							this.offset.push(value.offsetHeight * key + (11 * key));
 						}
 					);
@@ -356,7 +358,7 @@
 						var rightScrollHeight = this.$refs.rightView.scrollTop;
 						//        console.log(rightScrollHeight)
 						if(10 < rightScrollHeight) {
-							this.$refs.boxCont.scrollTop = 200;
+//							this.$refs.boxCont.scrollTop = 200;
 						}
 						for(let index = 0; index < mySort.length; index++) {
 							let myRightItemHeight = mySort[index];
@@ -591,11 +593,11 @@
 			Divider
 		},
 		beforeRouteLeave(to, from, next) {
-			DB.setItem("classification-left-scrollTop", this.$refs.left.scrollTop);
-			DB.setItem(
-				"classification-right-scrollTop",
-				this.$refs.rightView.scrollTop
-			);
+//			DB.setItem("classification-left-scrollTop", this.$refs.left.scrollTop);
+//			DB.setItem(
+//				"classification-right-scrollTop",
+//				this.$refs.rightView.scrollTop
+//			);
 			next();
 		}
 	};
@@ -606,6 +608,7 @@
 @import "../../assets/scss/util";
 .classification {
   background-color: #fff;
+  height: 100vh;
 }
 .headerImg {
   width: 100%;
@@ -617,9 +620,10 @@
   top: 1.2rem;
   left: 0px;
   bottom: $footerHeight;
-  overflow-y: auto;
+  overflow-y: hidden;
   .classificationCont {
-    height: calc(100vh - 2.6rem);
+  	padding-top: 1rem;
+    height: calc(100% - 4rem);
     position: absolute;
     width: 100%;
     top: 4rem;
@@ -627,14 +631,27 @@
     bottom: 0rem;
     .left-menu {
       width: getIphoneWidth(170px);
+      height: 100%;
       left: 0px;
       top: 0px;
       bottom: 0px;
       overflow-x: hidden;
+      height: 100%;
       @include box-sizing;
       background-color: #efefef;
+      position: relative;
+      overflow: visible;
+      .leftLogo{
+      	position: absolute;
+      	top: -2rem;
+      	z-index: 999;
+      	border-radius: 4px;
+      }
       ul {
         padding-bottom: 0.44rem;
+        overflow-y: scroll;
+        height: calc(100% - 1rem);
+        overflow-x: hidden;
       }
       li.item {
         text-align: center;
@@ -659,11 +676,14 @@
       right: 0px;
       bottom: 0px;
       overflow-x: hidden;
+       height: calc(100% - 1rem);
+     padding-bottom: 1rem;
       .item {
         padding-top: 0.4rem;
         .title {
           text-align: center;
           padding-bottom: 0.2rem;
+          font-size: 0.4rem;
         }
         span {
           position: relative;
@@ -693,6 +713,7 @@
         margin-bottom: 0.3rem;
         @include f12px;
         position: relative;
+        display: flex;
         img {
           width: getIphoneWidth(140px);
           height: getIphoneWidth(140px);
@@ -709,14 +730,19 @@
         .shop-detail {
           display: inline-block;
           width: calc(100% - 2.4rem);
+          padding-left: 0.3rem;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
           .shopd-title {
             @include f14px;
             font-weight: 600;
             vertical-align: top;
+            color: #000000;
           }
           .shopd-detail {
             div {
-              font-size: 0.26rem;
+              font-size: 0.22rem;
             }
           }
         }
@@ -724,6 +750,10 @@
           display: flex;
           .shopdpa-price {
             flex: 1;
+            font-size: 0.26rem;
+              span{
+              	font-size: 0.34rem;
+              }
           }
           .shopdpa-add {
             flex: 1;
@@ -756,13 +786,14 @@
   }
 }
 .classification-footer {
+  position: absolute;
+/*  -webkit-top: calc(100vh - 1.4rem);*/
   left: 0;
   right: 0px;
-  bottom: 0px;
-  top: calc(100vh - 1.4rem);
+  bottom: 0;
   height: $footerHeight;
   display: flex;
-  z-index: 999;
+  z-index: 333;
   .cf-left {
     flex: 1;
     background-color: rgb(80, 80, 83);

@@ -11,19 +11,19 @@
     <footer class="footer clear" :class="{'leave':leaveComp}">
       <div class="footer-item" :class="{ 'active': isActive('home') }" @click="open('/home')">
         <p class="icon">
-          <span class="iconfont icon-shouye"></span>
+          <span class=" icon-sjtshouye"></span>
         </p>
         <p class="name">{{$t('BottomNav.nav_djjx')}}</p>
       </div>    	
       <div class="footer-item" :class="{ 'active': isActive('classification') }" @click="open('/classification')">
         <p class="icon">
-          <span class="iconfont icon-classifition"></span>
+          <span class=" icon-classifition"></span>
         </p>
         <p class="name">{{$t('BottomNav.nav_sysp')}}</p>
       </div>     	
       <div class="footer-item" :class="{ 'active': isActive('mine') }" @click="open('/mine')">
         <p class="icon">
-          <span class="iconfont icon-mine"></span>
+          <span class=" icon-mine"></span>
         </p>
         <p class="name">{{$t('BottomNav.nav_grzx')}}</p>
       </div> 	

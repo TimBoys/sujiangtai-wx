@@ -184,7 +184,7 @@ li {
                 width: 0.6rem;
                 height: 0.6rem;
             }
-          .icon-shouye{
+          .icon-sjtshouye{
             background-image:url('~@/assets/img/home.png');
           }
           .icon-classifition{
@@ -215,7 +215,7 @@ li {
     }
     .active {
         color: rgb(255,151,3);
-         .icon .icon-shouye{
+         .icon .icon-sjtshouye{
             background-image:url('~@/assets/img/home_action.png');
           }
          .icon .icon-classifition{
@@ -283,6 +283,12 @@ li {
 .red{
     color:red;
 }
+.publicColor{
+    color: #fda544;
+}
 .ft2{
     font-size: 0.24rem;
+}
+.fw{
+    font-weight: 700;
 }

@@ -1,5 +1,5 @@
 <template>
-	<div class="app-init">
+	<div class="app-init"  @click.capture="initMack">
 			<div class="mineContHead">
 				<x-img v-lazy="maskImg" class="maskCont"></x-img>				
 				<div class="mineCont">
@@ -12,8 +12,8 @@
 						</div>
 					</div>
 					<div class="mineContBottom" @click="nextWait">
-						<div>{{$t('mine.VIPEnjoyMoreDiscounts')}}</div>
-						<div @click="showFavorText">{{$t('mine.favorable')}}</div>
+						<div class="fw">{{$t('mine.VIPEnjoyMoreDiscounts')}}</div>
+						<div @click="showFavorText" class="mcbDiscounts fw">{{$t('mine.favorable')}}</div>
 						<div class="isFavorText" v-if="isFavorText"><span >#</span>充值系统即将开放，敬请期待。</div>
 					</div>
 				</div>
@@ -72,8 +72,8 @@
 				groupCont:{
 					mineDingdan:"../../../static/images/mine/groupDingDan.png",
 					mineHuiYuan:"../../../static/images/mine/groupHuiYuan.png",
-					mineHelp:"../../../static/images/mine/groupHelp.png",
-					mineMsg:"../../../static/images/mine/groupMsg.png",
+					mineHelp:"../../../static/images/mine/groupMsg.png",
+					mineMsg:"../../../static/images/mine/groupHelp.png",
 				},
 				value:"",
 				position: 'default',
@@ -177,6 +177,15 @@
 				}).catch((err) => {
 					console.log(err)
 				})				
+				
+			},
+			//初始化弹出
+			initMack(e){
+				console.log(e.srcElement.className)
+				if (e.srcElement.className != "mcbDiscounts" && e.srcElement.className != "headIcon") {
+						this.isImgText = false;						
+						this.isFavorText = false;							
+				}				
 				
 			}
 			

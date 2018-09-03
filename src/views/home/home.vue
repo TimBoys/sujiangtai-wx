@@ -101,7 +101,7 @@
 				detailFSsrc:"../../../static/images/home/fire_icon.png",
 				banner: [],
 				topFire_src: [{
-					src: "../../../static/images/home/tf_zhaopai.png",
+					src: "../../../static/images/home/tf_zhaopai3.png",
 					title: this.$t('home.topFire_src.title_djjx'),
 					linkTo: "/classification",
 					indexNo:"1"
@@ -216,11 +216,11 @@
 			//初始化获取本地语言
 			initLocalLang() {
 				if(!DB.getItem("localLang").toString()) {
-					this.localLang = "zh";
+					this.localLang = "中";
 //					DB.setItem("localLang",this.localLang);
 					DB.setItem("localLang","en");
 				} else {
-					this.localLang = DB.getItem("localLang").toString() == "en" ? "zh" : "en";
+					this.localLang = DB.getItem("localLang").toString() == "en" ? "中" : "EN";
 				}
 			},
 			//初始化轮播
@@ -337,11 +337,11 @@
 			//切换语言
 			changeLang(item) {
 				console.log(item);
-				if(item == "zh") {
-					this.localLang = "en";
+				if(item == "中") {
+					this.localLang = "EN";
 					DB.setItem("localLang", "zh");
 				} else {
-					this.localLang = "zh";
+					this.localLang = "中";
 					DB.setItem("localLang", "en");
 				}
 				this.shopCar.removeAll();
