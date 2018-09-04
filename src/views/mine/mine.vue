@@ -233,6 +233,7 @@
 				align-items: center;
 				position: relative;
 				.isImgText{
+					font-weight: 600;
 					position: absolute;
 					top:1.6rem ;
 					left: 1.2rem;
