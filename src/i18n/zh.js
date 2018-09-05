@@ -13,7 +13,7 @@ module.exports =  {
       },
       classification:{
       		headTitle:"所有商品",
-      		seleStyle:"选择规格",
+      		seleStyle:"选规格",
       		yixuanGoods:"已选商品",
       		empltyGwc:"清空",
       		addCart:"加入购物车",

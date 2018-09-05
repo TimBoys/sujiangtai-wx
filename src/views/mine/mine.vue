@@ -11,7 +11,7 @@
 							<div>积分：{{points}}</div>
 						</div>
 					</div>
-					<div class="mineContBottom" @click="nextWait">
+					<div class="mineContBottom">
 						<div class="fw">{{$t('mine.VIPEnjoyMoreDiscounts')}}</div>
 						<div @click="showFavorText" class="mcbDiscounts fw">{{$t('mine.favorable')}}</div>
 						<div class="isFavorText" v-if="isFavorText"><span >#</span>充值系统即将开放，敬请期待。</div>
@@ -181,8 +181,8 @@
 			},
 			//初始化弹出
 			initMack(e){
-				console.log(e.srcElement.className)
-				if (e.srcElement.className != "mcbDiscounts" && e.srcElement.className != "headIcon") {
+//				console.log(e.srcElement.className)
+				if (e.srcElement.className != "mcbDiscounts fw" && e.srcElement.className != "headIcon") {
 						this.isImgText = false;						
 						this.isFavorText = false;							
 				}				

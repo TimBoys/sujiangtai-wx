@@ -103,7 +103,8 @@
 
 		<!--选择规格弹出层-->
 		<div class="goodsGuiGe">
-			<x-dialog v-model="isShowGuiGe" hide-on-blur :dialog-style="{'width':'90%','max-width':'90%'}">
+			<x-dialog v-model="isShowGuiGe" hide-on-blur :dialog-style="{'width':'90%','max-width':'650px','overflow':'visible'}">
+				<span class="bool bool-animate" ref="bool"></span>
 				<div class="guiGe-header">
 					<div class="guiGeh-title">
 						{{initGuiGeBottomSC.goodsItem.goodsName}}
@@ -130,8 +131,6 @@
 						<span class="guiGef-guiGe">({{initGuiGeBottomSC.iGAGAllGuige}})</span>
 					</div>
 					<div class="guiGef-right">
-						
-						<span class="bool bool-animate" ref="bool"></span>
 						<x-button class="gr-btn" mini style="border-radius:44px;" action-type="button" @click.native="addItemGoods(initGuiGeBottomSC,initGuiGeBottomSC.iGAGAllGuige)" v-if="!hasTheGgInGwcLen">
 							<div class="iconfont icon-gouwuche ftl-gwc">{{joinGwc}}</div>
 						</x-button>
@@ -146,7 +145,6 @@
 		</div>
 
 		<!--选择规格弹出层-->
-		
 	</div>
 </template>
 
@@ -159,8 +157,10 @@
 	import { XImg, Divider } from "vux";
 	import _ from 'lodash';
 	import { setTimeout } from 'timers';
- 	import Parabola from '../../util/parabola/index'
+ 	import funParabola from '../../util/parabola/parabola'
 	var DB = new VueDB();
+	var parabola = null;
+
 
 	export default {
 		name: "classification",
@@ -211,7 +211,7 @@
 			this.initGetCarousel();
 			//初始化店铺数据
 			this.initStoreData();
-
+	    
 		},
 		methods: {
 			showModel() {
@@ -512,45 +512,25 @@
 			},
 			//购物车新增商品
 			addItemGoods(item, fromGuige) {
-		        var root = this;
-		        var width = document.documentElement.clientWidth || document.body.clientWidth;
-		        console.log(root.$refs)
-		        console.dir(root.$refs.bool)
-		        console.log(root.$refs.bool.offsetLeft)
-		        console.log(root.$refs.bool.offsetTop)
-		        console.dir(root.$refs.cflCont)
-		        console.log(root.$refs.cflCont.offsetLeft)
-		        console.log(root.$refs.cflCont.offsetTop)
-		        root.$refs.bool.style.display = 'block';
-		
-		        var parabola = new Parabola({
-		          startPos: {
-		            left: root.$refs.bool.offsetLeft + 40,
-		            top: root.$refs.bool.offsetTop + 240
-		          },
-		          endPos: {
-		            left: root.$refs.bool.offsetLeft - (6.8 * width / 10),
-//		            left: root.$refs.cflCont.offsetLeft,
-		            top: root.$refs.bool.offsetTop + 200
-		          },
-		          duration: 600,
-		          onStep (pos) {
-		            var position = 'translate3d('+(pos.left - root.$refs.bool.offsetLeft)+'px,'+(pos.top - root.$refs.bool.offsetTop + 120)+'px, 0px)'
-		
-		            root.$refs.bool.style.webKitTransform = position
-		            root.$refs.bool.style.transform = position
-		          },
-		          onFinish (pos) {
-		            root.$refs.bool.style.display = 'block'
-		          }
-		        });
-		        parabola.start();				
-				
-				
-				console.log("add")
-				console.log(item)
+				document.querySelector(".cfl-cont").style.transform = "scale(1)";
+			    parabola = new funParabola(document.querySelector(".bool"),document.querySelector(".ftl-gwc"),{
+			       speed: 250,// 每帧移动的像素大小
+			       curvature: 0.002,// 实际指焦点到准线的距离
+			       complete: function () {
+			            document.querySelector(".bool").style.visibility = "hidden";
+			            document.querySelector(".cfl-cont").style.transform = "scale(1.2)";
+			            setTimeout(function(){
+			            	document.querySelector(".cfl-cont").style.transform = "scale(1)";
+			            },200)
+			        }		           
+			    });
+				parabola.position().move();
+        		$('.bool').css({ left: '88%', bottom: '92%', visibility: 'visible' });
+        		
+//				console.log("add")
+//				console.log(item)
 //				console.log(fromGuige)
-				console.log(this.shopCar.getAll())
+//				console.log(this.shopCar.getAll())
 				this.shopCar.add(item);
 				
 				// 初始化购物车
@@ -963,8 +943,24 @@
 .maskLeave {
   transform: translateY(100vh);
 }
-// 选择规格start
+/*选择规格start*/
 .goodsGuiGe{
+	 position: relative;
+	  .bool{
+	    position: absolute;
+	    display: block;
+	    width: 0.3rem;
+	    height: 0.3rem;
+	    background-color: red;
+	    left: 88%;
+	    top: 92%;
+	    margin-left: -0.2rem;
+	    margin-top: -0.2rem;
+	    border-radius: 50%;
+	    z-index: 5999;
+	    visibility: hidden;
+	  }
+	
   .guiGe-header{
       text-align: center;
       line-height: 1rem;
@@ -1020,21 +1016,7 @@
       }
     }
     .guiGef-right{
-    	 	.bool{
-  	      	    position: absolute;
-		        display: block;
-		        width: 0.4rem;
-		        height: 0.4rem;
-		        /*background-color: #F2F2F2;*/
-		        background-color: red;
-		        left: 80%;
-		        top: 80%;
-		        margin-left: -0.2rem;
-		        margin-top: -0.2rem;
-		        border-radius: 50%;
-		        z-index: 5999;
-		        /*display: none;*/
-	  	      }
+		  position: relative;
     	  .gr-btn{
     	  	background-color: #FDA544;
     	  }
@@ -1049,6 +1031,5 @@
     }
   }
 }
-
 
 </style>
