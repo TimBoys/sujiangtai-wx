@@ -240,6 +240,7 @@ export default{
        		         key: 'pk_live_3aqw1J17VC1gcSxl29khgL3u',  //TODO:正式key,正式发布时替换
      		        image: _this.sjtStripeLogo,
      		        locale: 'auto',
+     		        allowRememberMe:true,
      		        token: function(token) {
      		            // You can access the token ID with `token.id`.
      		            // Get the token ID to your server-side code for use.
@@ -273,6 +274,7 @@ export default{
 									text: _this.$t("closeAccount.paymentSuccess"),
 									type: "text",
 								}) 
+								
 								_this.$router.openPage("/mineOrder");
      		               }else{
      		               		_this.$vux.toast.show({
@@ -290,7 +292,7 @@ export default{
      		    });     			
 	    	
 	    	    window.addEventListener('popstate', function() {
-			        handler.close();
+	    	    	handler.close();
 			    });
 			        	
 	    },
@@ -519,7 +521,8 @@ export default{
  			 handler.open({
  	            name: '素匠泰茶',
    	            description: commodityInformation,
- 	            currency: 'usd',
+// 	            currency: 'usd',//美元
+   	            currency: 'cad',//加币
  	            amount: _this.allGoods.allGDOrderPrice * 100   //TODO:金额，单位分，变量,需乘以100
  	        });	  
 			}
@@ -716,4 +719,8 @@ export default{
   color: #999;
   opacity: 0.2;
 }
+
+
+
+
 </style>

@@ -78,7 +78,7 @@ module.exports =  {
       },
       login:{
       	usersLogin:"用户登录",
-      	holdPhone:"请输入手机号码",
+      	holdPhone:"请输入手机号码(提示:手机号码10位)",
       	holdPassword:"请输入密码",
       	holdNewPassword:"请输入新密码",
       	newUserReg:"新用户？请注册",
@@ -87,7 +87,7 @@ module.exports =  {
       },
       register:{
       	usersRegister:"用户注册",
-      	holdPhone:"请输入手机号码",
+      	holdPhone:"请输入手机号码(提示:手机号码10位)",
       	holdPassword:"请输入密码",
       	holdNewPassword:"请输入新密码",
       	inputVerificationCode:"请输入验证码",

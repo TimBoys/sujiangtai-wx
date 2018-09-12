@@ -1,7 +1,10 @@
 <template>
 	<div class="app-init">
-		<swiper :list="banner"></swiper>
-
+		<!--<swiper :list="banner"></swiper>-->
+	    <swiper loop auto  :interval=4000 height="4rem" :show-dots="true" dots-position="center">
+	      <swiper-item class="swiper-demo-img" v-for="(item, index) in banner" :key="index"><img :src="item.figureAddress"></swiper-item>
+	    </swiper>
+		
 		<!--热门三种按钮-->
 		<div class="topFire_cont" v-show="detailFireSrc.length">
 			<div v-for="(tf_src) in topFire_src" class="tf_cell">
@@ -41,9 +44,10 @@
 					</div>
 					<div class="df_body">
 						<div v-for="(dfb_body) in detailFS.goods" class="dfb_item" >
-							<x-img v-lazy="dfb_body.goodsPictureRound" class="dfb_img" @click.native="selectThisGoods(dfb_body)"></x-img>
+							<x-img v-lazy="dfb_body.goodsPictureRound" class="dfb_img" @click.native="seeThisGoods(dfb_body)"></x-img>
 							<p class="dfb_name">{{dfb_body.goodsName}}</p>
-							<p class="dfb_price">${{dfb_body.goodsPrice}}</p>
+							<p class="dfb_price">$ {{dfb_body.goodsPrice}}</p>
+							<x-button class="dfb_buy" mini @click.native="selectThisGoods(dfb_body)">购买</x-button>			
 						</div>
 					</div>
 				</div>
@@ -53,17 +57,26 @@
 		<!--<!--地址选择localAddr-->
 		<actionsheet v-model="isShowAs" :menus="menusAddr" @on-click-menu="selectMenu" show-cancel></actionsheet>
 
+	    <div class="dialogGoodsDet">
+		      <x-dialog v-model="showHideOnBlur" class="dialog-demo" hide-on-blur :dialog-style="{'width':'80%','max-width':'650px','overflow':'visible'}">
+		        <div class="img-box">
+		          <img :src="dialogGoodsDetCont.dgdUrl" style="max-width:100%">
+		          <div class="dgdCont">
+		          	{{dialogGoodsDetCont.dgdCont}}
+		          </div>
+		        </div>
+		      </x-dialog>
+	    </div>
+
 	</div>
 </template>
 
 <script>
 	import VueDB from '../../util/vue-db/vue-db-long'
-	import swiper from '../../components/swiper';
 	import shopCarTool from "../../util/shop-car-tool/index.js";
-	import { XImg, Flexbox, FlexboxItem, Actionsheet  } from 'vux';
+	import { XImg, Flexbox, FlexboxItem, Actionsheet, Swiper,SwiperItem  } from 'vux';
 
 	var DB = new VueDB();
-
 	//获取微信第一次登录参数 
 	function getUrlParam(sHref, sArgName) {
 		var args = sHref.split("?");
@@ -87,6 +100,12 @@
 		name: "home",
 		data() {
 			return {
+		      	showHideOnBlur: false,
+		      	dialogGoodsDetCont:{
+		      		dgdUrl:"",
+		      		dgdCont:"",
+		      	},
+		      	dgdUrl:"../../../static/images/home/local_position2.png",
 				home: "home",
 				localLang: "zh",
 				localAddr: {
@@ -233,6 +252,8 @@
 				}}).then((res) => {
 						if(res.status == 200 && res.data.rspCode == "00000"){
 							this.banner = res.data.data.data;
+							console.log("this.banner")
+							console.log(this.banner)
 						}
 					}).catch((err) => {
 						console.log(err)
@@ -353,6 +374,16 @@
 				DB.setItem("selectThisGoods",JSON.stringify(item))
 				this.$router.openPage("/classification");
 			},
+			//点击商品查看大图
+			seeThisGoods(item){
+				this.showHideOnBlur = true;
+				console.log("dgdUrl")
+				console.log(item)
+				this.dialogGoodsDetCont = {
+ 					dgdUrl:item.goodsPictureRound,
+		      		dgdCont:item.goodsIntroduction,					
+				}
+			},
 			//通用方法
 			
 			//初试化店铺数据end
@@ -372,11 +403,12 @@
 			},
 		},
 		components: {
-			swiper,
 			XImg,
 			Flexbox,
 			FlexboxItem,
-			Actionsheet
+			Actionsheet,
+			Swiper,
+			SwiperItem,
 		}
 
 	}
@@ -384,6 +416,10 @@
 
 <style scoped="scoped" lang="scss">
 	@import "../../assets/scss/util";
+	.swiper-demo-img img {
+  		width: 100%;
+  		height: 100%;
+	}
 	.bodyCont {
 		position: absolute;
 		width: 100%;
@@ -395,6 +431,7 @@
 	
 	.topFire_cont {
 		/*position: relative;*/
+		padding: 0 1rem;
 		.localLang {
 			width: 0.44rem;
 			height: 0.44rem;
@@ -521,6 +558,9 @@
 					height: 1rem;
 					margin-bottom: .1rem;
 				}
+				.tf_title{
+					font-size: 0.28rem;
+				}
 			}
 		}
 	}
@@ -545,6 +585,7 @@
 				}
 			}
 			.df_body {
+				padding: 0 1.4rem;
 				display: flex;
 				flex-wrap: wrap;
 				.dfb_item {
@@ -558,22 +599,43 @@
 					padding: 0.2rem;
 					@include box-sizing;
 					.dfb_img {
-						width: 1.6rem;
-						height: 1.6rem;
+						width: 1.8rem;
+						height: 1.8rem;
 						border-radius: 50%;
 						padding-bottom: 0.1rem;
 					}
 					.dfb_name,
-					.dfb_price {
+					.dfb_price{
 						font-size: 0.3rem;
+					}
+					.dfb_buy{
+						background-color: #FDA544;
+		            	font-size: 0.26rem;
+		            	overflow: visible;
+		            	padding: 0 1em;						
 					}
 				}
 			}
 		}
 	}
-	/*.footer{
-		position: absolute;
-		z-index: 400;
-		bottom: 0;
-	}*/
+	
+.dialogGoodsDet {
+  .weui-dialog{
+    border-radius: 8px;
+    padding-bottom: 8px;
+  }
+  .img-box {
+  	max-height: 8rem;
+    overflow-y:auto;   	
+  	img{
+  		height: 6rem;
+  	}
+  	.dgdCont{
+  		font-size: 0.36rem;
+  		text-align: left;
+  		padding: 0.2rem 0.4rem;
+  		color: #333;
+  	}
+  }
+}
 </style>

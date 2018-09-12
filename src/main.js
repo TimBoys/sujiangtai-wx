@@ -5,7 +5,7 @@ import App from './App'
 import router from './router'
 import store from './store/store'
 import axios from "axios";
-import { XButton,Group,Cell,XImg,XDialog,Checker, CheckerItem,Confirm,XInput,InlineXNumber,Badge,Toast,ToastPlugin,Loading,Tab,TabItem,Swiper      } from 'vux'
+import { XButton,Group,Cell,XImg,XDialog,Checker, CheckerItem,Confirm,XInput,InlineXNumber,Badge,Toast,ToastPlugin,Loading,Tab,TabItem,Swiper,SwiperItem     } from 'vux'
 import VueI18n from 'vue-i18n';
 import messages from './i18n/i18n';
 import localLang from './i18n/localeLang';
@@ -44,6 +44,7 @@ Vue.component('loading', Loading)
 Vue.component('tab', Tab)
 Vue.component('tab-item', TabItem)
 Vue.component('swiper', Swiper)
+Vue.component('swiper', SwiperItem)
 //配置i18n
 Vue.use(VueI18n);
 

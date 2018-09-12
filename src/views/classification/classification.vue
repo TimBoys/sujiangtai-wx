@@ -4,9 +4,10 @@
 			<header-back :title="headTitle"></header-back>
 		</div>
 		<!--左右侧滑动商品-->
-		<swiper :list="banner"></swiper>
 		<div class="warp-box" ref="boxCont">
-			<!--<swiper :list="banner"></swiper>-->
+		    <swiper loop auto  :interval=4000 height="4rem" :show-dots="true" dots-position="center" class="swiper">
+		      <swiper-item class="swiper-demo-img" v-for="(item, index) in banner" :key="index"><img :src="item.figureAddress"></swiper-item>
+		    </swiper>			
 			<div class="classificationCont">
 				<div class="left-menu absolute scroll-box-y" ref="left">
 					<x-img v-lazy="sjtLogo" alt="" class="leftLogo" ></x-img>
@@ -150,11 +151,10 @@
 
 <script>
 	import { mapGetters } from "vuex";
-	import swiper from "../../components/swiper";
 	import VueDB from "../../util/vue-db/vue-db-long.js";
 	import shopCarTool from "../../util/shop-car-tool/index.js";
 	import headerBack from "../../components/header-back";
-	import { XImg, Divider } from "vux";
+	import { XImg, Divider,Swiper,SwiperItem } from "vux";
 	import _ from 'lodash';
 	import { setTimeout } from 'timers';
  	import funParabola from '../../util/parabola/parabola'
@@ -244,7 +244,7 @@
 				this.$http.get("/userLogin/getClassGoods", {
 					params: {
 						storeNo: DB.getItem("storeNo").toString(),
-						classType: 1,
+						classType: null,
 						lang: DB.getItem("localLang").toString()
 					}
 				}).then((res) => {
@@ -605,7 +605,8 @@
 
 		},
 		components: {
-			swiper,
+			Swiper,
+			SwiperItem,
 			headerBack,
 			XImg,
 			Divider
@@ -624,6 +625,10 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style  lang="scss" type="text/scss">
 @import "../../assets/scss/util";
+.swiper-demo-img img {
+	width: 100%;
+	height: 100%;
+}
 .classification {
   background-color: #fff;
   height: 100vh;
