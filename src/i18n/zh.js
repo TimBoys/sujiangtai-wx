@@ -69,6 +69,7 @@ module.exports =  {
       		orderNumber:"订单编号：",
       		orderInformation:"订单信息",
       		orderTime:"下单时间：",
+      		bookTime:"预定时间",
       		orderType:"订单类型：",
       		modeOfPayment:"支付方式：",
       		onlinePayment:"在线支付",

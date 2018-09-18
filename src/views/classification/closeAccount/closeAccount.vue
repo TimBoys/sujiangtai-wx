@@ -157,8 +157,8 @@ export default{
    			takeOut:this.$t('closeAccount.takeOut'),
    			modeDistribution:this.$t('closeAccount.modeDistribution'),
 			gdTitle:"",
-			sjtLogo:"../../../static/images/mine/sjtLogo.jpg",
-			sjtStripeLogo:"../../../static/images/mine/sjtStripeLogo.png",
+			sjtLogo:"../../../static/images/mine/sjtLogo1.jpg",
+			sjtStripeLogo:"../../../static/images/mine/circleLogo.png",
 //			list2: [['微信支付', '支付宝', 'VISA/Master Card',"银行卡"]],
 			list2: [['VISA/Master Card']],
 //			value6: ['微信支付'],
@@ -221,7 +221,7 @@ export default{
 	    },20000)		
 	    
 		//初始化预约时间
-		this.initYuyueTime();
+//		this.initYuyueTime();
 		
 		this.queryPromotionByStoreNoNation(); //查询活动id
 		
@@ -297,9 +297,13 @@ export default{
 			        	
 	    },
 	    //初始化预约时间
-	    initYuyueTime(){
+	    initYuyueTime(start,end){
 	    	//是否为预约单子
 			console.log("DB.getItem(isOrder).toString()")
+//			console.log(start.slice(0,2))
+//			console.log(end.slice(0,2))
+			var startTime = start.slice(0,2)
+			var endTime = end.slice(0,2)
 			console.log(DB.getItem("isOrder").toString())
 			if (DB.getItem("isOrder").toString() == "isOrder") {
 				this.isShowOrderTime = true;
@@ -315,7 +319,7 @@ export default{
 //	    	var theSecondStart = new Date(n + 1000*60*30).getMinutes() < 10 ? "0" + new Date(n + 1000*60*30).getMinutes() : new Date(n + 1000*60*30).getMinutes();
 	    	console.log("theSecondStart")
 //	    	console.log(theSecondStart)
-	    	for (var i = 9 ; i < 18; i++) {
+	    	for (var i = startTime ; i < endTime; i++) {
 	    		var iHour = i < 10 ? "0"+i : i;
 	    		theTimeHour.push(iHour);
 	    	}
@@ -359,8 +363,13 @@ export default{
 	    queryPromotionByStoreNoNation(){
 	    	DB.getItem("storeList").toJson().forEach((item,index)=>{
 	    		if (DB.getItem("storeNo").toString() == item.storeNo) {
+	    			console.log("DB.getItem(storeNo).toString()")
+					console.log(item)
+					//初始化预约时间
+					this.initYuyueTime(item.reserveBeginTime,item.reserveEndTime);					
+					
 	    			this.storeAddress = item.storeAddress;
-	    			this.gdTitle = "素匠泰茶("+item.storeAddress+")";
+	    			this.gdTitle = "素匠·泰茶("+item.storeAddress+")";
 	    			this.storePhone = item.storePhone;
 	    		}
 	    	})
@@ -519,7 +528,7 @@ export default{
 			if(_this.allGoods.allGDOrderPrice){
 			_this.finishPayModfiyOrder();
  			 handler.open({
- 	            name: '素匠泰茶',
+ 	            name: '素匠·泰茶',
    	            description: commodityInformation,
 // 	            currency: 'usd',//美元
    	            currency: 'cad',//加币
@@ -579,6 +588,7 @@ export default{
 	  background-color:  rgb(80, 80, 83);
       top: 0.1rem;
       .ftl-gwc {
+      	border-radius: 50%;
         height: 1rem;
         color: #fff;
       }

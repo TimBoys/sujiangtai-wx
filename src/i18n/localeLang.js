@@ -6,7 +6,7 @@ let DB = new VueDB();
 var localLangs = DB.getItem("localLang").toString();
 //console.log(localLangs)
 
-var localLang = localLangs || "en";
+var localLang = localLangs || "zh";
 
 //console.log(localLang)
 

@@ -61,7 +61,7 @@
 		      <x-dialog v-model="showHideOnBlur" class="dialog-demo" hide-on-blur :dialog-style="{'width':'80%','max-width':'650px','overflow':'visible'}">
 		        <div class="img-box">
 		          <img :src="dialogGoodsDetCont.dgdUrl" style="max-width:100%">
-		          <div class="dgdCont">
+		          <div class="dgdCont" v-if="dialogGoodsDetCont.dgdCont">
 		          	{{dialogGoodsDetCont.dgdCont}}
 		          </div>
 		        </div>
@@ -162,8 +162,8 @@
 	//			console.log("url:"+ location.href);
 				var resultCode = getUrlParam(strUrl, "code");
 				var telUserNo = DB.getItem("telUserNo").toJson();
-				console.log("telUserNo")
-				console.log(DB.getItem("telUserNo").toJson())
+//				console.log("telUserNo")
+//				console.log(DB.getItem("telUserNo").toJson())
 				if (!telUserNo) {
 				//code存在是wx端，不存在是pc端
 				if (resultCode) {
@@ -178,9 +178,9 @@
 						if(res.data.data && res.data.rspCode == "00000") {
 							var weixinOpenid = res.data.data.weixinOpenid;
 							var accessToken = res.data.data.accessToken;
-							console.log(res.data.data)
-							console.log(weixinOpenid)
-							console.log(accessToken)
+//							console.log(res.data.data)
+//							console.log(weixinOpenid)
+//							console.log(accessToken)
 							DB.setItem("weixinOpenid",weixinOpenid);
 							DB.setItem("accessToken",accessToken);
 							DB.setItem("wxUserInfo",JSON.stringify(res.data.data));
@@ -213,13 +213,13 @@
 						weixinOpenid:DB.getItem("weixinOpenid").toString()
 					}
 				}).then((res) => {
-					console.log(res)
+//					console.log(res)
 					if(res.status == 200 && res.data.rspCode == "00000") {
 						console.log("根据手机号码查找用户,确定用户已经存在了，存储userNo,telephone")
 						console.log(res.data.data)
 						if(res.data.data && res.data.data.telephone && res.data.data.userNo) {
-							var telUserNo = {telephone:res.data.data.telephone,userNo:res.data.data.userNo}
-							console.log(telUserNo)
+							var telUserNo = {telephone:res.data.data.telephone,userNo:res.data.data.userNo,weixinOpenid:res.data.data.weixinOpenid}
+//							console.log(telUserNo)
 							DB.setItem("telUserNo",telUserNo);
 						}
 						if(res.data.data && res.data.data.userNo) {
@@ -252,8 +252,8 @@
 				}}).then((res) => {
 						if(res.status == 200 && res.data.rspCode == "00000"){
 							this.banner = res.data.data.data;
-							console.log("this.banner")
-							console.log(this.banner)
+//							console.log("this.banner")
+//							console.log(this.banner)
 						}
 					}).catch((err) => {
 						console.log(err)
@@ -268,6 +268,9 @@
 							lang:DB.getItem("localLang").toString()
 						}
 					}).then((res) => {
+						console.log("storelist")
+						console.log(res.data)
+						
 						if(res.status == 200 && res.data.rspCode == "00000"){
 							//初始化上拉店铺
 							if(DB.getItem("storeNo").toString()) {
@@ -380,7 +383,8 @@
 				console.log("dgdUrl")
 				console.log(item)
 				this.dialogGoodsDetCont = {
- 					dgdUrl:item.goodsPictureRound,
+// 					dgdUrl:item.goodsPictureRound,
+ 					dgdUrl:item.goodsPictureBig,
 		      		dgdCont:item.goodsIntroduction,					
 				}
 			},

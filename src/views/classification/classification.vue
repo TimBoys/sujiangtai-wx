@@ -197,7 +197,7 @@
 				hasTheGgInGwc: false,
 				hasTheGgInGwcLen: 0,
 				goodsSellOut:"../../../static/images/home/sellOut.jpg",
-				sjtLogo:"../../static/images/mine/sjtLogo.jpg", //sjt-logo
+				sjtLogo:"../../static/images/mine/sjtLogo1.jpg", //sjt-logo
 			};
 		},
 		computed: {
@@ -665,6 +665,7 @@
       position: relative;
       overflow: visible;
       .leftLogo{
+      	height: 2rem;
       	position: absolute;
       	top: -2rem;
       	z-index: 999;

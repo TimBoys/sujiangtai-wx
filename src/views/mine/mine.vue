@@ -68,7 +68,7 @@
 				aboutUs:this.$t('mine.aboutUs'), //帮助中心
 				maskImg:"../../../static/images/home/testImg1.jpg",
 				maskImg2:null,
-				headName:"素匠泰 PRIME'S HAI TEA",
+				headName:"素匠泰 PRIME'S THAI TEA",
 				groupCont:{
 					mineDingdan:"../../../static/images/mine/groupDingDan.png",
 					mineHuiYuan:"../../../static/images/mine/groupHuiYuan.png",

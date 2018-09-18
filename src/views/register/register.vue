@@ -4,7 +4,7 @@
 		<div class="sjtLogin-cont">
 			<div class="sjtlc-logo">
 				<x-img class="sjtlcl-img" v-lazy="sjtLogo2"></x-img>
-				<div>素匠泰茶</div>
+				<div>素匠·泰茶</div>
 			</div>
 			<div class="sjtlc-title">
 				{{$t('register.usersRegister')}}
@@ -57,7 +57,7 @@
 				isMsgShow: false,
 				countDown: 120,
 				sjtLogo: "../../../static/images/mine/sjtLogin.jpg",
-				sjtLogo2: "../../../static/images/mine/circleLogo.png",
+				sjtLogo2: "../../../static/images/mine/sjtLogo1.jpg",
 				iconType: '',
 				//请求参数
 				register: {

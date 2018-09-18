@@ -76,6 +76,14 @@
 			  		{{orderDetail.orderTime}}
 			  	</div>
 			  </div>     
+			  <div class="odc-cont" v-if="orderDetail.bookTime">
+			  	<div class="odcc-title">
+			  		{{$t('mine.bookTime')}}
+			  	</div>
+			  	<div class="odcc-cont">
+			  		{{orderDetail.bookTime}}
+			  	</div>
+			  </div> 			  
 			  <div class="odc-cont">
 			  	<div class="odcc-title">
 			  		{{$t('mine.orderType')}}
@@ -137,6 +145,7 @@ import { XImg } from 'vux'
 		},
 		methods:{
 			initData(){
+				console.log("DB.getItem(orderDetail).toJson()")
 				console.log(DB.getItem("orderDetail").toJson())
 				var orderDetail = DB.getItem("orderDetail").toJson();
 				var orderDetail1 = orderDetail;
@@ -192,7 +201,7 @@ import { XImg } from 'vux'
 	    queryPromotionByStoreNoNation(){
 			DB.getItem("storeList").toJson().forEach((item,index)=>{
 	    		if (DB.getItem("storeNo").toString() == item.storeNo) {
-	    			this.storeAddress = "素匠泰茶("+item.storeAddress+")";
+	    			this.storeAddress = "素匠·泰茶("+item.storeAddress+")";
 	    		}
 	    	})
 	    	

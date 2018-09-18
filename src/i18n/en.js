@@ -69,6 +69,7 @@ module.exports = {
       		orderNumber:"Order Number：",      		
       		orderInformation:"Order Information",
       		orderTime:"Order Time：",
+      		bookTime:"Book Time",
       		orderType:"Order Type：",
       		modeOfPayment:"Mode Of Payment：",
       		onlinePayment:"Online Payment",
