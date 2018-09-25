@@ -26,7 +26,7 @@
 							 <!--@click.native="showPhone = true"-->
 						</cell>
 						<popup-picker :title="appointmentTime" v-show="isShowOrderTime" v-model="formatDemoValue" value-text-align="left" :data="ppAllYuyueTime" :display-format="format"></popup-picker>
-						<popup-picker :title="modeOfPayment" :data="list2" v-model="value6" value-text-align="left" ></popup-picker>
+						<popup-picker :title="modeOfPayment" :data="listSel" v-model="valueDefault" value-text-align="left" ></popup-picker>
 						
 				</group>	
 
@@ -94,6 +94,9 @@
 				<div class="cf-right" @click="updateAccount()">
 			{{$t('closeAccount.submitOrder')}}
 		</div>
+				<!--<a href="../../../static/alipay.html" target="_blank" class="cf-right" @click="updateAccount()">
+			{{$t('closeAccount.submitOrder')}}
+		</a>		-->
 	</div>
 	<!--底部结算按钮e-->
 		
@@ -113,8 +116,19 @@
 	<loading :show="showLoading" is-show-mask :text="showText"></loading>
 
 	 <toast  v-model="showPositionValue"  type="text" :time="2000" is-show-mask :text="enjoyLooking" :position="position"></toast>
-
-		
+	
+	<!--二维码支付-->
+    <div class="dialogGoodsDet">
+	      <x-dialog v-model="showHideOnBlur" @on-show="pcPayShow" @on-hide="pcPayHide" class="dialog-demo" hide-on-blur :dialog-style="{'width':'60%','max-width':'6rem','overflow':'visible'}">
+	        <div class="img-box">
+	          <div class="dgdCont">
+	          	{{iotPayMsg}}
+	          </div>
+	          <img :src="pcPayUrl" style="max-width:6rem">
+	        </div>
+	      </x-dialog>
+    </div>		
+    
 	</div>
 	
 </template>
@@ -124,15 +138,19 @@ import headerBack from "../../../components/header-back";
 import { Confirm,XImg,Divider,PopupPicker,Tab,TabItem,XTextarea } from "vux";
 import VueDB from "../../../util/vue-db/vue-db-long.js";
 import shopCarTool from "../../../util/shop-car-tool/index.js";
+import isMobile from "../../../util/isMobile/isMobile.js";
 import formatTime from "../../../util/formatTime/formatTime.js";
 import _ from 'lodash'
 
 var DB = new VueDB();
 var handler = null;
+var num = 1; //IOTpay支付订单区别
+var loopPayInter = null; //定时查询订单
 export default{
 	name:"closeAccount",
 	data(){
 		return{
+			showHideOnBlur: false,
 			showPositionValue: false, //toast弹出
 			position: 'default',
 			headTitle:this.$t('closeAccount.submitOrder'), //加入购物车
@@ -159,10 +177,14 @@ export default{
 			gdTitle:"",
 			sjtLogo:"../../../static/images/mine/sjtLogo1.jpg",
 			sjtStripeLogo:"../../../static/images/mine/circleLogo.png",
-//			list2: [['微信支付', '支付宝', 'VISA/Master Card',"银行卡"]],
-			list2: [['VISA/Master Card']],
-//			value6: ['微信支付'],
-			value6: ['VISA/Master Card'],
+			listPc: [['VISA/Master Card','微信支付','支付宝']],  //pc浏览器
+			listMo: [['VISA/Master Card']], //,'微信支付','支付宝' //手机浏览器
+			listWx: [['VISA/Master Card','微信支付']], //微商城
+			isPcMoWx:'',  //判断不同设备
+			listSel: [['VISA/Master Card']], //根据设备选择支付方式
+			valueDefault: ['VISA/Master Card'],  //默认支付方式
+			pcPayUrl:"", //pc支付二维码地址
+			iotPayMsg:"", //提示pc支付
 			showPhone:false,
 			showPhoneTitle:this.$t("closeAccount.changePhone"),
 			formatDemoValue: [],				//默认预约时间
@@ -185,7 +207,8 @@ export default{
 		    showLoading:false, //loading加载
 		    showInitData:false, //初始化数据加载
 		    showText:this.$t("reminder.dataLoading"),
-		    orderNo:null,
+		    orderNo:null, //订单编号
+		    goodsId:null, //商品id
 		    maxNum:250,  //最长留言
 		}
 	},
@@ -200,6 +223,8 @@ export default{
 	},
 	mounted:function(){
 		this.shopCar = new shopCarTool(this.$store);
+		this.isMobile = new isMobile();
+		
 		//商品个数为0退出到所有商品
 //		console.log("商品个数为01退出到所有商品")
 //		console.log(this.shopCar.length())
@@ -222,10 +247,13 @@ export default{
 	    
 		//初始化预约时间
 //		this.initYuyueTime();
+
+		//根据不同设备初始化支付方式
+		this.initPayStyle();
 		
 		this.queryPromotionByStoreNoNation(); //查询活动id
 		
-		this.initPayData(); //初始化支付
+		this.initPayData(); //初始化stripe支付
 		
 	},
 	methods:{
@@ -233,6 +261,29 @@ export default{
 	    open(link){
 	    	this.$router.openPage(link);
 	    },
+	    initPayStyle(){
+//	    	console.log("initPayStyle")
+//	    	console.log(this.isMobile.isMobile())
+//	    	console.log(DB.getItem("wxCode").toString())
+	    	//wxcode存在是微商城
+	    	if (DB.getItem("wxCode").toString()) {
+	    		this.isPcMoWx = "wx";
+	    		this.listSel = this.listWx;
+	    	}else{
+	    		//移动端 / pc端
+	    		if(this.isMobile.isMobile()){
+	    			this.isPcMoWx = "mo";
+	    			this.listSel = this.listMo;
+	    		
+	    		}else{
+	    			this.isPcMoWx = "pc";
+	    			this.listSel = this.listPc;
+	    		}
+	    		
+	    	}
+	    	
+	    },
+	    //stripe支付
 	    initPayData(){
      			 var _this = this;
      		     handler = StripeCheckout.configure({
@@ -296,6 +347,114 @@ export default{
 			    });
 			        	
 	    },
+	   stripePay(){
+	    	var _this = this;
+ 			 handler.open({
+ 	            name: '素匠·泰茶',
+   	            description: _this.$t("closeAccount.commodityInformation"),
+// 	            currency: 'usd',//美元
+   	            currency: 'cad',//加币
+ 	            amount: _this.allGoods.allGDOrderPrice * 100   //TODO:金额，单位分，变量,需乘以100
+ 	        });		    	
+	    },
+	    
+	    //pc支付宝支付
+	    pcAliWxPayData(channelId,extra){
+	    	console.log(channelId)
+	    	console.log(extra)
+	    	var _this = this;
+	    	
+	    	console.log("pcAliWxPayData")
+	    	var commodityInformation = _this.$t("closeAccount.commodityInformation");
+	    	var data = {
+	    		mchOrderNo:_this.orderNo+"@"+num++,
+				channelId:channelId,
+	    		currency:"CAD",
+	    		amount:_this.allGoods.allGDOrderPrice * 100,
+//	    		device:"WEB",
+	    		subject:"素匠·泰茶",
+	    		body:commodityInformation,
+				extra:extra,
+	    	}
+	    	console.log(data)
+	    	
+			_this.$http.post("/iotpay/charge",data).then((res) => {
+				console.log(res)
+	    		console.log("charge")
+				if(res.status == 200 && res.data.rspCode == "00000") {
+				console.log(JSON.parse(res.data.data))
+				var resData = JSON.parse(res.data.data);
+				console.log(resData.codeUrl)
+//				location.href = JSON.parse(res.data.data).payUrl;
+					if(channelId == "ALIPAY_QR"){
+						this.pcPayUrl = resData.payUrl;
+						this.iotPayMsg = "请打开手机支付宝扫一扫！";
+					}else if(channelId == "WX_NATIVE"){
+						this.pcPayUrl = "http://mobile.qq.com/qrcode?url=" + resData.codeUrl;
+						this.iotPayMsg = "请打开手机微信扫一扫！";
+					}
+					this.showHideOnBlur = true;
+					
+				}else{
+					_this.$vux.toast.show({
+						text: res.data.data.retMsg,
+						type: "text",
+					})
+				}
+			}).catch((err) => {
+           		
+			})		    	
+	    	
+	    	
+	    },
+	    //开始pc轮询支付成功
+	    pcPayShow(){
+	    	console.log("pcPaySHow")
+	    	loopPayInter = setInterval(()=>{
+	    		this.loopPcPaySuc();
+	    	},10000)
+	    },
+	    //关闭pc轮询支付成功
+	    pcPayHide(){
+	    	console.log("pcPayHide")
+	    	clearInterval(loopPayInter);
+	    	this.loopPcPaySuc();
+	    	
+	    },
+	    loopPcPaySuc(){
+	    	var _this = this;
+	    	_this.$http.get("/userOrderInfo/selectbyorderno",{params:{
+	    		orderNo:_this.orderNo
+	    	}}).then((res) => {
+//	    		console.log("selectbyorderno")
+				console.log(res)
+	            if(DB.getItem("localLang").toString() == "en"){
+					var ErrorMsg = res.data.usErrorMsg;
+				}else{
+					var ErrorMsg = res.data.cnErrorMsg;
+				}	
+				if(res.status == 200){
+				if(res.data.rspCode == "00000" && res.data.data.payStatus == 1) {
+					_this.shopCar.removeAll();
+					_this.$vux.toast.show({
+						text: _this.$t("closeAccount.paymentSuccess"),
+						type: "text",
+					}) 
+					
+					_this.$router.openPage("/mineOrder");					
+				}else{
+//					_this.$vux.toast.show({
+//						text: ErrorMsg,
+//						type: "text",
+//					})
+				}
+				}
+				
+			}).catch((err) => {
+           		
+			})	
+	    },
+	    
 	    //初始化预约时间
 	    initYuyueTime(start,end){
 	    	//是否为预约单子
@@ -452,6 +611,7 @@ export default{
 							console.log(res.data.data)
 							this.initOrderPage(res.data.data);
 							this.orderNo = res.data.data.orderNo;
+							this.goodsId = res.data.data.listTeaOrderDetails[0].goodsId;
 							this.showInitData = true;
 						}else{
      		               		this.$vux.toast.show({
@@ -524,16 +684,27 @@ export default{
 	    //提交订单
 	    updateAccount(){
 	    	var _this = this;
-	    	var commodityInformation = _this.$t("closeAccount.commodityInformation");
 			if(_this.allGoods.allGDOrderPrice){
-			_this.finishPayModfiyOrder();
- 			 handler.open({
- 	            name: '素匠·泰茶',
-   	            description: commodityInformation,
-// 	            currency: 'usd',//美元
-   	            currency: 'cad',//加币
- 	            amount: _this.allGoods.allGDOrderPrice * 100   //TODO:金额，单位分，变量,需乘以100
- 	        });	  
+				_this.finishPayModfiyOrder();
+				
+				console.log("DB.getItem(weixinOpenid).toString()")
+				console.log(DB.getItem("weixinOpenid").toString())
+				console.log(this.valueDefault[0])
+				//根据不同设备和选择的支付方式支付
+				if (this.valueDefault[0] == "VISA/Master Card") {
+	  				this.stripePay();
+				} else if(this.isPcMoWx == "wx"){
+					
+				} else if(this.isPcMoWx == "pc"){
+					if(this.valueDefault[0] == "支付宝"){
+						_this.pcAliWxPayData("ALIPAY_QR","{}");
+					}else if(this.valueDefault[0] == "微信支付"){
+						_this.pcAliWxPayData("WX_NATIVE",`{productId:${_this.goodsId}}`);
+					}
+				} else if(this.isPcMoWx == "mo"){
+					
+				}
+			
 			}
 	    	
 	    },
@@ -731,6 +902,24 @@ export default{
 }
 
 
-
+.dialogGoodsDet {
+  .weui-dialog{
+    border-radius: 8px;
+    padding-bottom: 8px;
+  }
+  .img-box {
+  	max-height: 9rem;
+    overflow-y:auto;   	
+  	img{
+  		height: 6rem;
+  	}
+  	.dgdCont{
+  		font-size: 0.3rem;
+  		text-align: center;
+  		padding-top: 0.2rem;
+  		color: rgba(255,0,0,0.9);
+  	}
+  }
+}
 
 </style>

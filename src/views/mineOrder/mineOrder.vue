@@ -28,7 +28,7 @@
 			   	  	<div class="bi_cont">
 			   	  		<div v-if="item.payStatus == 0">{{$t('mine.unpaid')}}</div>
 			   	  		<div v-else-if="item.payStatus == 1">{{$t('mine.paymentSuccess')}}</div>
-			   	  		<div v-else-if="item.payStatus == 2">{{$t('mine.paymentSuccess')}}</div>
+			   	  		<div v-else-if="item.payStatus == 2">{{$t('mine.paymentFailure')}}</div>
 			   	  		
 			   	  		<div v-if="item.orderStatus == 0">{{$t('mine.placedAnOrder')}}</div>
 			   	  		<div v-else-if="item.orderStatus == 1">{{$t('mine.finishedOrder')}}</div>

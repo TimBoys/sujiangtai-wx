@@ -162,6 +162,9 @@
 	//			console.log("url:"+ location.href);
 				var resultCode = getUrlParam(strUrl, "code");
 				var telUserNo = DB.getItem("telUserNo").toJson();
+				if(resultCode){//code存在是wx端，不存在是pc端或者手机端
+					DB.setItem("wxCode",resultCode);
+				}
 //				console.log("telUserNo")
 //				console.log(DB.getItem("telUserNo").toJson())
 				if (!telUserNo) {
