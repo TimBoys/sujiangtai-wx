@@ -171,7 +171,7 @@
 				//code存在是wx端，不存在是pc端
 				if (resultCode) {
 					this.$http.get("/userLogin/weixin", {params:{
-						code: resultCode,
+						code:resultCode,
 						accessToken:DB.getItem("accessToken").toString(),
 						openId:DB.getItem("weixinOpenid").toString()
 					}}).then((res) => {
@@ -237,10 +237,12 @@
 			
 			//初始化获取本地语言
 			initLocalLang() {
+//				console.log("DB.getItem(localLang).toString()222")
+//				console.log(DB.getItem("localLang").toString())
 				if(!DB.getItem("localLang").toString()) {
-					this.localLang = "中";
+					this.localLang = "EN";
 //					DB.setItem("localLang",this.localLang);
-					DB.setItem("localLang","en");
+					DB.setItem("localLang","zh");
 				} else {
 					this.localLang = DB.getItem("localLang").toString() == "en" ? "中" : "EN";
 				}

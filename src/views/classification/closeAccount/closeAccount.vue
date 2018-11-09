@@ -141,11 +141,13 @@ import shopCarTool from "../../../util/shop-car-tool/index.js";
 import isMobile from "../../../util/isMobile/isMobile.js";
 import formatTime from "../../../util/formatTime/formatTime.js";
 import _ from 'lodash'
-
+//微信支付
+var onBridgeData = {};
 var DB = new VueDB();
 var handler = null;
 var num = 1; //IOTpay支付订单区别
 var loopPayInter = null; //定时查询订单
+
 export default{
 	name:"closeAccount",
 	data(){
@@ -178,7 +180,7 @@ export default{
 			sjtLogo:"../../../static/images/mine/sjtLogo1.jpg",
 			sjtStripeLogo:"../../../static/images/mine/circleLogo.png",
 			listPc: [['VISA/Master Card','微信支付','支付宝']],  //pc浏览器
-			listMo: [['VISA/Master Card']], //,'微信支付','支付宝' //手机浏览器
+			listMo: [['VISA/Master Card','微信支付']], //,'微信支付','支付宝' //手机浏览器
 			listWx: [['VISA/Master Card','微信支付']], //微商城
 			isPcMoWx:'',  //判断不同设备
 			listSel: [['VISA/Master Card']], //根据设备选择支付方式
@@ -262,10 +264,9 @@ export default{
 	    	this.$router.openPage(link);
 	    },
 	    initPayStyle(){
-//	    	console.log("initPayStyle")
-//	    	console.log(this.isMobile.isMobile())
-//	    	console.log(DB.getItem("wxCode").toString())
+			var telUserNo = DB.getItem("telUserNo").toJson();
 	    	//wxcode存在是微商城
+//	    	if (DB.getItem("wxCode").toString() || telUserNo.weixinOpenid) {
 	    	if (DB.getItem("wxCode").toString()) {
 	    		this.isPcMoWx = "wx";
 	    		this.listSel = this.listWx;
@@ -316,11 +317,11 @@ export default{
 								var ErrorMsg = res.data.cnErrorMsg;
 							}
      		               if(res.status == 200) {
+	     		               	_this.showLoading = false;	
      		               		if(res.data.rspCode == "00000"){
 //   		               		_this.finishPayModfiyOrder();
      		               		//清除店铺缓存
 								_this.shopCar.removeAll();
-								_this.showLoading = false;	
 								_this.$vux.toast.show({
 									text: _this.$t("closeAccount.paymentSuccess"),
 									type: "text",
@@ -407,6 +408,49 @@ export default{
 	    	
 	    	
 	    },
+	    //微商城内微信支付
+	    wPayData(channelId,extra){
+	    	console.log("wPayData")
+	    	console.log(channelId)
+	    	console.log(extra)
+	    	var _this = this;
+	    	
+	    	console.log("wPayData")
+	    	var commodityInformation = _this.$t("closeAccount.commodityInformation");
+	    	var data = {
+	    		mchOrderNo:_this.orderNo+"@"+num++,
+				channelId:channelId,
+	    		currency:"CAD",
+	    		amount:_this.allGoods.allGDOrderPrice * 100,
+//	    		device:"WEB",
+	    		subject:"素匠·泰茶",
+	    		body:commodityInformation,
+				extra:extra,
+				returnUrl:"https://www.primes-thaitea.com/wxindex.html#/home"
+	    	}
+	    	console.log(data)	    	
+
+			_this.$http.post("/iotpay/charge",data).then((res) => {
+				console.log(res)
+	    		console.log("charge2222")
+				if(res.status == 200 && res.data.rspCode == "00000") {
+					console.log(JSON.parse(res.data.data))
+					var resData = JSON.parse(res.data.data);
+					if(resData.success){
+						window.location.href = resData.url;
+					}
+				}else{
+					_this.$vux.toast.show({
+						text: res.data.data.retMsg,
+						type: "text",
+					})
+				}
+			}).catch((err) => {
+           		
+			})
+	    	
+	    },
+	    
 	    //开始pc轮询支付成功
 	    pcPayShow(){
 	    	console.log("pcPaySHow")
@@ -540,7 +584,7 @@ export default{
 				}
 			}).then((res) => {
 				console.log(res)
-				if(res.status == 200 && res.data.rspCode == "00000") {
+				if(res.status == 200 && res.data.rspCode == "00000" && res.data.data.data.length) {
 					this.promotionId = res.data.data.data[0].promotionId;
 					this.promotionName = res.data.data.data[0].promotionName;
 					this.initUserOrder();  //初始化订单
@@ -683,18 +727,20 @@ export default{
 	    },
 	    //提交订单
 	    updateAccount(){
+	    	var telUserNo = DB.getItem("telUserNo").toJson();
+			console.log("telUserNo")
+			console.log(telUserNo)
 	    	var _this = this;
 			if(_this.allGoods.allGDOrderPrice){
 				_this.finishPayModfiyOrder();
-				
-				console.log("DB.getItem(weixinOpenid).toString()")
-				console.log(DB.getItem("weixinOpenid").toString())
-				console.log(this.valueDefault[0])
 				//根据不同设备和选择的支付方式支付
 				if (this.valueDefault[0] == "VISA/Master Card") {
 	  				this.stripePay();
 				} else if(this.isPcMoWx == "wx"){
-					
+					var openId = JSON.stringify({openId:telUserNo.weixinOpenid});
+					_this.wPayData("WX_JSAPI",openId);
+//					_this.wPayData("WX_JSAPI",`{"openId":"oO3y_1Ezzso4gsJOTK4UsX1zE5Uw"}`);
+//					this.wxPay();
 				} else if(this.isPcMoWx == "pc"){
 					if(this.valueDefault[0] == "支付宝"){
 						_this.pcAliWxPayData("ALIPAY_QR","{}");
@@ -702,12 +748,124 @@ export default{
 						_this.pcAliWxPayData("WX_NATIVE",`{productId:${_this.goodsId}}`);
 					}
 				} else if(this.isPcMoWx == "mo"){
-					
+					var openId = JSON.stringify({openId:telUserNo.weixinOpenid});
+					_this.wPayData("WX_JSAPI",openId);					
 				}
 			
 			}
 	    	
 	    },
+	    
+	    //微信支付
+	    wxPay(){
+	    	var telUserNo = DB.getItem("telUserNo").toJson();
+	    	var data = {
+	    		orderNO:this.orderNo,
+	    		userId:telUserNo.userNo
+	    	}
+			this.$http.post("/wxpay/pay",data).then((res) => {
+				console.log("/wxpay/pay")
+				console.log(res.data)
+				if(res.status == 200 && res.data.rspCode == "00000" && res.data.data) {
+					console.log(res.data.data)
+					onBridgeData = res.data.data;
+					if(onBridgeData.paySign){
+//						onBridgeReady();	
+						this.onBridgeReady();
+					}else{
+						this.$vux.toast.show({
+							text: "微信支付调用失败！",
+							type: "text",
+						})				
+					}					
+				}
+			}).catch((err) => {
+				console.log(err)
+			})	
+	    },	    
+
+	    //微信支付
+	    onBridgeReady(){
+	    	var configData = {};
+	    	var strUrl = location.href.split('#')[0];
+			console.log(strUrl)
+			this.$http.get("/getconfig",{
+				params:{
+					pageUrl:strUrl
+				}
+			}).then((res) => {
+				console.log("/getconfig")
+				console.log(res.data.data)
+				if(res.status == 200 && res.data.rspCode == "00000" && res.data.data) {
+					console.log(res)
+					configData = res.data.data;
+					this.configData(configData);
+				}
+			}).catch((err) => {
+				console.log(err)
+			})		    	
+	    },
+	    
+ 		//config 
+	    configData(configData){
+	    			var _this = this;
+					console.log("configData")
+	       			console.log(configData)	    	
+					wx.config({
+					    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+					    appId: configData.appId, // 必填，企业号的唯一标识，此处填写企业号corpid
+					    timestamp:configData.timestamp , // 必填，生成签名的时间戳
+					    nonceStr: configData.nonceStr, // 必填，生成签名的随机串
+					    signature: configData.signature,// 必填，签名，见附录1
+					    jsApiList: ["openAddress","getLocation","chooseWXPay"], // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+					});
+
+					wx.ready(function(res){							
+						console.log("wxConfig-success")
+						console.log(res)
+							//支付
+							console.log("onBridgeData")
+							console.log(onBridgeData)										
+							wx.chooseWXPay({  
+			                  timestamp: onBridgeData.timestamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符  
+			                  nonceStr: onBridgeData.nonceStr, // 支付签名随机串，不长于 32 位  
+			                  package: onBridgeData.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）  
+			                  signType: onBridgeData.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'  
+			                  paySign: onBridgeData.paySign, // 支付签名  
+			                  success: function(res) {  
+									console.log("chooseWXPay-success")
+									console.log(res)
+			                      // 支付成功后的回调函数  
+			                      if (res.errMsg == "chooseWXPay:ok") {  
+			                          //支付成功  
+				   					_this.$vux.toast.show({
+					    			 type:'text',
+									 text:"微信付款成功！"
+									})
+				   					_this.$router.openPage("/mineOrder");
+				   					
+			                      } else {  
+				                      _this.$vux.toast.show({
+						    			 type:'text',
+										 text:res.errMsg
+										})
+			                      }  
+			                  },  
+			                  cancel: function(res) {  
+			                      //支付取消  
+			                      console.log('支付取消')
+			                  }  
+			              });
+			              
+					})
+		
+			wx.error(function(res){
+			    // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+				console.log("wxConfig-error")
+				console.log(res)
+			
+			});		    	
+	    },	    
 	    
 	    //通用
 	    //敬请期待

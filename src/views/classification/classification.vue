@@ -23,7 +23,7 @@
 							</p>
 							<div class="shop-item-wrap clear">
 								<div class="shop-item" v-for="(goods,index) in target.goods"  :key="index">
-									<x-img v-lazy="goods.goodsPictureRound" alt="" @click.native="showModel(goods)"></x-img>
+									<x-img v-lazy="goods.goodsPictureRound" alt="" @click.native="seeThisGoods(goods)"></x-img>
 									<x-img v-lazy="goodsSellOut" alt="" @click.native="showModel(goods)" class="sellOut" v-if="goods.goodsStock < 1"></x-img>
 									
 									<div class="shop-detail">
@@ -144,8 +144,20 @@
 				</div>
 			</x-dialog>
 		</div>
-
 		<!--选择规格弹出层-->
+		
+		<!--详细图片-->
+	    <div class="dialogGoodsDet">
+		      <x-dialog v-model="showHideOnBlur" class="dialog-demo" hide-on-blur :dialog-style="{'width':'80%','max-width':'650px','overflow':'visible'}">
+		        <div class="img-box">
+		          <img :src="dialogGoodsDetCont.dgdUrl" style="max-width:100%">
+		          <div class="dgdCont" v-if="dialogGoodsDetCont.dgdCont">
+		          	{{dialogGoodsDetCont.dgdCont}}
+		          </div>
+		        </div>
+		      </x-dialog>
+	    </div>		
+		
 	</div>
 </template>
 
@@ -166,6 +178,11 @@
 		name: "classification",
 		data() {
 			return {
+				showHideOnBlur: false,
+		      	dialogGoodsDetCont:{
+		      		dgdUrl:"",
+		      		dgdCont:"",
+		      	},
 				msg: "",
 				active: 0,
 				headTitle: this.$t('classification.headTitle'), //所有商品
@@ -272,6 +289,18 @@
 				})
 			},
 
+			//点击商品查看大图
+			seeThisGoods(item){
+				this.showHideOnBlur = true;
+//				console.log("dgdUrl")
+//				console.log(item)
+				this.dialogGoodsDetCont = {
+// 					dgdUrl:item.goodsPictureRound,
+ 					dgdUrl:item.goodsPictureBig,
+		      		dgdCont:item.goodsIntroduction,					
+				}
+			},
+			
 			//根据缓存初始化购物车
 			initGwc() {
 				console.log("初始化购物车")
@@ -1035,6 +1064,26 @@
 		      }
 		    }    	
     }
+  }
+}
+
+.dialogGoodsDet {
+  .weui-dialog{
+    border-radius: 8px;
+    padding-bottom: 8px;
+  }
+  .img-box {
+  	max-height: 8rem;
+    overflow-y:auto;   	
+  	img{
+  		height: 6rem;
+  	}
+  	.dgdCont{
+  		font-size: 0.36rem;
+  		text-align: left;
+  		padding: 0.2rem 0.4rem;
+  		color: #333;
+  	}
   }
 }
 

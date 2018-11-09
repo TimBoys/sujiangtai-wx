@@ -47,7 +47,7 @@ Vue.component('swiper', Swiper)
 Vue.component('swiper', SwiperItem)
 //配置i18n
 Vue.use(VueI18n);
-
+//alert(localLang.localLang)
 const i18n = new VueI18n({
     locale: localLang.localLang, // 语言标识
     messages
