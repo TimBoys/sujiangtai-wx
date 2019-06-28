@@ -46,7 +46,7 @@
 						<div v-for="(dfb_body) in detailFS.goods" class="dfb_item" >
 							<x-img v-lazy="dfb_body.goodsPictureRound" class="dfb_img" @click.native="seeThisGoods(dfb_body)"></x-img>
 							<p class="dfb_name">{{dfb_body.goodsName}}</p>
-							<p class="dfb_price">$ {{dfb_body.goodsPrice}}</p>
+							<p class="dfb_price">C$ {{dfb_body.goodsPrice}}</p>
 							<x-button class="dfb_buy" mini @click.native="selectThisGoods(dfb_body)">购买</x-button>			
 						</div>
 					</div>

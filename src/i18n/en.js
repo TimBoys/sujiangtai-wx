@@ -79,7 +79,7 @@ module.exports = {
       },
       login:{
       	usersLogin:"users Login",
-      	holdPhone:"mobile phone number(hint: mobile phone no. 10)",
+      	holdPhone:"mobile phone number",
       	holdPassword:"password",
       	newUserReg:"New user? Please register",
       	forgetPassword:"forget Password",
@@ -87,7 +87,7 @@ module.exports = {
       },
       register:{
       	usersRegister:"users Register",
-      	holdPhone:"mobile phone number(hint: mobile phone no. 10)",
+      	holdPhone:"mobile phone number",
       	holdPassword:"password",
       	holdNewPassword:"New Password",
       	inputVerificationCode:"verification Code",

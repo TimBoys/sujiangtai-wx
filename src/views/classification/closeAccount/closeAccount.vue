@@ -44,11 +44,11 @@
 					<div  class="gdcd-price">
 						<div class="gdcdp-right">
 							<div class="gdcdpr-title">{{item.goodsItem.goodsName}}</div>
-							<div>{{item.iGAGAllGuige}} <span class="ft2" v-if="item.goodsItem.goodsGuigePrice">(${{item.goodsItem.goodsGuigePrice}})</span></div>
+							<div>{{item.iGAGAllGuige}} <span class="ft2" v-if="item.goodsItem.goodsGuigePrice">(C${{item.goodsItem.goodsGuigePrice}})</span></div>
 							<div>x{{item.itemOneGuigeLen}}</div>
 						</div>
 						<div class="gdcdp-plus">
-							<span>${{item.hasGuigePrice * item.itemOneGuigeLen}}</span>
+							<span>C${{item.hasGuigePrice * item.itemOneGuigeLen}}</span>
 							<!--<span>${{item.goodsItem.goodsPrice}}</span>
 							<span>${{item.goodsItem.goodsGuigePrice}}</span>-->
 						</div>
@@ -57,16 +57,16 @@
 				<div class="gdc-footer">
 					<div class="gdcf-allPrice">
 						{{$t('closeAccount.originalPrice')}}：
-						<span class="red">${{allGoods.allGDOrigPrice}}</span>
+						<span class="red">C${{allGoods.allGDOrigPrice}}</span>
 					</div>
 					<div class="gdcf-allPrice">
 						{{$t('closeAccount.discounts')}}<span class="ft2">({{promotionName}})</span>：
-						<span class="red">${{allGoods.allGDDiscount}}</span>
+						<span class="red">C${{allGoods.allGDDiscount}}</span>
 					</div>
 					
 					<div class="gdcf-allPrice">
 						{{$t('closeAccount.subtotal')}}：
-						<span class="red">${{allGoods.allGDOrderPrice}}</span>
+						<span class="red">C${{allGoods.allGDOrderPrice}}</span>
 					</div>
 					<group :title="theSellerMessage" class="gdc-textarea">
   						<x-textarea  name="detail"  :max="maxNum" :placeholder="holdSay" :show-counter="true" v-model="textAreaValue"></x-textarea>
@@ -89,7 +89,7 @@
 			</div>
 		</div>
 				<div class="cf-center">
-			{{$t('classification.totalPrice')}}:${{allGoods.allGDOrderPrice}}
+			{{$t('classification.totalPrice')}}:C${{allGoods.allGDOrderPrice}}
 		</div>
 				<div class="cf-right" @click="updateAccount()">
 			{{$t('closeAccount.submitOrder')}}

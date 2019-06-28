@@ -33,7 +33,7 @@
 											<div>{{$t('classification.inventory')}} {{goods.goodsStock}}</div>
 										</div>
 										<div class="shopd-pAdd">
-											<div class="shopdpa-price red">$<span>{{goods.goodsPrice}}</span>{{$t('classification.start')}}</div>
+											<div class="shopdpa-price red">C$<span>{{goods.goodsPrice}}</span>{{$t('classification.start')}}</div>
 											<div class="shopdpa-add">
 												<!--<x-icon type="ios-plus" class="cell-x-icon" @click="showGuiGe"></x-icon>-->
 												<x-button class="shopdpa-select" @click.native="showGuiGe(goods)" mini v-if="goods.goodsStock > 0">{{seleStyle}}
@@ -88,7 +88,7 @@
 								<div class="gwcdil-bottom"><span>{{gwcItem.iGAGAllGuige}}</span></div>
 							</div>
 							<div class="gwcdi-right">
-								<div class="gwcdir-left">${{gwcItem.iGAGPrice}}</div>
+								<div class="gwcdir-left">C${{gwcItem.iGAGPrice}}</div>
 								<div class="gwcdir-right">
 									<x-icon type="ios-minus" class="cell-x-icon" @click.native="minusItemGoods(gwcItem.goodsItem)"></x-icon>
 									<span>{{gwcItem.itemGuige.itemOneGuigeLen}}</span>
@@ -128,7 +128,7 @@
 
 				<div class="guiGe-footer">
 					<div class="guiGef-left">
-						<span class="red guiGef-price">${{initGuiGeBottomSC.iGAGPrice}}</span>
+						<span class="red guiGef-price">C${{initGuiGeBottomSC.iGAGPrice}}</span>
 						<span class="guiGef-guiGe">({{initGuiGeBottomSC.iGAGAllGuige}})</span>
 					</div>
 					<div class="guiGef-right">
@@ -336,7 +336,7 @@
 						console.log(item)
 						allGoodsPrice += item.iGAGPrice * item.itemGuige.itemOneGuigeLen;
 					})
-					this.hasGwcData.allGoodsPrice = this.$t('classification.totalPrice') + "：" + "$" + allGoodsPrice;
+					this.hasGwcData.allGoodsPrice = this.$t('classification.totalPrice') + "：" + "C$" + allGoodsPrice;
 					this.hasGwcData.allGoodsBtn = this.$t('classification.toSettleAccounts');
 				} else {
 					this.hasGwcData.hasGoodsData = false;

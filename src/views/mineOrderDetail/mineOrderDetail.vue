@@ -29,8 +29,8 @@
 								<div>x{{item.tGoodsLeng}}</div>
 							</div>
 							<div class="gdcdp-plus">
-								<span>${{item.origPrice}}</span>
-								<span>${{item.attrPrice}}</span>
+								<span>C${{item.origPrice}}</span>
+								<span>C${{item.attrPrice}}</span>
 							</div>
 						</div>
 					</div>
@@ -38,16 +38,16 @@
 					<div class="gdc-footer">
 						<div class="gdcf-allPrice">
 							<span class="gdcfa-One">{{$t('closeAccount.originalPrice')}}：</span>
-							<span class="gdcfa-Two">${{orderDetail.origPrice}}</span>
+							<span class="gdcfa-Two">C${{orderDetail.origPrice}}</span>
 						</div>
 						<div class="gdcf-allPrice">
 							<span class="gdcfa-One">{{$t('closeAccount.discounts')}}({{promotionName}})：</span>
-							<span class="gdcfa-Two">${{orderDetail.discount}}</span>
+							<span class="gdcfa-Two">C${{orderDetail.discount}}</span>
 						</div>
 						
 						<div class="gdcf-allPrice">
 							<span class="gdcfa-One">{{$t('closeAccount.subtotal')}}：</span>
-							<span class="gdcfa-Two">${{orderDetail.orderPrice}}</span>							
+							<span class="gdcfa-Two">C${{orderDetail.orderPrice}}</span>							
 						</div>
 					</div>
 					

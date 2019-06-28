@@ -42,7 +42,7 @@
 		   	  	<div class="bottomItem">
 			   	  	<div class="bi_cont">
 			   	  		<div v-for="(itemName,indexName) in item.orderDetails" v-if="!indexName">{{itemName.goodsName}}{{$t('mine.andSoOn')}} {{item.orderDetails.length}} {{$t('mine.items')}}</div>
-						<div class="bi-origPrice">${{item.origPrice}}</div>
+						<div class="bi-origPrice">C${{item.origPrice}}</div>
 			   	  	</div>
 		   	  	</div>	
 		   	  	
@@ -88,7 +88,7 @@
 		   	  	<div class="bottomItem">
 			   	  	<div class="bi_cont">
 			   	  		<div v-for="(itemName,indexName) in item.orderDetails" v-if="!indexName">{{itemName.goodsName}}{{$t('mine.andSoOn')}} {{item.orderDetails.length}} {{$t('mine.items')}}</div>
-						<div class="bi-origPrice">${{item.origPrice}}</div>
+						<div class="bi-origPrice">C${{item.origPrice}}</div>
 			   	  	</div>
 		   	  	</div>	
 		   	  	
