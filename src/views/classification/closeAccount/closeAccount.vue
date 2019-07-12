@@ -179,12 +179,12 @@ export default{
 			gdTitle:"",
 			sjtLogo:"../../../static/images/mine/sjtLogo1.jpg",
 			sjtStripeLogo:"../../../static/images/mine/circleLogo.png",
-			listPc: [['VISA/Master Card','微信支付','支付宝']],  //pc浏览器
-			listMo: [['VISA/Master Card','微信支付']], //,'微信支付','支付宝' //手机浏览器
-			listWx: [['VISA/Master Card','微信支付']], //微商城
+			listPc: [['VISA/Master/Debit','微信支付','支付宝']],  //pc浏览器
+			listMo: [['VISA/Master/Debit','微信支付']], //,'微信支付','支付宝' //手机浏览器
+			listWx: [['VISA/Master/Debit','微信支付']], //微商城
 			isPcMoWx:'',  //判断不同设备
-			listSel: [['VISA/Master Card']], //根据设备选择支付方式
-			valueDefault: ['VISA/Master Card'],  //默认支付方式
+			listSel: [['VISA/Master/Debit']], //根据设备选择支付方式
+			valueDefault: ['VISA/Master/Debit'],  //默认支付方式
 			pcPayUrl:"", //pc支付二维码地址
 			iotPayMsg:"", //提示pc支付
 			showPhone:false,
@@ -391,7 +391,7 @@ export default{
 						this.pcPayUrl = resData.payUrl;
 						this.iotPayMsg = "请打开手机支付宝扫一扫！";
 					}else if(channelId == "WX_NATIVE"){
-						this.pcPayUrl = "http://mobile.qq.com/qrcode?url=" + resData.codeUrl;
+						this.pcPayUrl = "http://qr.topscan.com/api.php?text=" + resData.codeUrl;
 						this.iotPayMsg = "请打开手机微信扫一扫！";
 					}
 					this.showHideOnBlur = true;
@@ -588,6 +588,12 @@ export default{
 					this.promotionId = res.data.data.data[0].promotionId;
 					this.promotionName = res.data.data.data[0].promotionName;
 					this.initUserOrder();  //初始化订单
+				}else{
+	               		this.$vux.toast.show({
+							text: "该店铺活动已结束！",
+							type: "text",
+						})							
+					this.$router.openPage("/classification");
 				}
 			}).catch((err) => {
 				console.log(err)
@@ -734,7 +740,7 @@ export default{
 			if(_this.allGoods.allGDOrderPrice){
 				_this.finishPayModfiyOrder();
 				//根据不同设备和选择的支付方式支付
-				if (this.valueDefault[0] == "VISA/Master Card") {
+				if (this.valueDefault[0] == "VISA/Master/Debit") {
 	  				this.stripePay();
 				} else if(this.isPcMoWx == "wx"){
 					var openId = JSON.stringify({openId:telUserNo.weixinOpenid});
